@@ -1,1 +1,612 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DataPi — Free Download</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://w.tads.me/widget.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
 
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    :root {
+      --bg:      var(--tg-theme-bg-color,           #08081a);
+      --card:    var(--tg-theme-secondary-bg-color,  #10102a);
+      --text:    var(--tg-theme-text-color,          #f0f0ff);
+      --hint:    var(--tg-theme-hint-color,          #7070a0);
+      --accent:  #6c63ff;
+      --accent2: #a78bfa;
+      --green:   #22d37a;
+      --radius:  20px;
+      --glow:    rgba(108,99,255,.35);
+    }
+
+    html { height:100%; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100%;
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 0 0 40px;
+      overflow-x: hidden;
+    }
+
+    /* noise grain overlay */
+    body::before {
+      content:'';
+      position: fixed; inset:0; pointer-events:none; z-index:0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
+      opacity: 0.6;
+    }
+
+    /* glow blobs */
+    .blob {
+      position: fixed; border-radius: 50%;
+      filter: blur(90px); opacity: .18; pointer-events: none; z-index: 0;
+    }
+    .blob-1 { width:320px; height:320px; background:#6c63ff; top:-80px; left:-60px; }
+    .blob-2 { width:260px; height:260px; background:#a78bfa; bottom:10%; right:-60px; }
+
+    /* ── Wrapper ── */
+    .wrapper {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 420px;
+      display: flex; flex-direction: column; gap: 0;
+    }
+
+    /* ── Screen ── */
+    .screen { display:none; flex-direction:column; align-items:center; width:100%; }
+    .screen.active { display:flex; animation: fadeUp .45s cubic-bezier(.22,1,.36,1); }
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(16px) }
+      to   { opacity:1; transform:translateY(0) }
+    }
+
+    /* ── Loading ── */
+    #s-loading { padding: 50px 20px; gap: 18px; }
+    .loader-ring {
+      width: 56px; height: 56px;
+      border: 3px solid rgba(108,99,255,.15);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg) } }
+    .loader-text { color: var(--hint); font-size: 14px; letter-spacing:.03em; }
+
+    /* ── Header Banner ── */
+    .hero {
+      width: 100%;
+      background: linear-gradient(160deg, #14143a 0%, #0d0d22 100%);
+      border-bottom: 1px solid rgba(108,99,255,.2);
+      padding: 28px 22px 22px;
+      display: flex; flex-direction: column; align-items: center; gap: 18px;
+      position: relative; overflow: hidden;
+    }
+    .hero::after {
+      content:'';
+      position:absolute; bottom:0; left:0; right:0; height:2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    }
+
+    /* ── Progress Steps ── */
+    .steps {
+      display: flex; gap: 6px; width: 100%; max-width: 280px;
+    }
+    .step {
+      flex: 1; height: 4px; border-radius: 99px;
+      background: rgba(255,255,255,.08);
+      transition: background .5s;
+    }
+    .step.done   { background: var(--accent); }
+    .step.active {
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      animation: pulse-bar 1.4s ease-in-out infinite;
+    }
+    @keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:.5} }
+
+    /* ── Cover Image ── */
+    .cover-wrap {
+      position: relative; width: 110px; height: 145px;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 12px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07);
+      flex-shrink: 0;
+    }
+    .cover-wrap img {
+      width: 100%; height: 100%; object-fit: cover;
+      display: block;
+    }
+    .cover-placeholder {
+      width: 100%; height: 100%;
+      background: linear-gradient(135deg, #1a1a3e, #2a2a5e);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 44px;
+    }
+    .cover-shine {
+      position: absolute; inset:0;
+      background: linear-gradient(120deg, rgba(255,255,255,.12) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    /* ── Title + Meta ── */
+    .hero-body { display:flex; gap:16px; align-items:flex-start; width:100%; }
+    .hero-text  { flex:1; display:flex; flex-direction:column; gap:8px; }
+
+    .file-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+      color: var(--accent2);
+      background: rgba(108,99,255,.15);
+      border: 1px solid rgba(108,99,255,.25);
+      border-radius: 6px; padding: 3px 8px;
+      width: fit-content;
+    }
+
+    .book-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 18px; font-weight: 800; line-height: 1.25;
+      color: var(--text);
+    }
+
+    /* ── Stats row ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(3,1fr);
+      gap: 8px; width: 100%; padding: 16px 22px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px;
+      padding: 12px 8px;
+      display: flex; flex-direction:column; align-items:center; gap: 4px;
+      transition: border-color .3s;
+    }
+    .stat-card:hover { border-color: rgba(108,99,255,.3); }
+    .stat-icon { font-size: 20px; }
+    .stat-val  { font-family:'Syne',sans-serif; font-size: 16px; font-weight:700; color:var(--text); }
+    .stat-lbl  { font-size: 10px; color:var(--hint); letter-spacing:.04em; text-transform:uppercase; }
+
+    /* ── Content card ── */
+    .content-card {
+      width: 100%; padding: 0 14px; display: flex; flex-direction:column; gap:12px;
+    }
+
+    .divider {
+      width:100%; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+    }
+
+    /* ── Ad notice ── */
+    .ad-notice {
+      background: rgba(108,99,255,.08);
+      border: 1px solid rgba(108,99,255,.2);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex; gap: 10px; align-items: flex-start;
+    }
+    .ad-notice .icon { font-size: 20px; flex-shrink:0; margin-top:1px; }
+    .ad-notice p { font-size: 12.5px; line-height: 1.65; color: var(--hint); }
+    .ad-notice strong { color: var(--accent2); }
+
+    /* ── Buttons ── */
+    .btn-watch {
+      width: 100%; padding: 16px;
+      border: none; border-radius: var(--radius);
+      background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+      color: #fff; font-family: 'Syne', sans-serif;
+      font-size: 15px; font-weight: 700; letter-spacing:.02em;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      box-shadow: 0 6px 28px var(--glow);
+      transition: transform .15s, box-shadow .2s, opacity .2s;
+      position: relative; overflow:hidden;
+    }
+    .btn-watch::before {
+      content:''; position:absolute; inset:-1px;
+      background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
+      border-radius: inherit;
+    }
+    .btn-watch:not(:disabled):hover  { transform:translateY(-1px); box-shadow:0 10px 36px var(--glow); }
+    .btn-watch:not(:disabled):active { transform: scale(.97); }
+    .btn-watch:disabled {
+      opacity: .35; cursor: not-allowed;
+      background: rgba(255,255,255,.08); box-shadow: none;
+    }
+    .btn-watch.loading::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
+      animation: shimmer 1.3s infinite;
+    }
+    @keyframes shimmer { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
+
+    .btn-download {
+      width: 100%; padding: 16px;
+      border: 1.5px solid rgba(255,255,255,.1); border-radius: var(--radius);
+      background: rgba(255,255,255,.04);
+      color: var(--hint); font-family: 'Syne', sans-serif;
+      font-size: 15px; font-weight: 700;
+      cursor: not-allowed;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all .45s cubic-bezier(.22,1,.36,1);
+    }
+    .btn-download.unlocked {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      border-color: transparent;
+      color: #fff; cursor: pointer;
+      box-shadow: 0 6px 28px rgba(22,163,74,.4);
+      animation: pop .45s cubic-bezier(.22,1,.36,1);
+    }
+    .btn-download.unlocked:hover  { transform:translateY(-1px); box-shadow:0 10px 36px rgba(22,163,74,.45); }
+    .btn-download.unlocked:active { transform: scale(.97); }
+    @keyframes pop { 0%{transform:scale(.88)} 70%{transform:scale(1.03)} 100%{transform:scale(1)} }
+
+    .lock-icon { font-size: 18px; transition: all .3s; }
+
+    /* ── Info rows below buttons ── */
+    .info-chips {
+      display: flex; gap:8px; flex-wrap:wrap; justify-content:center;
+    }
+    .chip {
+      display:inline-flex; align-items:center; gap:5px;
+      font-size: 11px; color:var(--hint);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 99px; padding: 5px 10px;
+    }
+
+    /* ── Error screen ── */
+    #s-error { padding: 50px 22px; gap: 16px; text-align:center; }
+    #s-error h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
+    #s-error p  { color:var(--hint); font-size:13px; max-width:280px; line-height:1.6; }
+    .btn-ghost {
+      width:100%; padding:13px; border:1px solid rgba(255,255,255,.12); border-radius:var(--radius);
+      background:rgba(255,255,255,.05); color:var(--text);
+      font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
+      cursor:pointer; max-width:320px;
+      transition: border-color .2s, background .2s;
+    }
+    .btn-ghost:hover { background:rgba(255,255,255,.08); border-color:rgba(108,99,255,.4); }
+
+    /* ── Footer ── */
+    .footer {
+      padding: 20px 22px 0;
+      display:flex; align-items:center; justify-content:center; gap:6px;
+    }
+    .footer span { font-size:11px; color:var(--hint); }
+    .footer .dot  { width:3px; height:3px; border-radius:50%; background:var(--hint); opacity:.4; }
+    .badge-free {
+      font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+      color:#22d37a;
+      background: rgba(34,211,122,.12);
+      border: 1px solid rgba(34,211,122,.25);
+      border-radius:6px; padding:2px 7px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<!-- ─── TADS container ─────────────────────────────────── -->
+<div id="tads-container-9607" style="display:none"></div>
+
+<div class="wrapper">
+
+  <!-- Screen: Loading -->
+  <div id="s-loading" class="screen active">
+    <div class="loader-ring"></div>
+    <p class="loader-text">Preparing your download…</p>
+  </div>
+
+  <!-- Screen: Main -->
+  <div id="s-main" class="screen">
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="steps">
+        <div class="step done"></div>
+        <div class="step active" id="step2"></div>
+        <div class="step" id="step3"></div>
+      </div>
+
+      <div class="hero-body">
+        <div class="cover-wrap" id="cover-wrap">
+          <div class="cover-placeholder" id="cover-placeholder">📊</div>
+          <div class="cover-shine"></div>
+        </div>
+
+        <div class="hero-text">
+          <span class="file-badge" id="file-badge">📁 File</span>
+          <h1 class="book-title" id="book-title">Loading…</h1>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="stat-icon">👁</span>
+        <span class="stat-val" id="stat-views">—</span>
+        <span class="stat-lbl">Views</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📥</span>
+        <span class="stat-val" id="stat-dl">—</span>
+        <span class="stat-lbl">Downloads</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon">📄</span>
+        <span class="stat-val" id="stat-pages">—</span>
+        <span class="stat-lbl">Pages</span>
+      </div>
+    </div>
+
+    <!-- Buttons + notice -->
+    <div class="content-card">
+
+      <div class="ad-notice">
+        <span class="icon">⚠️</span>
+        <p>
+          <strong>How to unlock:</strong> Tap <strong>"Watch Ad"</strong> below and watch the full ad.
+          When the <strong>✕ close button</strong> appears, tap it — the download button activates automatically.
+        </p>
+      </div>
+
+      <button class="btn-watch" id="btn-watch">
+        <span>▶</span>
+        <span id="btn-watch-label">Watch Ad to Unlock</span>
+      </button>
+
+      <button class="btn-download" id="btn-download" disabled>
+        <span class="lock-icon" id="lock-icon">🔒</span>
+        <span id="dl-label">Download — Watch ad first</span>
+      </button>
+
+      <div class="info-chips">
+        <span class="chip">✅ No signup</span>
+        <span class="chip">✅ No payment</span>
+        <span class="chip" id="chip-size">⏱ ~15 sec ad</span>
+        <span class="badge-free">100% FREE</span>
+      </div>
+
+    </div>
+
+    <div class="footer">
+      <span>Powered by DataPi</span>
+      <div class="dot"></div>
+      <span>@DATASCIENCEQ</span>
+    </div>
+
+  </div>
+
+  <!-- Screen: Error -->
+  <div id="s-error" class="screen">
+    <div style="font-size:52px">⚠️</div>
+    <h2>Ad Unavailable</h2>
+    <p>No ads available right now. You can still access your file directly.</p>
+    <button class="btn-download unlocked" onclick="goToDataset()" style="max-width:320px;cursor:pointer">
+      <span>🚀</span><span>Access File Directly</span>
+    </button>
+    <button class="btn-ghost" onclick="startAd()">Try Again</button>
+  </div>
+
+</div>
+
+<!-- ─── Scripts ──────────────────────────────────────────── -->
+<script>
+  /* ── Telegram ── */
+  const tg = window.Telegram?.WebApp || null;
+  if (tg) { tg.ready(); tg.expand(); }
+
+  /* ── Parse params ── */
+  function decodeB64(str) {
+    if (!str) return null;
+    try {
+      const p = str + '=='.slice(0,(4-str.length%4)%4);
+      return atob(p.replace(/-/g,'+').replace(/_/g,'/'));
+    } catch { return null; }
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const startParam =
+    tg?.initDataUnsafe?.start_param ||
+    params.get('startapp') ||
+    params.get('tgWebAppStartParam');
+
+  /* startParam is base64(downloadURL) */
+  const DATASET_URL = decodeB64(startParam);
+
+  /* Optional title param */
+  const rawTitle = params.get('title');
+  const PAGE_TITLE = rawTitle ? decodeB64(rawTitle) || decodeURIComponent(rawTitle) : null;
+
+  /* ── State ── */
+  const WIDGET_ID   = 9607;
+  let   adController = null;
+  let   adWatched    = false;
+
+  /* ── Screens ── */
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id)?.classList.add('active');
+  }
+
+  /* ── Detect file type from URL ── */
+  function detectBadge(url) {
+    if (!url) return { emoji:'📁', label:'File' };
+    const u = url.toLowerCase();
+    if (u.includes('.pdf'))  return { emoji:'📕', label:'PDF Book' };
+    if (u.match(/\.(mp4|mkv|avi|mov|webm)/)) return { emoji:'🎬', label:'Video' };
+    if (u.match(/\.(mp3|wav|ogg|flac|m4a)/)) return { emoji:'🎧', label:'Audio' };
+    return { emoji:'📁', label:'File' };
+  }
+
+  /* ── Populate UI ── */
+  function populateUI() {
+    const badge = detectBadge(DATASET_URL);
+
+    /* Title */
+    const titleEl = document.getElementById('book-title');
+    if (PAGE_TITLE) titleEl.textContent = PAGE_TITLE;
+    else if (DATASET_URL) {
+      const parts = DATASET_URL.split('/');
+      titleEl.textContent = decodeURIComponent(parts[parts.length-1] || 'Dataset');
+    } else {
+      titleEl.textContent = 'Dataset';
+    }
+
+    /* Badge */
+    const badgeEl = document.getElementById('file-badge');
+    if (badgeEl) badgeEl.textContent = badge.emoji + ' ' + badge.label;
+
+    /* Placeholder icon */
+    const ph = document.getElementById('cover-placeholder');
+    if (ph) ph.textContent = badge.emoji;
+
+    /* Try Pixeldrain thumbnail */
+    if (DATASET_URL) {
+      const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
+      if (m) {
+        const thumbUrl = `https://pixeldrain.com/api/file/${m[1]}/thumbnail`;
+        const img = new Image();
+        img.onload = () => {
+          const wrap = document.getElementById('cover-wrap');
+          const existing = wrap.querySelector('img');
+          if (!existing) {
+            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;';
+            wrap.insertBefore(img, wrap.firstChild);
+            if (ph) ph.style.display = 'none';
+          }
+        };
+        img.src = thumbUrl;
+
+        /* Fetch metadata */
+        fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
+          .then(r => r.json())
+          .then(d => {
+            if (d.views     !== undefined) document.getElementById('stat-views').textContent = fmtNum(d.views);
+            if (d.downloads !== undefined) document.getElementById('stat-dl').textContent    = fmtNum(d.downloads);
+            if (d.pages     !== undefined) document.getElementById('stat-pages').textContent = fmtNum(d.pages);
+            if (d.size) {
+              document.getElementById('chip-size').textContent = '💾 ' + fmtBytes(d.size);
+            }
+          })
+          .catch(() => {});
+      }
+    }
+  }
+
+  function fmtNum(n) {
+    if (n == null) return '—';
+    if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
+    return String(n);
+  }
+
+  function fmtBytes(n) {
+    const units = ['B','KB','MB','GB'];
+    for (const u of units) {
+      if (n < 1024) return n.toFixed(1)+' '+u;
+      n /= 1024;
+    }
+    return n.toFixed(1)+' TB';
+  }
+
+  /* ── Unlock button ── */
+  function unlockDownloadButton() {
+    if (adWatched) return;
+    adWatched = true;
+
+    document.getElementById('step2')?.classList.replace('active','done');
+    document.getElementById('step3')?.classList.add('active');
+
+    const btn   = document.getElementById('btn-download');
+    const icon  = document.getElementById('lock-icon');
+    const label = document.getElementById('dl-label');
+    if (btn)   { btn.disabled = false; btn.classList.add('unlocked'); btn.onclick = goToDataset; }
+    if (icon)  { icon.textContent = '📥'; }
+    if (label) { label.textContent = 'Download — FREE ✓'; }
+
+    const watch = document.getElementById('btn-watch');
+    if (watch) { watch.style.opacity='0.3'; watch.disabled=true; }
+  }
+
+  /* ── Navigate ── */
+  function goToDataset() {
+    const url = DATASET_URL || 'https://pixeldrain.com';
+    if (tg?.openLink) { tg.openLink(url); setTimeout(()=>tg.close(),600); }
+    else window.location.href = url;
+  }
+
+  /* ── Start ad ── */
+  function startAd() {
+    const btn   = document.getElementById('btn-watch');
+    const label = document.getElementById('btn-watch-label');
+
+    if (btn)   { btn.disabled=true; btn.classList.add('loading'); }
+    if (label) { label.textContent='Loading Ad…'; }
+
+    if (!adController) {
+      console.warn('adController not ready — fallback');
+      unlockDownloadButton();
+      return;
+    }
+
+    adController.showAd()
+      .then(() => {
+        console.log('✅ Ad complete');
+        unlockDownloadButton();
+      })
+      .catch(err => {
+        console.error('Ad error:', err);
+        if (btn)   { btn.disabled=false; btn.classList.remove('loading'); }
+        if (label) { label.textContent='Watch Ad to Unlock'; }
+        if (err?.type === 'ADS_NOT_FOUND' || !err) unlockDownloadButton();
+      });
+  }
+
+  /* ── Init TADS ── */
+  function initTads() {
+    if (!window.tads?.init) return;
+    try {
+      adController = window.tads.init({
+        widgetId: WIDGET_ID,
+        type: 'fullscreen',
+        debug: false,
+        onShowReward: (r) => { console.log('reward:', r); unlockDownloadButton(); },
+        onAdsNotFound: ()  => { console.warn('no ads'); unlockDownloadButton(); },
+      });
+      document.getElementById('btn-watch')?.addEventListener('click', startAd);
+      populateUI();
+      showScreen('s-main');
+    } catch(e) {
+      console.error('TADS init error:', e);
+      showScreen('s-error');
+    }
+  }
+
+  /* ── Boot ── */
+  window.addEventListener('load', () => {
+    showScreen('s-loading');
+    let tries = 0;
+    const iv = setInterval(() => {
+      tries++;
+      if (window.tads?.init) { clearInterval(iv); initTads(); }
+      else if (tries > 60) {
+        clearInterval(iv);
+        populateUI();
+        unlockDownloadButton();
+        showScreen('s-main');
+      }
+    }, 200);
+  });
+</script>
+</body>
+</html>
