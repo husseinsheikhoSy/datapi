@@ -279,21 +279,17 @@
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 
-<!-- ─── TADS container ─────────────────────────────────── -->
 <div id="tads-container-9607" style="display:none"></div>
 
 <div class="wrapper">
 
-  <!-- Screen: Loading -->
   <div id="s-loading" class="screen active">
     <div class="loader-ring"></div>
-    <p class="loader-text">جارٍ تحضير ملفك…</p>
+    <p class="loader-text">Preparing your file…</p>
   </div>
 
-  <!-- Screen: Main -->
   <div id="s-main" class="screen">
 
-    <!-- Hero -->
     <div class="hero">
       <div class="steps">
         <div class="step done"></div>
@@ -314,7 +310,6 @@
       </div>
     </div>
 
-    <!-- Stats -->
     <div class="stats-grid">
       <div class="stat-card">
         <span class="stat-icon">👁</span>
@@ -333,58 +328,55 @@
       </div>
     </div>
 
-    <!-- Buttons + notice -->
     <div class="content-card">
 
       <div class="ad-notice">
         <span class="icon">⚠️</span>
         <p>
-          <strong>كيفية فتح التحميل:</strong> اضغط على <strong>«شاهد الإعلان»</strong> أدناه وشاهد الإعلان كاملاً.
-          عند ظهور <strong>زر ✕ الإغلاق</strong>، اضغط عليه — سيُفعَّل زر التحميل تلقائياً.
+          <strong>How to unlock download:</strong> Click on <strong>"Watch Ad"</strong> below and watch the full ad.
+          When the <strong>Close ✕ button</strong> appears, click it — the download button will activate automatically.
         </p>
       </div>
 
       <button class="btn-watch" id="btn-watch">
         <span>▶</span>
-        <span id="btn-watch-label">شاهد الإعلان لفتح التحميل</span>
+        <span id="btn-watch-label">Watch ad to unlock download</span>
       </button>
 
       <button class="btn-download" id="btn-download" disabled>
         <span class="lock-icon" id="lock-icon">🔒</span>
-        <span id="dl-label">التحميل — شاهد الإعلان أولاً</span>
+        <span id="dl-label">Download — Watch ad first</span>
       </button>
 
       <div class="info-chips">
-        <span class="chip">✅ بدون تسجيل</span>
-        <span class="chip">✅ بدون دفع</span>
-        <span class="chip" id="chip-size">⏱ ~15 ثانية إعلان</span>
-        <span class="badge-free">مجاني 100%</span>
+        <span class="chip">✅ No registration</span>
+        <span class="chip">✅ No payment</span>
+        <span class="chip" id="chip-size">⏱ ~15 sec ad</span>
+        <span class="badge-free">100% FREE</span>
       </div>
 
     </div>
 
     <div class="footer">
-      <span>مقدّم من DataPi</span>
+      <span>Powered by DataPi</span>
       <div class="dot"></div>
       <span>@DATASCIENCEQ</span>
     </div>
 
   </div>
 
-  <!-- Screen: Error -->
   <div id="s-error" class="screen">
     <div style="font-size:52px">⚠️</div>
-    <h2>الإعلان غير متاح</h2>
-    <p>لا توجد إعلانات متاحة الآن. يمكنك الوصول إلى الملف مباشرةً.</p>
+    <h2>Ad not available</h2>
+    <p>No ads are currently available. You can access the file directly.</p>
     <button class="btn-download unlocked" onclick="goToDataset()" style="max-width:320px;cursor:pointer">
-      <span>🚀</span><span>الوصول للملف مباشرةً</span>
+      <span>🚀</span><span>Access file directly</span>
     </button>
-    <button class="btn-ghost" onclick="startAd()">حاول مجدداً</button>
+    <button class="btn-ghost" onclick="startAd()">Try again</button>
   </div>
 
 </div>
 
-<!-- ─── Scripts ──────────────────────────────────────────── -->
 <script>
   /* ── Telegram ── */
   const tg = window.Telegram?.WebApp || null;
@@ -444,7 +436,7 @@
       const parts = DATASET_URL.split('/');
       titleEl.textContent = decodeURIComponent(parts[parts.length-1] || 'Dataset');
     } else {
-      titleEl.textContent = 'ملف';
+      titleEl.textContent = 'File';
     }
 
     /* Badge */
@@ -517,7 +509,7 @@
     const label = document.getElementById('dl-label');
     if (btn)   { btn.disabled = false; btn.classList.add('unlocked'); btn.onclick = goToDataset; }
     if (icon)  { icon.textContent = '📥'; }
-    if (label) { label.textContent = 'تحميل — مجاني ✓'; }
+    if (label) { label.textContent = 'Download — Free ✓'; }
 
     const watch = document.getElementById('btn-watch');
     if (watch) { watch.style.opacity='0.3'; watch.disabled=true; }
@@ -536,7 +528,7 @@
     const label = document.getElementById('btn-watch-label');
 
     if (btn)   { btn.disabled=true; btn.classList.add('loading'); }
-    if (label) { label.textContent='جارٍ تحميل الإعلان…'; }
+    if (label) { label.textContent='Loading ad…'; }
 
     if (!adController) {
       console.warn('adController not ready — fallback');
@@ -552,7 +544,7 @@
       .catch(err => {
         console.error('Ad error:', err);
         if (btn)   { btn.disabled=false; btn.classList.remove('loading'); }
-        if (label) { label.textContent='شاهد الإعلان لفتح التحميل'; }
+        if (label) { label.textContent='Watch ad to unlock download'; }
         if (err?.type === 'ADS_NOT_FOUND' || !err) unlockDownloadButton();
       });
   }
