@@ -36,7 +36,6 @@
       overflow-x: hidden;
     }
 
-    /* noise grain overlay */
     body::before {
       content:'';
       position: fixed; inset:0; pointer-events:none; z-index:0;
@@ -44,7 +43,6 @@
       opacity: 0.6;
     }
 
-    /* glow blobs */
     .blob {
       position: fixed; border-radius: 50%;
       filter: blur(90px); opacity: .18; pointer-events: none; z-index: 0;
@@ -52,14 +50,12 @@
     .blob-1 { width:320px; height:320px; background:#6c63ff; top:-80px; left:-60px; }
     .blob-2 { width:260px; height:260px; background:#a78bfa; bottom:10%; right:-60px; }
 
-    /* ── Wrapper ── */
     .wrapper {
       position: relative; z-index: 1;
       width: 100%; max-width: 420px;
       display: flex; flex-direction: column; gap: 0;
     }
 
-    /* ── Screen ── */
     .screen { display:none; flex-direction:column; align-items:center; width:100%; }
     .screen.active { display:flex; animation: fadeUp .45s cubic-bezier(.22,1,.36,1); }
     @keyframes fadeUp {
@@ -67,7 +63,6 @@
       to   { opacity:1; transform:translateY(0) }
     }
 
-    /* ── Loading ── */
     #s-loading { padding: 50px 20px; gap: 18px; }
     .loader-ring {
       width: 56px; height: 56px;
@@ -79,7 +74,6 @@
     @keyframes spin { to { transform: rotate(360deg) } }
     .loader-text { color: var(--hint); font-size: 14px; letter-spacing:.03em; }
 
-    /* ── Header Banner ── */
     .hero {
       width: 100%;
       background: linear-gradient(160deg, #14143a 0%, #0d0d22 100%);
@@ -94,7 +88,6 @@
       background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
     }
 
-    /* ── Progress Steps ── */
     .steps {
       display: flex; gap: 6px; width: 100%; max-width: 280px;
     }
@@ -110,7 +103,6 @@
     }
     @keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:.5} }
 
-    /* ── Cover Image ── */
     .cover-wrap {
       position: relative; width: 110px; height: 145px;
       border-radius: 12px; overflow: hidden;
@@ -133,7 +125,6 @@
       pointer-events: none;
     }
 
-    /* ── Title + Meta ── */
     .hero-body { display:flex; gap:16px; align-items:flex-start; width:100%; }
     .hero-text  { flex:1; display:flex; flex-direction:column; gap:8px; }
 
@@ -153,35 +144,29 @@
       color: var(--text);
     }
 
-    /* ── Stats row ── */
-    .stats-grid {
-      display: grid; grid-template-columns: repeat(3,1fr);
+    /* Stats row updated to remove grid for 3 items */
+    .stats-container {
+      display: flex; justify-content: center;
       gap: 8px; width: 100%; padding: 16px 22px;
     }
     .stat-card {
       background: rgba(255,255,255,.04);
       border: 1px solid rgba(255,255,255,.07);
       border-radius: 14px;
-      padding: 12px 8px;
+      padding: 12px 16px;
       display: flex; flex-direction:column; align-items:center; gap: 4px;
       transition: border-color .3s;
+      min-width: 100px;
     }
     .stat-card:hover { border-color: rgba(108,99,255,.3); }
     .stat-icon { font-size: 20px; }
     .stat-val  { font-family:'Syne',sans-serif; font-size: 16px; font-weight:700; color:var(--text); }
     .stat-lbl  { font-size: 10px; color:var(--hint); letter-spacing:.04em; text-transform:uppercase; }
 
-    /* ── Content card ── */
     .content-card {
       width: 100%; padding: 0 14px; display: flex; flex-direction:column; gap:12px;
     }
 
-    .divider {
-      width:100%; height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
-    }
-
-    /* ── Ad notice ── */
     .ad-notice {
       background: rgba(108,99,255,.08);
       border: 1px solid rgba(108,99,255,.2);
@@ -193,7 +178,6 @@
     .ad-notice p { font-size: 12.5px; line-height: 1.65; color: var(--hint); }
     .ad-notice strong { color: var(--accent2); }
 
-    /* ── Buttons ── */
     .btn-watch {
       width: 100%; padding: 16px;
       border: none; border-radius: var(--radius);
@@ -247,7 +231,6 @@
 
     .lock-icon { font-size: 18px; transition: all .3s; }
 
-    /* ── Info rows below buttons ── */
     .info-chips {
       display: flex; gap:8px; flex-wrap:wrap; justify-content:center;
     }
@@ -259,7 +242,6 @@
       border-radius: 99px; padding: 5px 10px;
     }
 
-    /* ── Error screen ── */
     #s-error { padding: 50px 22px; gap: 16px; text-align:center; }
     #s-error h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
     #s-error p  { color:var(--hint); font-size:13px; max-width:280px; line-height:1.6; }
@@ -272,7 +254,6 @@
     }
     .btn-ghost:hover { background:rgba(255,255,255,.08); border-color:rgba(108,99,255,.4); }
 
-    /* ── Footer ── */
     .footer {
       padding: 20px 22px 0;
       display:flex; align-items:center; justify-content:center; gap:6px;
@@ -294,21 +275,17 @@
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 
-<!-- ─── TADS container ─────────────────────────────────── -->
 <div id="tads-container-9607" style="display:none"></div>
 
 <div class="wrapper">
 
-  <!-- Screen: Loading -->
   <div id="s-loading" class="screen active">
     <div class="loader-ring"></div>
     <p class="loader-text">Preparing your download…</p>
   </div>
 
-  <!-- Screen: Main -->
   <div id="s-main" class="screen">
 
-    <!-- Hero -->
     <div class="hero">
       <div class="steps">
         <div class="step done"></div>
@@ -329,18 +306,7 @@
       </div>
     </div>
 
-    <!-- Stats -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-icon">👁</span>
-        <span class="stat-val" id="stat-views">—</span>
-        <span class="stat-lbl">Views</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">📥</span>
-        <span class="stat-val" id="stat-dl">—</span>
-        <span class="stat-lbl">Downloads</span>
-      </div>
+    <div class="stats-container">
       <div class="stat-card">
         <span class="stat-icon">📄</span>
         <span class="stat-val" id="stat-pages">—</span>
@@ -348,7 +314,6 @@
       </div>
     </div>
 
-    <!-- Buttons + notice -->
     <div class="content-card">
 
       <div class="ad-notice">
@@ -386,7 +351,6 @@
 
   </div>
 
-  <!-- Screen: Error -->
   <div id="s-error" class="screen">
     <div style="font-size:52px">⚠️</div>
     <h2>Ad Unavailable</h2>
@@ -399,7 +363,6 @@
 
 </div>
 
-<!-- ─── Scripts ──────────────────────────────────────────── -->
 <script>
   /* ── Telegram ── */
   const tg = window.Telegram?.WebApp || null;
@@ -420,12 +383,17 @@
     params.get('startapp') ||
     params.get('tgWebAppStartParam');
 
-  /* startParam is base64(downloadURL) */
-  const DATASET_URL = decodeB64(startParam);
+  /* فك المتغيرات بعد تقسيمها بواسطة العلامة _ */
+  let DATASET_URL = null;
+  let PAGE_TITLE = null;
 
-  /* Optional title param */
-  const rawTitle = params.get('title');
-  const PAGE_TITLE = rawTitle ? decodeB64(rawTitle) || decodeURIComponent(rawTitle) : null;
+  if (startParam) {
+    const parts = startParam.split('_');
+    DATASET_URL = decodeB64(parts[0]);
+    if (parts.length > 1) {
+      PAGE_TITLE = decodeB64(parts[1]);
+    }
+  }
 
   /* ── State ── */
   const WIDGET_ID   = 9607;
@@ -470,30 +438,15 @@
     const ph = document.getElementById('cover-placeholder');
     if (ph) ph.textContent = badge.emoji;
 
-    /* Try Pixeldrain thumbnail */
+    /* Fetch metadata to get Pages and Size */
     if (DATASET_URL) {
       const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
       if (m) {
-        const thumbUrl = `https://pixeldrain.com/api/file/${m[1]}/thumbnail`;
-        const img = new Image();
-        img.onload = () => {
-          const wrap = document.getElementById('cover-wrap');
-          const existing = wrap.querySelector('img');
-          if (!existing) {
-            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;';
-            wrap.insertBefore(img, wrap.firstChild);
-            if (ph) ph.style.display = 'none';
-          }
-        };
-        img.src = thumbUrl;
-
         /* Fetch metadata */
         fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
           .then(r => r.json())
           .then(d => {
-            if (d.views     !== undefined) document.getElementById('stat-views').textContent = fmtNum(d.views);
-            if (d.downloads !== undefined) document.getElementById('stat-dl').textContent    = fmtNum(d.downloads);
-            if (d.pages     !== undefined) document.getElementById('stat-pages').textContent = fmtNum(d.pages);
+            if (d.pages !== undefined) document.getElementById('stat-pages').textContent = fmtNum(d.pages);
             if (d.size) {
               document.getElementById('chip-size').textContent = '💾 ' + fmtBytes(d.size);
             }
