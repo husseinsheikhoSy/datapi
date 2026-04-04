@@ -397,10 +397,16 @@
     params.get('startapp') ||
     params.get('tgWebAppStartParam');
 
-  /* startParam is base64(downloadURL) */
-  const DATASET_URL = decodeB64(startParam);
+  /*
+   * startParam = base64("<dl_url>") or base64("<dl_url>|<cover_url>")
+   * Split on '|' after decoding to get both parts.
+   */
+  const _decoded    = decodeB64(startParam) || '';
+  const _pipeIdx    = _decoded.indexOf('|');
+  const DATASET_URL = _pipeIdx === -1 ? (_decoded || null) : (_decoded.slice(0, _pipeIdx) || null);
+  const COVER_URL   = _pipeIdx === -1 ? null               : (_decoded.slice(_pipeIdx + 1) || null);
 
-  /* Optional title param */
+  /* Optional title param (legacy) */
   const rawTitle = params.get('title');
   const PAGE_TITLE = rawTitle ? decodeB64(rawTitle) || decodeURIComponent(rawTitle) : null;
 
@@ -447,24 +453,41 @@
     const ph = document.getElementById('cover-placeholder');
     if (ph) ph.textContent = badge.emoji;
 
-    /* Try Pixeldrain thumbnail */
+    /* ✅ Cover image — priority order:
+       1. COVER_URL passed from bot (Pixeldrain direct URL)
+       2. Pixeldrain thumbnail derived from dl URL
+       3. Keep placeholder emoji  */
+    function showCoverImg(src) {
+      const wrap = document.getElementById('cover-wrap');
+      if (!wrap || wrap.querySelector('img.cover-img')) return;
+      const img = new Image();
+      img.className = 'cover-img';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;position:absolute;inset:0;';
+      img.onload = () => {
+        wrap.insertBefore(img, wrap.firstChild);
+        if (ph) ph.style.display = 'none';
+      };
+      img.onerror = () => {
+        // silently keep placeholder
+      };
+      img.src = src;
+    }
+
+    if (COVER_URL) {
+      // ✅ Direct URL uploaded by the bot — most reliable
+      showCoverImg(COVER_URL);
+    } else if (DATASET_URL) {
+      // Fallback: try Pixeldrain auto-thumbnail
+      const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
+      if (m) {
+        showCoverImg(`https://pixeldrain.com/api/file/${m[1]}/thumbnail`);
+      }
+    }
+
+    /* Fetch Pixeldrain metadata for size chip */
     if (DATASET_URL) {
       const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
       if (m) {
-        const thumbUrl = `https://pixeldrain.com/api/file/${m[1]}/thumbnail`;
-        const img = new Image();
-        img.onload = () => {
-          const wrap = document.getElementById('cover-wrap');
-          const existing = wrap.querySelector('img');
-          if (!existing) {
-            img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;';
-            wrap.insertBefore(img, wrap.firstChild);
-            if (ph) ph.style.display = 'none';
-          }
-        };
-        img.src = thumbUrl;
-
-        /* Fetch metadata */
         fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
           .then(r => r.json())
           .then(d => {
