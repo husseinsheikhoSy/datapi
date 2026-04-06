@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>DataPi — Free Download</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://w.tads.me/widget.js"></script>
+  <script src="https://inapp.telega.io/sdk/v1/sdk.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet" />
 
@@ -13,15 +13,18 @@
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
     :root {
-      --bg:      var(--tg-theme-bg-color,           #08081a);
-      --card:    var(--tg-theme-secondary-bg-color,  #10102a);
-      --text:    var(--tg-theme-text-color,          #f0f0ff);
-      --hint:    var(--tg-theme-hint-color,          #7070a0);
-      --accent:  #6c63ff;
-      --accent2: #a78bfa;
-      --green:   #22d37a;
-      --radius:  20px;
-      --glow:    rgba(108,99,255,.35);
+      --bg:       var(--tg-theme-bg-color,            #07071a);
+      --card:     var(--tg-theme-secondary-bg-color,   #0f0f28);
+      --card2:    #13132e;
+      --text:     var(--tg-theme-text-color,           #eeeeff);
+      --hint:     var(--tg-theme-hint-color,           #6a6a9a);
+      --accent:   #6c63ff;
+      --accent2:  #a78bfa;
+      --green:    #22d37a;
+      --green2:   #16a34a;
+      --radius:   18px;
+      --glow:     rgba(108,99,255,.3);
+      --glow-g:   rgba(34,211,122,.3);
     }
 
     html { height:100%; }
@@ -32,357 +35,497 @@
       font-family: 'DM Sans', sans-serif;
       min-height: 100%;
       display: flex; align-items: flex-start; justify-content: center;
-      padding: 0 0 40px;
       overflow-x: hidden;
     }
 
-    /* noise grain overlay */
-    body::before {
-      content:'';
-      position: fixed; inset:0; pointer-events:none; z-index:0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");
-      opacity: 0.6;
+    /* ── Mesh background ── */
+    .bg-mesh {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      overflow: hidden;
     }
+    .mesh-blob {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px);
+    }
+    .mb1 { width:380px; height:380px; background:rgba(108,99,255,.14); top:-120px; left:-80px; }
+    .mb2 { width:300px; height:300px; background:rgba(167,139,250,.10); bottom:5%; right:-80px; }
+    .mb3 { width:200px; height:200px; background:rgba(34,211,122,.07); top:50%; left:30%; }
 
-    /* glow blobs */
-    .blob {
-      position: fixed; border-radius: 50%;
-      filter: blur(90px); opacity: .18; pointer-events: none; z-index: 0;
+    /* subtle grid lines */
+    .bg-grid {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image:
+        linear-gradient(rgba(108,99,255,.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(108,99,255,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
     }
-    .blob-1 { width:320px; height:320px; background:#6c63ff; top:-80px; left:-60px; }
-    .blob-2 { width:260px; height:260px; background:#a78bfa; bottom:10%; right:-60px; }
 
     /* ── Wrapper ── */
     .wrapper {
       position: relative; z-index: 1;
-      width: 100%; max-width: 420px;
-      display: flex; flex-direction: column; gap: 0;
+      width: 100%; max-width: 430px;
+      display: flex; flex-direction: column;
+      padding-bottom: 48px;
     }
 
     /* ── Screen ── */
     .screen { display:none; flex-direction:column; align-items:center; width:100%; }
-    .screen.active { display:flex; animation: fadeUp .45s cubic-bezier(.22,1,.36,1); }
+    .screen.active { display:flex; animation: fadeUp .5s cubic-bezier(.22,1,.36,1); }
     @keyframes fadeUp {
-      from { opacity:0; transform:translateY(16px) }
+      from { opacity:0; transform:translateY(20px) }
       to   { opacity:1; transform:translateY(0) }
     }
 
     /* ── Loading ── */
-    #s-loading { padding: 50px 20px; gap: 18px; }
-    .loader-ring {
-      width: 56px; height: 56px;
-      border: 3px solid rgba(108,99,255,.15);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .75s linear infinite;
+    #s-loading {
+      padding: 60px 20px; gap: 22px;
+      align-items: center; justify-content: center; min-height: 100vh;
     }
-    @keyframes spin { to { transform: rotate(360deg) } }
-    .loader-text { color: var(--hint); font-size: 14px; letter-spacing:.03em; }
+    .loader-outer {
+      width: 64px; height: 64px; position: relative;
+    }
+    .loader-outer::before, .loader-outer::after {
+      content:''; position:absolute; border-radius:50%;
+    }
+    .loader-outer::before {
+      inset: 0;
+      border: 2px solid rgba(108,99,255,.12);
+    }
+    .loader-outer::after {
+      inset: 0;
+      border: 2px solid transparent;
+      border-top-color: var(--accent);
+      border-right-color: var(--accent2);
+      animation: spin .8s cubic-bezier(.6,.2,.4,.8) infinite;
+    }
+    @keyframes spin { to { transform:rotate(360deg) } }
+    .loader-dot {
+      position: absolute; inset: 18px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(108,99,255,.4), transparent);
+      animation: pulse-dot 1.6s ease-in-out infinite;
+    }
+    @keyframes pulse-dot { 0%,100%{transform:scale(.8);opacity:.5} 50%{transform:scale(1.1);opacity:1} }
+    .loader-text {
+      color: var(--hint); font-size: 13px; letter-spacing:.05em;
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:.5} 50%{opacity:1} }
 
-    /* ── Header Banner ── */
-    .hero {
-      width: 100%;
-      background: linear-gradient(160deg, #14143a 0%, #0d0d22 100%);
-      border-bottom: 1px solid rgba(108,99,255,.2);
-      padding: 28px 22px 22px;
-      display: flex; flex-direction: column; align-items: center; gap: 18px;
+    /* ── Step Bar ── */
+    .stepbar-wrap {
+      width: 100%; padding: 18px 22px 0;
+      display: flex; flex-direction: column; gap: 7px;
+    }
+    .stepbar-labels {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--hint); font-weight: 500; letter-spacing: .04em;
+    }
+    .stepbar { display: flex; gap: 5px; }
+    .step {
+      flex: 1; height: 3px; border-radius: 99px;
+      background: rgba(255,255,255,.07);
+      transition: background .5s;
       position: relative; overflow: hidden;
     }
-    .hero::after {
-      content:'';
-      position:absolute; bottom:0; left:0; right:0; height:2px;
-      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-    }
-
-    /* ── Progress Steps ── */
-    .steps {
-      display: flex; gap: 6px; width: 100%; max-width: 280px;
-    }
-    .step {
-      flex: 1; height: 4px; border-radius: 99px;
-      background: rgba(255,255,255,.08);
-      transition: background .5s;
-    }
-    .step.done   { background: var(--accent); }
-    .step.active {
+    .step.done { background: var(--accent); }
+    .step.active { background: rgba(108,99,255,.2); }
+    .step.active .pulse {
+      position: absolute; inset: 0;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
-      animation: pulse-bar 1.4s ease-in-out infinite;
+      border-radius: 99px;
+      animation: bar-pulse 1.5s ease-in-out infinite;
     }
-    @keyframes pulse-bar { 0%,100%{opacity:1} 50%{opacity:.5} }
+    @keyframes bar-pulse { 0%,100%{opacity:1} 50%{opacity:.35} }
 
-    /* ── Cover Image ── */
-    .cover-wrap {
-      position: relative; width: 110px; height: 145px;
-      border-radius: 12px; overflow: hidden;
-      box-shadow: 0 12px 40px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.07);
+    /* ── Hero ── */
+    .hero {
+      width: 100%; margin-top: 16px;
+      padding: 20px 22px;
+      position: relative;
+    }
+
+    .hero-inner {
+      display: flex; gap: 18px; align-items: flex-start;
+    }
+
+    /* ── Cover ── */
+    .cover-frame {
       flex-shrink: 0;
-    }
-    .cover-wrap img {
-      width: 100%; height: 100%; object-fit: cover;
-      display: block;
-    }
-    .cover-placeholder {
-      width: 100%; height: 100%;
-      background: linear-gradient(135deg, #1a1a3e, #2a2a5e);
+      width: 108px; height: 142px;
+      border-radius: 14px;
+      background: linear-gradient(145deg, #1a1a40, #252560);
+      border: 1px solid rgba(108,99,255,.2);
+      box-shadow: 0 16px 48px rgba(0,0,0,.5), 0 0 0 1px rgba(255,255,255,.05);
+      position: relative; overflow: hidden;
       display: flex; align-items: center; justify-content: center;
-      font-size: 44px;
     }
+    .cover-frame img {
+      width:100%; height:100%; object-fit:cover; display:block; border-radius:14px;
+      position:absolute; inset:0;
+    }
+    .cover-emoji { font-size: 42px; z-index: 1; }
     .cover-shine {
-      position: absolute; inset:0;
-      background: linear-gradient(120deg, rgba(255,255,255,.12) 0%, transparent 50%);
+      position:absolute; inset:0; border-radius:14px; z-index: 2;
+      background: linear-gradient(135deg, rgba(255,255,255,.13) 0%, transparent 55%);
       pointer-events: none;
     }
+    /* spine effect */
+    .cover-spine {
+      position: absolute; left:0; top:0; bottom:0;
+      width: 5px;
+      background: linear-gradient(180deg, rgba(108,99,255,.5), rgba(167,139,250,.3));
+      border-radius: 14px 0 0 14px;
+    }
 
-    /* ── Title + Meta ── */
-    .hero-body { display:flex; gap:16px; align-items:flex-start; width:100%; }
-    .hero-text  { flex:1; display:flex; flex-direction:column; gap:8px; }
-
-    .file-badge {
+    /* ── Hero Text ── */
+    .hero-text {
+      flex: 1; display: flex; flex-direction: column; gap: 10px; padding-top: 4px;
+    }
+    .type-badge {
       display: inline-flex; align-items: center; gap: 5px;
-      font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+      font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
       color: var(--accent2);
-      background: rgba(108,99,255,.15);
-      border: 1px solid rgba(108,99,255,.25);
-      border-radius: 6px; padding: 3px 8px;
+      background: rgba(108,99,255,.13);
+      border: 1px solid rgba(108,99,255,.22);
+      border-radius: 7px; padding: 3px 9px;
+      width: fit-content;
+    }
+    .file-title {
+      font-family: 'Syne', sans-serif;
+      font-size: 17px; font-weight: 800; line-height: 1.3;
+      color: var(--text);
+      word-break: break-word;
+    }
+    .free-pill {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; font-weight: 700; letter-spacing: .05em;
+      color: var(--green);
+      background: rgba(34,211,122,.10);
+      border: 1px solid rgba(34,211,122,.22);
+      border-radius: 99px; padding: 4px 10px;
       width: fit-content;
     }
 
-    .book-title {
-      font-family: 'Syne', sans-serif;
-      font-size: 18px; font-weight: 800; line-height: 1.25;
-      color: var(--text);
+    /* ── Section body ── */
+    .body-section {
+      width: 100%; padding: 0 22px;
+      display: flex; flex-direction: column; gap: 12px;
     }
 
-    /* ── Stats row — hidden ── */
-    .stats-grid { display: none; }
-
-    /* ── Content card ── */
-    .content-card {
-      width: 100%; padding: 0 14px; display: flex; flex-direction:column; gap:12px;
+    /* ── Step card ── */
+    .step-card {
+      background: var(--card);
+      border: 1px solid rgba(255,255,255,.055);
+      border-radius: var(--radius);
+      padding: 18px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative; overflow: hidden;
+    }
+    .step-card::before {
+      content:''; position:absolute; top:0; left:0; right:0; height:1px;
+      background: linear-gradient(90deg, transparent, rgba(108,99,255,.45), transparent);
     }
 
-    .divider {
-      width:100%; height:1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,.07), transparent);
+    .steps-title {
+      font-size: 11px; font-weight: 600; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--hint);
     }
 
-    /* ── Ad notice ── */
-    .ad-notice {
-      background: rgba(108,99,255,.08);
-      border: 1px solid rgba(108,99,255,.2);
-      border-radius: 14px;
-      padding: 14px 16px;
-      display: flex; gap: 10px; align-items: flex-start;
+    .how-steps {
+      display: flex; flex-direction: column; gap: 10px;
     }
-    .ad-notice .icon { font-size: 20px; flex-shrink:0; margin-top:1px; }
-    .ad-notice p { font-size: 12.5px; line-height: 1.65; color: var(--hint); }
-    .ad-notice strong { color: var(--accent2); }
+    .how-row {
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .how-num {
+      width: 24px; height: 24px; flex-shrink: 0;
+      border-radius: 50%;
+      background: rgba(108,99,255,.18);
+      border: 1px solid rgba(108,99,255,.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: var(--accent2);
+    }
+    .how-num.done-num {
+      background: rgba(108,99,255,.35);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .how-text { font-size: 13px; color: var(--hint); line-height: 1.6; padding-top: 3px; }
+    .how-text strong { color: var(--text); font-weight: 600; }
 
-    /* ── Buttons ── */
+    /* ── Info chips ── */
+    .chips-row {
+      display: flex; gap: 7px; flex-wrap: wrap;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--hint);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 99px; padding: 5px 11px;
+    }
+
+    /* ── Watch Button ── */
     .btn-watch {
-      width: 100%; padding: 16px;
+      width: 100%; padding: 16px 20px;
       border: none; border-radius: var(--radius);
-      background: linear-gradient(135deg, var(--accent) 0%, #9333ea 100%);
+      background: linear-gradient(135deg, var(--accent) 0%, #8b5cf6 100%);
       color: #fff; font-family: 'Syne', sans-serif;
-      font-size: 15px; font-weight: 700; letter-spacing:.02em;
+      font-size: 15px; font-weight: 700; letter-spacing: .02em;
       cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      box-shadow: 0 6px 28px var(--glow);
+      box-shadow: 0 8px 32px var(--glow);
       transition: transform .15s, box-shadow .2s, opacity .2s;
-      position: relative; overflow:hidden;
+      position: relative; overflow: hidden;
     }
-    .btn-watch::before {
-      content:''; position:absolute; inset:-1px;
-      background: linear-gradient(135deg, rgba(255,255,255,.12), transparent);
-      border-radius: inherit;
+    .btn-watch::after {
+      content:''; position:absolute; inset:0;
+      background: linear-gradient(135deg, rgba(255,255,255,.16) 0%, transparent 55%);
+      pointer-events:none; border-radius:inherit;
     }
-    .btn-watch:not(:disabled):hover  { transform:translateY(-1px); box-shadow:0 10px 36px var(--glow); }
-    .btn-watch:not(:disabled):active { transform: scale(.97); }
+    .btn-watch:not(:disabled):hover  { transform:translateY(-2px); box-shadow:0 14px 40px var(--glow); }
+    .btn-watch:not(:disabled):active { transform:scale(.97); }
     .btn-watch:disabled {
-      opacity: .35; cursor: not-allowed;
-      background: rgba(255,255,255,.08); box-shadow: none;
+      opacity:.35; cursor:not-allowed;
+      background:rgba(255,255,255,.08); box-shadow:none;
     }
-    .btn-watch.loading::after {
+    .btn-watch.loading::before {
       content:''; position:absolute; inset:0;
       background: linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent);
       animation: shimmer 1.3s infinite;
     }
     @keyframes shimmer { from{transform:translateX(-100%)} to{transform:translateX(100%)} }
 
+    .play-circle {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; flex-shrink: 0;
+    }
+
+    /* ── Download Button ── */
     .btn-download {
-      width: 100%; padding: 16px;
-      border: 1.5px solid rgba(255,255,255,.1); border-radius: var(--radius);
+      width: 100%; padding: 16px 20px;
+      border: 1.5px solid rgba(255,255,255,.09); border-radius: var(--radius);
       background: rgba(255,255,255,.04);
       color: var(--hint); font-family: 'Syne', sans-serif;
       font-size: 15px; font-weight: 700;
       cursor: not-allowed;
       display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: all .45s cubic-bezier(.22,1,.36,1);
+      transition: all .5s cubic-bezier(.22,1,.36,1);
+      position: relative;
     }
     .btn-download.unlocked {
-      background: linear-gradient(135deg, #16a34a, #15803d);
+      background: linear-gradient(135deg, var(--green) 0%, var(--green2) 100%);
       border-color: transparent;
       color: #fff; cursor: pointer;
-      box-shadow: 0 6px 28px rgba(22,163,74,.4);
-      animation: pop .45s cubic-bezier(.22,1,.36,1);
+      box-shadow: 0 8px 32px var(--glow-g);
+      animation: pop .5s cubic-bezier(.22,1,.36,1);
     }
-    .btn-download.unlocked:hover  { transform:translateY(-1px); box-shadow:0 10px 36px rgba(22,163,74,.45); }
-    .btn-download.unlocked:active { transform: scale(.97); }
-    @keyframes pop { 0%{transform:scale(.88)} 70%{transform:scale(1.03)} 100%{transform:scale(1)} }
-
-    .lock-icon { font-size: 18px; transition: all .3s; }
-
-    /* ── Info rows below buttons ── */
-    .info-chips {
-      display: flex; gap:8px; flex-wrap:wrap; justify-content:center;
+    .btn-download.unlocked::after {
+      content:''; position:absolute; inset:0; border-radius:inherit;
+      background: linear-gradient(135deg, rgba(255,255,255,.18) 0%, transparent 55%);
+      pointer-events:none;
     }
-    .chip {
-      display:inline-flex; align-items:center; gap:5px;
-      font-size: 11px; color:var(--hint);
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.07);
-      border-radius: 99px; padding: 5px 10px;
+    .btn-download.unlocked:hover  { transform:translateY(-2px); box-shadow:0 14px 40px var(--glow-g); }
+    .btn-download.unlocked:active { transform:scale(.97); }
+    @keyframes pop {
+      0%  { transform:scale(.88); opacity:.5; }
+      65% { transform:scale(1.03); }
+      100%{ transform:scale(1);   opacity:1; }
     }
 
-    /* ── Error screen ── */
-    #s-error { padding: 50px 22px; gap: 16px; text-align:center; }
-    #s-error h2 { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; }
-    #s-error p  { color:var(--hint); font-size:13px; max-width:280px; line-height:1.6; }
+    .lock-icon { font-size: 18px; flex-shrink: 0; }
+
+    /* ── Divider ── */
+    .divider {
+      width:100%; height:1px;
+      background: linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent);
+    }
+
+    /* ── Error ── */
+    #s-error {
+      padding: 60px 22px; gap: 18px;
+      text-align: center; min-height: 100vh;
+      justify-content: center;
+    }
+    .err-icon {
+      width: 80px; height: 80px;
+      border-radius: 24px;
+      background: rgba(239,68,68,.1);
+      border: 1px solid rgba(239,68,68,.18);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 38px;
+      margin: 0 auto;
+    }
+    #s-error h2 { font-family:'Syne',sans-serif; font-size:22px; font-weight:800; }
+    #s-error p  { color:var(--hint); font-size:13px; max-width:280px; line-height:1.65; }
     .btn-ghost {
-      width:100%; padding:13px; border:1px solid rgba(255,255,255,.12); border-radius:var(--radius);
-      background:rgba(255,255,255,.05); color:var(--text);
+      width:100%; padding:14px; border:1.5px solid rgba(255,255,255,.1); border-radius:var(--radius);
+      background:rgba(255,255,255,.04); color:var(--text);
       font-family:'Syne',sans-serif; font-size:14px; font-weight:700;
-      cursor:pointer; max-width:320px;
+      cursor:pointer; max-width:340px;
       transition: border-color .2s, background .2s;
     }
     .btn-ghost:hover { background:rgba(255,255,255,.08); border-color:rgba(108,99,255,.4); }
 
     /* ── Footer ── */
     .footer {
-      padding: 20px 22px 0;
-      display:flex; align-items:center; justify-content:center; gap:6px;
+      width: 100%;
+      padding: 22px 22px 0;
+      display:flex; align-items:center; justify-content:center; gap:7px;
     }
     .footer span { font-size:11px; color:var(--hint); }
-    .footer .dot  { width:3px; height:3px; border-radius:50%; background:var(--hint); opacity:.4; }
+    .footer-dot { width:3px; height:3px; border-radius:50%; background:var(--hint); opacity:.3; }
     .badge-free {
-      font-size:10px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
-      color:#22d37a;
-      background: rgba(34,211,122,.12);
-      border: 1px solid rgba(34,211,122,.25);
+      font-size:10px; font-weight:700; letter-spacing:.07em; text-transform:uppercase;
+      color: var(--green);
+      background: rgba(34,211,122,.10);
+      border: 1px solid rgba(34,211,122,.22);
       border-radius:6px; padding:2px 7px;
     }
 
+    /* slide-in children */
+    .screen.active > * {
+      animation: slide-up .45s ease backwards;
+    }
+    .screen.active > *:nth-child(1) { animation-delay: .03s; }
+    .screen.active > *:nth-child(2) { animation-delay: .09s; }
+    .screen.active > *:nth-child(3) { animation-delay: .15s; }
+    .screen.active > *:nth-child(4) { animation-delay: .21s; }
+    @keyframes slide-up {
+      from { opacity:0; transform:translateY(14px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
   </style>
 </head>
 <body>
 
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-
-<div id="tads-container-9607" style="display:none"></div>
+<div class="bg-mesh">
+  <div class="mesh-blob mb1"></div>
+  <div class="mesh-blob mb2"></div>
+  <div class="mesh-blob mb3"></div>
+</div>
+<div class="bg-grid"></div>
 
 <div class="wrapper">
 
+  <!-- Screen: Loading -->
   <div id="s-loading" class="screen active">
-    <div class="loader-ring"></div>
+    <div class="loader-outer">
+      <div class="loader-dot"></div>
+    </div>
     <p class="loader-text">Preparing your file…</p>
   </div>
 
+  <!-- Screen: Main -->
   <div id="s-main" class="screen">
 
-    <div class="hero">
-      <div class="steps">
+    <!-- Step bar -->
+    <div class="stepbar-wrap">
+      <div class="stepbar-labels">
+        <span id="step-left">Step 2 of 3</span>
+        <span id="step-right">Almost there!</span>
+      </div>
+      <div class="stepbar">
         <div class="step done"></div>
-        <div class="step active" id="step2"></div>
+        <div class="step active" id="step2"><div class="pulse"></div></div>
         <div class="step" id="step3"></div>
       </div>
+    </div>
 
-      <div class="hero-body">
-        <div class="cover-wrap" id="cover-wrap">
-          <div class="cover-placeholder" id="cover-placeholder">📊</div>
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-inner">
+        <div class="cover-frame" id="cover-frame">
+          <div class="cover-spine"></div>
+          <span class="cover-emoji" id="cover-emoji">📊</span>
           <div class="cover-shine"></div>
         </div>
 
         <div class="hero-text">
-          <span class="file-badge" id="file-badge">📁 File</span>
-          <h1 class="book-title" id="book-title">Loading…</h1>
+          <span class="type-badge" id="type-badge">📁 File</span>
+          <h1 class="file-title" id="file-title">Loading…</h1>
+          <span class="free-pill">✦ 100% Free</span>
         </div>
       </div>
     </div>
 
-    <div class="stats-grid">
-      <div class="stat-card">
-        <span class="stat-icon">👁</span>
-        <span class="stat-val" id="stat-views">—</span>
-        <span class="stat-lbl">Views</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">📥</span>
-        <span class="stat-val" id="stat-dl">—</span>
-        <span class="stat-lbl">Downloads</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-icon">📄</span>
-        <span class="stat-val" id="stat-pages">—</span>
-        <span class="stat-lbl">Pages</span>
-      </div>
-    </div>
+    <!-- Body -->
+    <div class="body-section">
 
-    <div class="content-card">
-
-      <div class="ad-notice">
-        <span class="icon">⚠️</span>
-        <p>
-          <strong>How to unlock download:</strong> Click on <strong>"Watch Ad"</strong> below and watch the full ad.
-          When the <strong>Close ✕ button</strong> appears, click it — the download button will activate automatically.
-        </p>
+      <!-- How it works card -->
+      <div class="step-card">
+        <p class="steps-title">How to unlock your download</p>
+        <div class="how-steps">
+          <div class="how-row">
+            <div class="how-num done-num">✓</div>
+            <p class="how-text"><strong>Bot verified</strong> — Your access link is confirmed.</p>
+          </div>
+          <div class="how-row">
+            <div class="how-num" id="how2">2</div>
+            <p class="how-text">Tap <strong>"Watch Ad"</strong> and watch the short ad fully.</p>
+          </div>
+          <div class="how-row">
+            <div class="how-num" id="how3">3</div>
+            <p class="how-text">When <strong>✕ Close</strong> appears, tap it — download activates automatically.</p>
+          </div>
+        </div>
       </div>
 
+      <div class="divider"></div>
+
+      <!-- Watch -->
       <button class="btn-watch" id="btn-watch">
-        <span>▶</span>
-        <span id="btn-watch-label">Watch ad to unlock download</span>
+        <span class="play-circle">▶</span>
+        <span id="btn-watch-label">Watch Ad to Unlock Download</span>
       </button>
 
+      <!-- Download -->
       <button class="btn-download" id="btn-download" disabled>
         <span class="lock-icon" id="lock-icon">🔒</span>
         <span id="dl-label">Download — Watch ad first</span>
       </button>
 
-      <div class="info-chips">
-        <span class="chip">✅ No registration</span>
+      <!-- Info chips -->
+      <div class="chips-row">
+        <span class="chip">✅ No signup</span>
         <span class="chip">✅ No payment</span>
         <span class="chip" id="chip-size">⏱ ~15 sec ad</span>
-        <span class="badge-free">100% FREE</span>
       </div>
 
     </div>
 
+    <!-- Footer -->
     <div class="footer">
       <span>Powered by DataPi</span>
-      <div class="dot"></div>
+      <div class="footer-dot"></div>
       <span>@DATASCIENCEQ</span>
+      <div class="footer-dot"></div>
+      <span class="badge-free">FREE</span>
     </div>
 
   </div>
 
+  <!-- Screen: Error -->
   <div id="s-error" class="screen">
-    <div style="font-size:52px">⚠️</div>
-    <h2>Ad not available</h2>
-    <p>No ads are currently available. You can access the file directly.</p>
-    <button class="btn-download unlocked" onclick="goToDataset()" style="max-width:320px;cursor:pointer">
-      <span>🚀</span><span>Access file directly</span>
+    <div class="err-icon">⚠️</div>
+    <h2>Ad Unavailable</h2>
+    <p>No ads are available right now. You can still access your file directly.</p>
+    <button class="btn-download unlocked" onclick="goToDataset()" style="max-width:340px;cursor:pointer">
+      <span>🚀</span><span>Access File Directly</span>
     </button>
-    <button class="btn-ghost" onclick="startAd()">Try again</button>
+    <button class="btn-ghost" onclick="startAd()">Try Again</button>
   </div>
 
 </div>
 
 <script>
-  /* ── Telegram ── */
   const tg = window.Telegram?.WebApp || null;
   if (tg) { tg.ready(); tg.expand(); }
 
-  /* ── Parse params ── */
   function decodeB64(str) {
     if (!str) return null;
     try {
@@ -397,103 +540,76 @@
     params.get('startapp') ||
     params.get('tgWebAppStartParam');
 
-  /*
-   * startParam = base64("<dl_url>") or base64("<dl_url>|<cover_url>")
-   * Split on '|' after decoding to get both parts.
-   */
   const _decoded    = decodeB64(startParam) || '';
   const _pipeIdx    = _decoded.indexOf('|');
   const DATASET_URL = _pipeIdx === -1 ? (_decoded || null) : (_decoded.slice(0, _pipeIdx) || null);
   const COVER_URL   = _pipeIdx === -1 ? null               : (_decoded.slice(_pipeIdx + 1) || null);
 
-  /* Optional title param (legacy) */
   const rawTitle = params.get('title');
   const PAGE_TITLE = rawTitle ? decodeB64(rawTitle) || decodeURIComponent(rawTitle) : null;
 
-  /* ── State ── */
-  const WIDGET_ID   = 9607;
-  let   adController = null;
-  let   adWatched    = false;
+  let   ads       = null;
+  let   adWatched = false;
 
-  /* ── Screens ── */
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     document.getElementById(id)?.classList.add('active');
   }
 
-  /* ── Detect file type from URL ── */
   function detectBadge(url) {
     if (!url) return { emoji:'📁', label:'File' };
     const u = url.toLowerCase();
     if (u.includes('.pdf'))  return { emoji:'📕', label:'PDF Book' };
     if (u.match(/\.(mp4|mkv|avi|mov|webm)/)) return { emoji:'🎬', label:'Video' };
     if (u.match(/\.(mp3|wav|ogg|flac|m4a)/)) return { emoji:'🎧', label:'Audio' };
+    if (u.match(/\.(zip|rar|7z|tar|gz)/))    return { emoji:'🗜', label:'Archive' };
+    if (u.match(/\.(csv|xlsx|xls)/))          return { emoji:'📊', label:'Dataset' };
     return { emoji:'📁', label:'File' };
   }
 
-  /* ── Populate UI ── */
   function populateUI() {
     const badge = detectBadge(DATASET_URL);
 
-    /* Title */
-    const titleEl = document.getElementById('book-title');
+    const titleEl = document.getElementById('file-title');
     if (PAGE_TITLE) titleEl.textContent = PAGE_TITLE;
     else if (DATASET_URL) {
       const parts = DATASET_URL.split('/');
       titleEl.textContent = decodeURIComponent(parts[parts.length-1] || 'Dataset');
     } else {
-      titleEl.textContent = 'File';
+      titleEl.textContent = 'Your File';
     }
 
-    /* Badge */
-    const badgeEl = document.getElementById('file-badge');
+    const badgeEl = document.getElementById('type-badge');
     if (badgeEl) badgeEl.textContent = badge.emoji + ' ' + badge.label;
 
-    /* Placeholder icon */
-    const ph = document.getElementById('cover-placeholder');
-    if (ph) ph.textContent = badge.emoji;
+    const emojiEl = document.getElementById('cover-emoji');
+    if (emojiEl) emojiEl.textContent = badge.emoji;
 
-    /* ✅ Cover image — priority order:
-       1. COVER_URL passed from bot (Pixeldrain direct URL)
-       2. Pixeldrain thumbnail derived from dl URL
-       3. Keep placeholder emoji  */
     function showCoverImg(src) {
-      const wrap = document.getElementById('cover-wrap');
-      if (!wrap || wrap.querySelector('img.cover-img')) return;
+      const frame = document.getElementById('cover-frame');
+      if (!frame || frame.querySelector('img')) return;
       const img = new Image();
-      img.className = 'cover-img';
-      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:12px;position:absolute;inset:0;';
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;position:absolute;inset:0;z-index:1;';
       img.onload = () => {
-        wrap.insertBefore(img, wrap.firstChild);
-        if (ph) ph.style.display = 'none';
-      };
-      img.onerror = () => {
-        // silently keep placeholder
+        frame.insertBefore(img, frame.firstChild);
+        if (emojiEl) emojiEl.style.display = 'none';
       };
       img.src = src;
     }
 
     if (COVER_URL) {
-      // ✅ Direct URL uploaded by the bot — most reliable
       showCoverImg(COVER_URL);
     } else if (DATASET_URL) {
-      // Fallback: try Pixeldrain auto-thumbnail
       const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
-      if (m) {
-        showCoverImg(`https://pixeldrain.com/api/file/${m[1]}/thumbnail`);
-      }
+      if (m) showCoverImg(`https://pixeldrain.com/api/file/${m[1]}/thumbnail`);
     }
 
-    /* Fetch Pixeldrain metadata for size chip */
     if (DATASET_URL) {
       const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
       if (m) {
         fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
           .then(r => r.json())
           .then(d => {
-            if (d.views     !== undefined) document.getElementById('stat-views').textContent = fmtNum(d.views);
-            if (d.downloads !== undefined) document.getElementById('stat-dl').textContent    = fmtNum(d.downloads);
-            if (d.pages     !== undefined) document.getElementById('stat-pages').textContent = fmtNum(d.pages);
             if (d.size) {
               document.getElementById('chip-size').textContent = '💾 ' + fmtBytes(d.size);
             }
@@ -501,13 +617,6 @@
           .catch(() => {});
       }
     }
-  }
-
-  function fmtNum(n) {
-    if (n == null) return '—';
-    if (n >= 1e6) return (n/1e6).toFixed(1)+'M';
-    if (n >= 1e3) return (n/1e3).toFixed(1)+'K';
-    return String(n);
   }
 
   function fmtBytes(n) {
@@ -519,13 +628,24 @@
     return n.toFixed(1)+' TB';
   }
 
-  /* ── Unlock button ── */
   function unlockDownloadButton() {
     if (adWatched) return;
     adWatched = true;
 
-    document.getElementById('step2')?.classList.replace('active','done');
-    document.getElementById('step3')?.classList.add('active');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    if (step2) { step2.innerHTML = ''; step2.classList.replace('active','done'); }
+    if (step3) { step3.classList.add('active'); step3.innerHTML = '<div class="pulse"></div>'; }
+
+    const sl = document.getElementById('step-left');
+    const sr = document.getElementById('step-right');
+    if (sl) sl.textContent = 'Step 3 of 3';
+    if (sr) sr.textContent = 'Ready to download!';
+
+    const how2 = document.getElementById('how2');
+    const how3 = document.getElementById('how3');
+    if (how2) { how2.textContent = '✓'; how2.classList.add('done-num'); }
+    if (how3) { how3.textContent = '✓'; how3.classList.add('done-num'); }
 
     const btn   = document.getElementById('btn-download');
     const icon  = document.getElementById('lock-icon');
@@ -535,71 +655,63 @@
     if (label) { label.textContent = 'Download — Free ✓'; }
 
     const watch = document.getElementById('btn-watch');
-    if (watch) { watch.style.opacity='0.3'; watch.disabled=true; }
+    if (watch) { watch.style.opacity = '0.3'; watch.disabled = true; }
   }
 
-  /* ── Navigate ── */
   function goToDataset() {
     const url = DATASET_URL || 'https://pixeldrain.com';
-    if (tg?.openLink) { tg.openLink(url); setTimeout(()=>tg.close(),600); }
+    if (tg?.openLink) { tg.openLink(url); setTimeout(() => tg.close(), 600); }
     else window.location.href = url;
   }
 
-  /* ── Start ad ── */
   function startAd() {
     const btn   = document.getElementById('btn-watch');
     const label = document.getElementById('btn-watch-label');
+    if (btn)   { btn.disabled = true; btn.classList.add('loading'); }
+    if (label) { label.textContent = 'Loading ad…'; }
 
-    if (btn)   { btn.disabled=true; btn.classList.add('loading'); }
-    if (label) { label.textContent='Loading ad…'; }
-
-    if (!adController) {
-      console.warn('adController not ready — fallback');
+    if (!ads) {
+      console.warn('Telega SDK not ready — fallback unlock');
       unlockDownloadButton();
       return;
     }
 
-    adController.showAd()
-      .then(() => {
-        console.log('✅ Ad complete');
-        unlockDownloadButton();
-      })
-      .catch(err => {
-        console.error('Ad error:', err);
-        if (btn)   { btn.disabled=false; btn.classList.remove('loading'); }
-        if (label) { label.textContent='Watch ad to unlock download'; }
-        if (err?.type === 'ADS_NOT_FOUND' || !err) unlockDownloadButton();
-      });
+    ads.ad_show({
+      adBlockUuid: '929cfb86-605a-4310-b6f6-cdaad0cf3b83'
+    }).then(() => {
+      console.log('✅ Ad complete');
+      unlockDownloadButton();
+    }).catch(err => {
+      console.error('Telega ad error:', err);
+      if (btn)   { btn.disabled = false; btn.classList.remove('loading'); }
+      if (label) { label.textContent = 'Watch Ad to Unlock Download'; }
+      unlockDownloadButton();
+    });
   }
 
-  /* ── Init TADS ── */
-  function initTads() {
-    if (!window.tads?.init) return;
+  function initTelega() {
     try {
-      adController = window.tads.init({
-        widgetId: WIDGET_ID,
-        type: 'fullscreen',
-        debug: false,
-        onShowReward: (r) => { console.log('reward:', r); unlockDownloadButton(); },
-        onAdsNotFound: ()  => { console.warn('no ads'); unlockDownloadButton(); },
+      ads = window.TelegaIn.AdsController.create_miniapp({
+        token: '46e7cd34-c395-42eb-a68c-6a364dfc491c'
       });
       document.getElementById('btn-watch')?.addEventListener('click', startAd);
       populateUI();
       showScreen('s-main');
     } catch(e) {
-      console.error('TADS init error:', e);
+      console.error('Telega init error:', e);
       showScreen('s-error');
     }
   }
 
-  /* ── Boot ── */
   window.addEventListener('load', () => {
     showScreen('s-loading');
     let tries = 0;
     const iv = setInterval(() => {
       tries++;
-      if (window.tads?.init) { clearInterval(iv); initTads(); }
-      else if (tries > 60) {
+      if (window.TelegaIn?.AdsController) {
+        clearInterval(iv);
+        initTelega();
+      } else if (tries > 60) {
         clearInterval(iv);
         populateUI();
         unlockDownloadButton();
