@@ -173,6 +173,45 @@
 </head>
 <body>
 
+<!-- Full-screen tap overlay: captures first user gesture required by browser autoplay policy -->
+<div id="tap-overlay" style="
+  position:fixed; inset:0; z-index:9999;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  background: rgba(3,7,18,0.92);
+  backdrop-filter: blur(6px);
+  cursor:pointer;
+  animation: fadeIn .4s ease;
+" onclick="onFirstTap()">
+  <div style="
+    background: rgba(17,24,39,0.9);
+    border: 1px solid rgba(139,92,246,0.35);
+    border-radius: 28px;
+    padding: 36px 32px;
+    text-align: center;
+    max-width: 320px;
+    box-shadow: 0 0 60px rgba(139,92,246,0.2);
+    animation: pulse-card 2s ease-in-out infinite;
+  ">
+    <div style="font-size:52px; margin-bottom:16px; animation: bounce 1.4s ease-in-out infinite;">👆</div>
+    <h2 style="font-size:20px; font-weight:800; color:#f9fafb; margin-bottom:10px; letter-spacing:-0.4px;">Tap to Continue</h2>
+    <p style="font-size:13px; color:#9ca3af; line-height:1.6; margin:0;">Tap anywhere to unlock your<br>free file download</p>
+    <div style="margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px;">
+      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot1 1.2s ease-in-out infinite;"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot2 1.2s ease-in-out infinite;"></span>
+      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot3 1.2s ease-in-out infinite;"></span>
+    </div>
+  </div>
+</div>
+
+<style>
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+  @keyframes pulse-card { 0%,100%{box-shadow:0 0 60px rgba(139,92,246,.2)} 50%{box-shadow:0 0 80px rgba(139,92,246,.4)} }
+  @keyframes dot1 { 0%,100%{opacity:.3;transform:scale(.8)} 20%{opacity:1;transform:scale(1.2)} }
+  @keyframes dot2 { 0%,100%{opacity:.3;transform:scale(.8)} 40%{opacity:1;transform:scale(1.2)} }
+  @keyframes dot3 { 0%,100%{opacity:.3;transform:scale(.8)} 60%{opacity:1;transform:scale(1.2)} }
+</style>
+
 <div class="container" id="main-card">
 
   <div class="status-badge" id="status-box">
@@ -295,9 +334,31 @@
   /* ── RichAds SDK ── */
   let adsCtrl       = null;
   let adUnlocked    = false;
+  let adReady       = false;   // ad loaded and waiting for gesture
+  let gestureDone   = false;   // user has tapped at least once
   let checkAttempts = 0;
   const MAX_ATTEMPTS = 14;
   let checkInterval  = null;
+
+  // Called when user taps the overlay (first gesture)
+  function onFirstTap() {
+    if (gestureDone) return;
+    gestureDone = true;
+
+    // Dismiss overlay with fade
+    const overlay = document.getElementById('tap-overlay');
+    if (overlay) {
+      overlay.style.transition = 'opacity .3s ease';
+      overlay.style.opacity = '0';
+      setTimeout(() => overlay.remove(), 320);
+    }
+
+    // If ad was already ready while waiting for gesture, launch now
+    if (adReady && adsCtrl) {
+      launchAd();
+    }
+    // Otherwise updateLogic() will call launchAd() once ad becomes ready
+  }
 
   window.addEventListener('load', () => {
     populateFileUI();
@@ -325,20 +386,33 @@
       try { if (checkFn) isAvailable = checkFn.call(adsCtrl); } catch (e) {}
     }
 
-    if (isAvailable) {
+    if (isAvailable && !adReady) {
+      adReady = true;
       clearInterval(checkInterval);
-      showAdReadyState();
+
+      if (gestureDone) {
+        // Gesture already happened → launch immediately
+        launchAd();
+      }
+      // else wait — onFirstTap() will call launchAd()
       return;
     }
 
-    if (checkAttempts >= MAX_ATTEMPTS) {
+    if (checkAttempts >= MAX_ATTEMPTS && !adReady) {
       clearInterval(checkInterval);
+      // No ad available — dismiss overlay and unlock directly
+      adReady = true;
+      const overlay = document.getElementById('tap-overlay');
+      if (overlay) {
+        overlay.style.transition = 'opacity .3s ease';
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.remove(), 320);
+      }
       unlockDirectly();
     }
   }
 
-  function showAdReadyState() {
-    // Ad is ready — launch it automatically, no user tap needed
+  function launchAd() {
     document.getElementById('countdown').style.display = 'none';
     document.getElementById('ad-icon').style.display   = 'block';
     document.getElementById('status-text').innerText   = 'OFFER FOUND';
@@ -358,21 +432,19 @@
         clearInterval(pIv);
         const msg = String(err).toLowerCase();
         if (msg.includes('skip') || msg.includes('close')) {
-          // User closed early — show manual button so they can retry
-          document.getElementById('ad-icon').style.display   = 'none';
-          document.getElementById('countdown').style.display = 'block';
-          document.getElementById('countdown').innerText     = '!';
-          document.getElementById('status-text').innerText   = 'AD SKIPPED';
-          document.getElementById('title').innerText         = 'Almost There!';
-          document.getElementById('description').innerText   = 'Please watch the full ad to unlock your download.';
-          document.getElementById('progress-wrap').style.display = 'none';
+          document.getElementById('ad-icon').style.display        = 'none';
+          document.getElementById('countdown').style.display      = 'block';
+          document.getElementById('countdown').innerText          = '!';
+          document.getElementById('status-text').innerText        = 'AD SKIPPED';
+          document.getElementById('title').innerText              = 'Almost There!';
+          document.getElementById('description').innerText        = 'Please watch the full ad to unlock your download.';
+          document.getElementById('progress-wrap').style.display  = 'none';
 
           const btn = document.getElementById('btn-watch');
           btn.style.display = 'flex';
           btn.disabled      = false;
           document.getElementById('btn-text').innerText = '▶  Watch Ad to Unlock';
         } else {
-          // Any other error — unlock directly
           unlockDirectly();
         }
       });
