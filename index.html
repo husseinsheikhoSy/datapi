@@ -204,8 +204,8 @@
     <span class="chip" id="chip-size">⏱ ~15 sec ad</span>
   </div>
 
-  <button class="btn btn-primary" id="btn-watch" onclick="handleWatchAd()" disabled>
-    <span id="btn-text">Checking Offers…</span>
+  <button class="btn btn-primary" id="btn-watch" onclick="handleWatchAd()" disabled style="display:none;">
+    <span id="btn-text">Watch Ad to Unlock</span>
   </button>
 
   <button class="btn btn-success" id="btn-download" onclick="goToDataset()">
@@ -338,15 +338,44 @@
   }
 
   function showAdReadyState() {
+    // Ad is ready — launch it automatically, no user tap needed
     document.getElementById('countdown').style.display = 'none';
     document.getElementById('ad-icon').style.display   = 'block';
     document.getElementById('status-text').innerText   = 'OFFER FOUND';
-    document.getElementById('title').innerText         = 'Unlock Your Download';
-    document.getElementById('description').innerText   = 'Watch a short sponsored video to unlock your free download instantly.';
+    document.getElementById('title').innerText         = 'Unlocking Your Download…';
+    document.getElementById('description').innerText   = 'Loading your sponsored video, please wait.';
 
-    const btn = document.getElementById('btn-watch');
-    btn.disabled = false;
-    document.getElementById('btn-text').innerText = '▶  Watch Ad to Unlock';
+    document.getElementById('progress-wrap').style.display = 'block';
+    let p = 0;
+    const pIv = setInterval(() => { p += 2; if (p <= 95) document.getElementById('progress-bar').style.width = p + '%'; }, 200);
+
+    adsCtrl.show()
+      .then(() => {
+        clearInterval(pIv);
+        unlockDirectly();
+      })
+      .catch(err => {
+        clearInterval(pIv);
+        const msg = String(err).toLowerCase();
+        if (msg.includes('skip') || msg.includes('close')) {
+          // User closed early — show manual button so they can retry
+          document.getElementById('ad-icon').style.display   = 'none';
+          document.getElementById('countdown').style.display = 'block';
+          document.getElementById('countdown').innerText     = '!';
+          document.getElementById('status-text').innerText   = 'AD SKIPPED';
+          document.getElementById('title').innerText         = 'Almost There!';
+          document.getElementById('description').innerText   = 'Please watch the full ad to unlock your download.';
+          document.getElementById('progress-wrap').style.display = 'none';
+
+          const btn = document.getElementById('btn-watch');
+          btn.style.display = 'flex';
+          btn.disabled      = false;
+          document.getElementById('btn-text').innerText = '▶  Watch Ad to Unlock';
+        } else {
+          // Any other error — unlock directly
+          unlockDirectly();
+        }
+      });
   }
 
   async function handleWatchAd() {
