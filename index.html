@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>DataPi — Free Download</title>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-
   <style>
     :root {
       --bg: #030712;
@@ -30,7 +27,7 @@
       color: var(--text-main);
       min-height: 100vh;
       display: flex; align-items: center; justify-content: center;
-      padding: 20px; overflow: hidden;
+      padding: 20px;
     }
 
     .container {
@@ -42,7 +39,6 @@
       padding: 32px 24px;
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
       text-align: center;
-      position: relative;
       animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
@@ -51,115 +47,27 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    /* ── Screens ── */
+    .screen { display: none; }
+    .screen.active { display: block; }
+
+    /* ── Status badge ── */
     .status-badge {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255, 255, 255, 0.05);
+      background: rgba(255,255,255,0.05);
       padding: 6px 14px; border-radius: 99px;
       font-size: 12px; font-weight: 600; color: var(--accent);
-      margin-bottom: 20px; border: 1px solid rgba(139, 92, 246, 0.2);
+      margin-bottom: 20px; border: 1px solid rgba(139,92,246,0.2);
       transition: all 0.4s ease;
     }
 
-    .timer-circle {
-      position: relative; width: 100px; height: 100px; margin: 0 auto 24px;
+    /* ── Icon area ── */
+    .icon-wrap {
+      position: relative; width: 100px; height: 100px;
+      margin: 0 auto 24px;
       display: flex; align-items: center; justify-content: center;
     }
-
-    .timer-text {
-      font-size: 32px; font-weight: 800; color: var(--text-main);
-      text-shadow: 0 0 20px var(--accent-glow);
-    }
-
-    .icon-display {
-      font-size: 50px; display: none;
-      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
-
-    @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
-
-    h1 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
-    p  { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-
-    /* File info area */
-    .file-info {
-      display: none;
-      margin-bottom: 20px;
-    }
-    .file-type-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
-      color: #a78bfa;
-      background: rgba(108, 99, 255, 0.13);
-      border: 1px solid rgba(108, 99, 255, 0.22);
-      border-radius: 7px; padding: 3px 9px;
-      margin-bottom: 8px;
-    }
-    .file-title-text {
-      font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
-      color: var(--text-main); word-break: break-word;
-      margin-bottom: 8px; display: block;
-    }
-    .free-tag {
-      font-size: 11px; font-weight: 700;
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.10);
-      border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 99px; padding: 3px 10px;
-      display: inline-block;
-    }
-
-    /* Chips */
-    .chips-row {
-      display: none;
-      gap: 7px; flex-wrap: wrap;
-      justify-content: center; margin-bottom: 20px;
-    }
-    .chip {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: 11px; color: var(--text-dim);
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.07);
-      border-radius: 99px; padding: 5px 11px;
-    }
-
-    /* Buttons */
-    .btn {
-      width: 100%; padding: 18px; border-radius: 20px; border: none;
-      font-size: 16px; font-weight: 700; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 10px;
-      transition: all 0.3s ease; position: relative; overflow: hidden;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      color: white; box-shadow: 0 10px 20px -5px rgba(109, 40, 217, 0.5);
-    }
-    .btn-primary:disabled {
-      background: #374151; color: #9ca3af; box-shadow: none; cursor: not-allowed;
-    }
-    .btn-success {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.5);
-      display: none;
-    }
-    .btn:active:not(:disabled) { transform: scale(0.97); }
-
-    /* Progress */
-    .progress-container {
-      width: 100%; height: 6px; background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px; margin-top: 20px; display: none;
-    }
-    .progress-fill {
-      height: 100%; width: 0%; background: var(--accent);
-      border-radius: 10px; transition: width 0.3s ease;
-    }
-
-    /* Footer */
-    .footer-note {
-      margin-top: 24px; font-size: 11px; color: var(--text-dim);
-      opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 4px;
-    }
-
-    /* Pulse ring */
+    .icon-main { font-size: 52px; }
     .pulse-ring {
       position: absolute; width: 100%; height: 100%;
       border: 2px solid var(--accent); border-radius: 50%;
@@ -169,155 +77,344 @@
       0%   { transform: scale(0.8); opacity: 0.5; }
       100% { transform: scale(1.5); opacity: 0; }
     }
+
+    h1 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
+    p  { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
+
+    /* ── File info ── */
+    .file-info { margin-bottom: 20px; }
+    .file-type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
+      color: #a78bfa;
+      background: rgba(108,99,255,0.13);
+      border: 1px solid rgba(108,99,255,0.22);
+      border-radius: 7px; padding: 3px 9px;
+      margin-bottom: 8px;
+    }
+    .file-title-text {
+      font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
+      color: var(--text-main); word-break: break-word;
+      margin-bottom: 8px; display: block;
+    }
+    .free-tag {
+      font-size: 11px; font-weight: 700; color: #10b981;
+      background: rgba(16,185,129,0.10);
+      border: 1px solid rgba(16,185,129,0.22);
+      border-radius: 99px; padding: 3px 10px;
+      display: inline-block;
+    }
+
+    /* ── Chips ── */
+    .chips-row {
+      display: flex; gap: 7px; flex-wrap: wrap;
+      justify-content: center; margin-bottom: 20px;
+    }
+    .chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-size: 11px; color: var(--text-dim);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 99px; padding: 5px 11px;
+    }
+
+    /* ── Loading steps ── */
+    .steps { text-align: left; margin-bottom: 24px; }
+    .step-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 14px;
+      background: rgba(255,255,255,0.04); margin-bottom: 8px;
+      font-size: 13px; color: var(--text-dim);
+      transition: all 0.4s ease;
+    }
+    .step-item.done   { background: rgba(16,185,129,0.1);  color: #6ee7b7; }
+    .step-item.active { background: rgba(139,92,246,0.1);  color: #c4b5fd; }
+    .step-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--text-dim); flex-shrink: 0;
+      transition: background 0.4s;
+    }
+    .step-item.done   .step-dot { background: var(--success); }
+    .step-item.active .step-dot { background: var(--accent);  }
+
+    /* ── Loader dots ── */
+    .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
+    .dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--accent); opacity: 0.3;
+      animation: blink 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
+
+    /* ── Progress ── */
+    .progress-wrap {
+      width: 100%; height: 6px; background: rgba(255,255,255,0.05);
+      border-radius: 10px; margin-bottom: 24px;
+    }
+    .progress-fill {
+      height: 100%; width: 0%; background: var(--accent);
+      border-radius: 10px; transition: width 0.4s ease;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+      width: 100%; padding: 18px; border-radius: 20px; border: none;
+      font-size: 16px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px;
+      transition: all 0.3s ease;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
+      color: white; box-shadow: 0 10px 20px -5px rgba(109,40,217,0.5);
+    }
+    .btn-success {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white; box-shadow: 0 10px 20px -5px rgba(16,185,129,0.5);
+    }
+
+    /* ── Warning box ── */
+    .warning-box {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 16px; padding: 14px 16px;
+      font-size: 12px; color: #fde68a;
+      margin-bottom: 20px; line-height: 1.6; text-align: left;
+    }
+
+    /* ── Countdown badge ── */
+    .countdown-badge {
+      display: inline-block;
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 12px; padding: 4px 14px;
+      font-size: 13px; font-weight: 700; color: #c4b5fd;
+      margin-bottom: 16px; font-variant-numeric: tabular-nums;
+    }
+
+    /* ── Footer ── */
+    .footer-note {
+      margin-top: 24px; font-size: 11px; color: var(--text-dim);
+      opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 4px;
+    }
   </style>
 </head>
 <body>
+<div class="container">
 
-<!-- Full-screen tap overlay: captures first user gesture required by browser autoplay policy -->
-<div id="tap-overlay" style="
-  position:fixed; inset:0; z-index:9999;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background: rgba(3,7,18,0.92);
-  backdrop-filter: blur(6px);
-  cursor:pointer;
-  animation: fadeIn .4s ease;
-" onclick="onFirstTap()">
-  <div style="
-    background: rgba(17,24,39,0.9);
-    border: 1px solid rgba(139,92,246,0.35);
-    border-radius: 28px;
-    padding: 36px 32px;
-    text-align: center;
-    max-width: 320px;
-    box-shadow: 0 0 60px rgba(139,92,246,0.2);
-    animation: pulse-card 2s ease-in-out infinite;
-  ">
-    <div style="font-size:52px; margin-bottom:16px; animation: bounce 1.4s ease-in-out infinite;">👆</div>
-    <h2 style="font-size:20px; font-weight:800; color:#f9fafb; margin-bottom:10px; letter-spacing:-0.4px;">Tap to Continue</h2>
-    <p style="font-size:13px; color:#9ca3af; line-height:1.6; margin:0;">Tap anywhere to unlock your<br>free file download</p>
-    <div style="margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px;">
-      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot1 1.2s ease-in-out infinite;"></span>
-      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot2 1.2s ease-in-out infinite;"></span>
-      <span style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot3 1.2s ease-in-out infinite;"></span>
+  <!-- ══════════════════════════════
+       SCREEN 1 — Pre-landing
+  ══════════════════════════════ -->
+  <div class="screen active" id="screen-pre">
+    <div class="status-badge">
+      <span style="width:8px;height:8px;background:var(--accent);border-radius:50%"></span>
+      FREE DOWNLOAD
     </div>
-  </div>
-</div>
 
-<style>
-  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-  @keyframes bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
-  @keyframes pulse-card { 0%,100%{box-shadow:0 0 60px rgba(139,92,246,.2)} 50%{box-shadow:0 0 80px rgba(139,92,246,.4)} }
-  @keyframes dot1 { 0%,100%{opacity:.3;transform:scale(.8)} 20%{opacity:1;transform:scale(1.2)} }
-  @keyframes dot2 { 0%,100%{opacity:.3;transform:scale(.8)} 40%{opacity:1;transform:scale(1.2)} }
-  @keyframes dot3 { 0%,100%{opacity:.3;transform:scale(.8)} 60%{opacity:1;transform:scale(1.2)} }
-</style>
+    <div class="icon-wrap">
+      <div class="pulse-ring"></div>
+      <div class="icon-main">📥</div>
+    </div>
 
-<div class="container" id="main-card">
+    <!-- File info populated by JS -->
+    <div class="file-info" id="file-info-pre">
+      <div class="file-type-badge" id="type-badge-pre">📁 File</div>
+      <span class="file-title-text" id="file-title-pre">Your File</span>
+      <span class="free-tag">✦ 100% Free</span>
+    </div>
 
-  <div class="status-badge" id="status-box">
-    <span id="status-dot" style="width:8px;height:8px;background:var(--accent);border-radius:50%;flex-shrink:0;"></span>
-    <span id="status-text">SYSTEM INITIALIZING</span>
-  </div>
+    <div class="chips-row">
+      <span class="chip">✅ No signup</span>
+      <span class="chip">✅ No payment</span>
+      <span class="chip" id="chip-size-pre">⏱ ~15 sec ad</span>
+    </div>
 
-  <div class="timer-circle">
-    <div class="pulse-ring" id="pulse-effect"></div>
-    <div class="timer-text" id="countdown">10</div>
-    <div class="icon-display" id="success-icon">📥</div>
-    <div class="icon-display" id="ad-icon">🎬</div>
-  </div>
+    <p>To prevent spam and bots, we verify access through a short sponsored ad. It only takes a few seconds!</p>
 
-  <!-- File info (populated from URL params) -->
-  <div class="file-info" id="file-info">
-    <div class="file-type-badge" id="type-badge">📁 File</div>
-    <span class="file-title-text" id="file-title">Your File</span>
-    <span class="free-tag">✦ 100% Free</span>
-  </div>
+    <div class="warning-box">
+      ⚠️ <strong>How it works:</strong><br>
+      You will be redirected to a brief ad page. After completing it, return here to download your file instantly.
+    </div>
 
-  <h1 id="title">Verifying Connection</h1>
-  <p id="description">We are searching for the best available offers to unlock your file for free.</p>
-
-  <!-- Chips (shown after init) -->
-  <div class="chips-row" id="chips-row">
-    <span class="chip">✅ No signup</span>
-    <span class="chip">✅ No payment</span>
-    <span class="chip" id="chip-size">⏱ ~15 sec ad</span>
+    <button class="btn btn-primary" onclick="startVerification()">
+      🎬 &nbsp;Watch Ad &amp; Unlock Download
+    </button>
+    <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-  <button class="btn btn-primary" id="btn-watch" onclick="handleWatchAd()" disabled style="display:none;">
-    <span id="btn-text">Watch Ad to Unlock</span>
-  </button>
+  <!-- ══════════════════════════════
+       SCREEN 2 — Loading
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-loading">
+    <div class="status-badge">
+      <span style="width:8px;height:8px;background:var(--accent);border-radius:50%"></span>
+      PREPARING DOWNLOAD
+    </div>
+    <div class="icon-wrap">
+      <div class="pulse-ring"></div>
+      <div class="icon-main">⚙️</div>
+    </div>
+    <h1>Preparing Your Access…</h1>
+    <p>We're loading the sponsored content. Please wait a moment.</p>
 
-  <button class="btn btn-success" id="btn-download" onclick="goToDataset()">
-    <span>📥</span><span>Download — Free ✓</span>
-  </button>
+    <div class="steps">
+      <div class="step-item active" id="step-1">
+        <span class="step-dot"></span> Connecting to ad network
+      </div>
+      <div class="step-item" id="step-2">
+        <span class="step-dot"></span> Loading sponsored content
+      </div>
+      <div class="step-item" id="step-3">
+        <span class="step-dot"></span> Verifying your access
+      </div>
+    </div>
 
-  <div class="progress-container" id="progress-wrap">
-    <div class="progress-fill" id="progress-bar"></div>
+    <div class="progress-wrap"><div class="progress-fill" id="load-progress"></div></div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+    <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-  <div class="footer-note">
-    <span>🛡️</span>&nbsp;Powered by DataPi · @DATASCIENCEQ
+  <!-- ══════════════════════════════
+       SCREEN 3 — Return & Verify
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-return">
+    <div class="status-badge" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)">
+      <span style="width:8px;height:8px;background:#fbbf24;border-radius:50%"></span>
+      WAITING FOR YOU
+    </div>
+    <div class="icon-wrap">
+      <div class="icon-main">⏳</div>
+    </div>
+    <h1>Almost There!</h1>
+    <p>Please <strong style="color:var(--text-main)">complete the ad page</strong> that opened in your browser, then tap the button below to verify and unlock your download.</p>
+
+    <div class="countdown-badge" id="return-countdown">Auto-verify in 15s</div>
+
+    <button class="btn btn-primary" onclick="verifyReturn()" style="margin-bottom:12px;">
+      ✅ &nbsp;I Completed the Ad — Verify Now
+    </button>
+    <button class="btn" style="background:rgba(255,255,255,0.06);color:var(--text-dim);font-size:14px;" onclick="retryAd()">
+      🔄 &nbsp;Re-open Ad Page
+    </button>
+    <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-</div>
+  <!-- ══════════════════════════════
+       SCREEN 4 — Verifying
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-verifying">
+    <div class="status-badge" style="color:#10b981;border-color:rgba(16,185,129,0.3)">
+      <span style="width:8px;height:8px;background:#10b981;border-radius:50%"></span>
+      VERIFYING
+    </div>
+    <div class="icon-wrap">
+      <div class="pulse-ring" style="border-color:var(--success)"></div>
+      <div class="icon-main">🔍</div>
+    </div>
+    <h1>Verifying Access…</h1>
+    <p>Please wait while we confirm your verification and unlock the file.</p>
+    <div class="progress-wrap"><div class="progress-fill" id="verify-progress"></div></div>
+    <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN 5 — Access Granted
+  ══════════════════════════════ -->
+  <div class="screen" id="screen-done">
+    <div class="status-badge" style="color:var(--success);border-color:rgba(16,185,129,0.3)">
+      <span style="width:8px;height:8px;background:var(--success);border-radius:50%"></span>
+      ACCESS GRANTED
+    </div>
+    <div class="icon-wrap">
+      <div class="icon-main">📥</div>
+    </div>
+
+    <div class="file-info" id="file-info-done">
+      <div class="file-type-badge" id="type-badge-done">📁 File</div>
+      <span class="file-title-text" id="file-title-done">Your File</span>
+      <span class="free-tag">✦ 100% Free</span>
+    </div>
+
+    <h1>Ready to Download!</h1>
+    <p>Verification complete. Your file is ready — tap below to download for free.</p>
+    <button class="btn btn-success" onclick="goToDataset()">
+      📥 &nbsp;Download — Free ✓
+    </button>
+    <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
+  </div>
+
+</div><!-- .container -->
 
 <script>
   const tg = window.Telegram?.WebApp || null;
   if (tg) { tg.ready(); tg.expand(); }
+
+  /* ── Config ── */
+  const AD_URL = 'https://massive-hall.com/GQtbhS';
+  let returnTimer = null;
+  let returnSecs  = 15;
 
   /* ── Decode params ── */
   function decodeB64(str) {
     if (!str) return null;
     try {
       const p = str + '=='.slice(0, (4 - str.length % 4) % 4);
-      return atob(p.replace(/-/g, '+').replace(/_/g, '/'));
+      return atob(p.replace(/-/g,'+').replace(/_/g,'/'));
     } catch { return null; }
   }
 
-  const params      = new URLSearchParams(window.location.search);
-  const startParam  = tg?.initDataUnsafe?.start_param
-                    || params.get('startapp')
-                    || params.get('tgWebAppStartParam');
-  const _decoded    = decodeB64(startParam) || '';
-  const _pipeIdx    = _decoded.indexOf('|');
-  const DATASET_URL = _pipeIdx === -1 ? (_decoded || null) : (_decoded.slice(0, _pipeIdx) || null);
+  const params     = new URLSearchParams(window.location.search);
+  const startParam = tg?.initDataUnsafe?.start_param
+                   || params.get('startapp')
+                   || params.get('tgWebAppStartParam');
+  const _decoded   = decodeB64(startParam) || '';
+  const _pipeIdx   = _decoded.indexOf('|');
+  const DATASET_URL = _pipeIdx === -1
+    ? (_decoded || null)
+    : (_decoded.slice(0, _pipeIdx) || null);
 
   const rawTitle   = params.get('title');
-  const PAGE_TITLE = rawTitle ? (decodeB64(rawTitle) || decodeURIComponent(rawTitle)) : null;
+  const PAGE_TITLE = rawTitle
+    ? (decodeB64(rawTitle) || decodeURIComponent(rawTitle))
+    : null;
 
   /* ── File type detection ── */
   function detectBadge(url) {
     if (!url) return { emoji: '📁', label: 'File' };
     const u = url.toLowerCase();
-    if (u.includes('.pdf'))                   return { emoji: '📕', label: 'PDF Book' };
-    if (u.match(/\.(mp4|mkv|avi|mov|webm)/)) return { emoji: '🎬', label: 'Video' };
-    if (u.match(/\.(mp3|wav|ogg|flac|m4a)/)) return { emoji: '🎧', label: 'Audio' };
-    if (u.match(/\.(zip|rar|7z|tar|gz)/))    return { emoji: '🗜', label: 'Archive' };
-    if (u.match(/\.(csv|xlsx|xls)/))         return { emoji: '📊', label: 'Dataset' };
+    if (u.includes('.pdf'))                    return { emoji: '📕', label: 'PDF Book'  };
+    if (u.match(/\.(mp4|mkv|avi|mov|webm)/))  return { emoji: '🎬', label: 'Video'     };
+    if (u.match(/\.(mp3|wav|ogg|flac|m4a)/))  return { emoji: '🎧', label: 'Audio'     };
+    if (u.match(/\.(zip|rar|7z|tar|gz)/))     return { emoji: '🗜', label: 'Archive'   };
+    if (u.match(/\.(csv|xlsx|xls)/))          return { emoji: '📊', label: 'Dataset'   };
     return { emoji: '📁', label: 'File' };
   }
 
   function fmtBytes(n) {
-    const units = ['B', 'KB', 'MB', 'GB'];
+    const units = ['B','KB','MB','GB'];
     for (const u of units) { if (n < 1024) return n.toFixed(1) + ' ' + u; n /= 1024; }
     return n.toFixed(1) + ' TB';
   }
 
   function populateFileUI() {
     const badge = detectBadge(DATASET_URL);
-
-    // Title
-    const titleEl = document.getElementById('file-title');
+    let titleText = 'Your File';
     if (PAGE_TITLE) {
-      titleEl.textContent = PAGE_TITLE;
+      titleText = PAGE_TITLE;
     } else if (DATASET_URL) {
       const parts = DATASET_URL.split('/');
-      titleEl.textContent = decodeURIComponent(parts[parts.length - 1] || 'Dataset');
+      titleText = decodeURIComponent(parts[parts.length - 1] || 'Dataset');
     }
 
-    document.getElementById('type-badge').textContent    = badge.emoji + ' ' + badge.label;
-    document.getElementById('file-info').style.display   = 'block';
-    document.getElementById('chips-row').style.display   = 'flex';
+    // Pre-landing screen
+    document.getElementById('type-badge-pre').textContent  = badge.emoji + ' ' + badge.label;
+    document.getElementById('file-title-pre').textContent  = titleText;
+
+    // Done screen
+    document.getElementById('type-badge-done').textContent = badge.emoji + ' ' + badge.label;
+    document.getElementById('file-title-done').textContent = titleText;
 
     // Pixeldrain file size
     if (DATASET_URL) {
@@ -325,184 +422,136 @@
       if (m) {
         fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
           .then(r => r.json())
-          .then(d => { if (d.size) document.getElementById('chip-size').textContent = '💾 ' + fmtBytes(d.size); })
+          .then(d => {
+            if (d.size) {
+              const label = '💾 ' + fmtBytes(d.size);
+              document.getElementById('chip-size-pre').textContent = label;
+            }
+          })
           .catch(() => {});
       }
     }
   }
 
-  /* ── RichAds SDK ── */
-  let adsCtrl       = null;
-  let adUnlocked    = false;
-  let adReady       = false;   // ad loaded and waiting for gesture
-  let gestureDone   = false;   // user has tapped at least once
-  let checkAttempts = 0;
-  const MAX_ATTEMPTS = 20;
-  let checkInterval  = null;
-
-  // Called when user taps the overlay (first gesture)
-  function onFirstTap() {
-    if (gestureDone) return;
-    gestureDone = true;
-
-    // Dismiss overlay with fade
-    const overlay = document.getElementById('tap-overlay');
-    if (overlay) {
-      overlay.style.transition = 'opacity .3s ease';
-      overlay.style.opacity = '0';
-      setTimeout(() => overlay.remove(), 320);
-    }
-
-    // If ad was already ready while waiting for gesture, launch now
-    if (adReady && adsCtrl) {
-      launchAd();
-    }
-    // Otherwise updateLogic() will call launchAd() once ad becomes ready
+  /* ── Screen switching ── */
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
   }
 
-  window.addEventListener('load', () => {
-    populateFileUI();
-
-    if (typeof TelegramAdsController !== 'undefined') {
-      try {
-        adsCtrl = new TelegramAdsController();
-        adsCtrl.initialize({ pubId: "1006337", appId: "7003" });
-      } catch (e) { console.warn('Ads init failed:', e); }
-    }
-
-    checkInterval = setInterval(updateLogic, 500);
-  });
-
-  function updateLogic() {
-    checkAttempts++;
-    const secondsLeft = Math.ceil((MAX_ATTEMPTS - checkAttempts) / 2);
-    if (secondsLeft >= 0 && !adUnlocked) {
-      document.getElementById('countdown').innerText = secondsLeft;
-    }
-
-    let isAvailable = false;
-    if (adsCtrl) {
-      const checkFn = adsCtrl.isAdAvailable ?? adsCtrl.isReady ?? null;
-      try { if (checkFn) isAvailable = checkFn.call(adsCtrl); } catch (e) {}
-    }
-
-    if (isAvailable && !adReady) {
-      adReady = true;
-      clearInterval(checkInterval);
-
-      if (gestureDone) {
-        // Gesture already happened → launch immediately
-        launchAd();
-      }
-      // else wait — onFirstTap() will call launchAd()
-      return;
-    }
-
-    if (checkAttempts >= MAX_ATTEMPTS && !adReady) {
-      clearInterval(checkInterval);
-      // No ad available — dismiss overlay and unlock directly
-      adReady = true;
-      const overlay = document.getElementById('tap-overlay');
-      if (overlay) {
-        overlay.style.transition = 'opacity .3s ease';
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 320);
-      }
-      unlockDirectly();
-    }
+  /* ── STEP 1: User taps "Watch Ad" ── */
+  function startVerification() {
+    show('screen-loading');
+    animateLoadingSteps();
   }
 
-  function launchAd() {
-    document.getElementById('countdown').style.display = 'none';
-    document.getElementById('ad-icon').style.display   = 'block';
-    document.getElementById('status-text').innerText   = 'OFFER FOUND';
-    document.getElementById('title').innerText         = 'Unlocking Your Download…';
-    document.getElementById('description').innerText   = 'Loading your sponsored video, please wait.';
+  function animateLoadingSteps() {
+    const bar   = document.getElementById('load-progress');
+    const steps = ['step-1','step-2','step-3'];
+    let p = 0, si = 0;
 
-    document.getElementById('progress-wrap').style.display = 'block';
-    let p = 0;
-    const pIv = setInterval(() => { p += 2; if (p <= 95) document.getElementById('progress-bar').style.width = p + '%'; }, 200);
+    const pIv = setInterval(() => {
+      p = Math.min(p + 3, 95);
+      bar.style.width = p + '%';
+    }, 80);
 
-    adsCtrl.show()
-      .then(() => {
-        clearInterval(pIv);
-        unlockDirectly();
-      })
-      .catch(err => {
-        clearInterval(pIv);
-        const msg = String(err).toLowerCase();
-        if (msg.includes('skip') || msg.includes('close')) {
-          document.getElementById('ad-icon').style.display        = 'none';
-          document.getElementById('countdown').style.display      = 'block';
-          document.getElementById('countdown').innerText          = '!';
-          document.getElementById('status-text').innerText        = 'AD SKIPPED';
-          document.getElementById('title').innerText              = 'Almost There!';
-          document.getElementById('description').innerText        = 'Please watch the full ad to unlock your download.';
-          document.getElementById('progress-wrap').style.display  = 'none';
-
-          const btn = document.getElementById('btn-watch');
-          btn.style.display = 'flex';
-          btn.disabled      = false;
-          document.getElementById('btn-text').innerText = '▶  Watch Ad to Unlock';
-        } else {
-          unlockDirectly();
+    function nextStep() {
+      if (si < steps.length) {
+        if (si > 0) {
+          document.getElementById(steps[si-1]).classList.remove('active');
+          document.getElementById(steps[si-1]).classList.add('done');
         }
-      });
-  }
-
-  async function handleWatchAd() {
-    const btn = document.getElementById('btn-watch');
-    btn.disabled = true;
-    document.getElementById('btn-text').innerText = 'Loading ad…';
-
-    document.getElementById('progress-wrap').style.display = 'block';
-    let p = 0;
-    const pIv = setInterval(() => { p += 2; if (p <= 95) document.getElementById('progress-bar').style.width = p + '%'; }, 200);
-
-    try {
-      await adsCtrl.show();
-      clearInterval(pIv);
-      unlockDirectly();
-    } catch (err) {
-      clearInterval(pIv);
-      const msg = String(err).toLowerCase();
-      if (msg.includes('skip') || msg.includes('close')) {
-        btn.disabled = false;
-        document.getElementById('btn-text').innerText          = '▶  Watch Ad to Unlock';
-        document.getElementById('progress-wrap').style.display = 'none';
-        alert('Please watch the full ad to unlock your download.');
-      } else {
-        unlockDirectly();
+        document.getElementById(steps[si]).classList.add('active');
+        si++;
+        if (si < steps.length) setTimeout(nextStep, 900);
       }
     }
+    nextStep();
+
+    setTimeout(() => {
+      clearInterval(pIv);
+      bar.style.width = '100%';
+      if (steps[si-1]) {
+        document.getElementById(steps[si-1]).classList.remove('active');
+        document.getElementById(steps[si-1]).classList.add('done');
+      }
+      openAd();
+    }, 3000);
   }
 
-  function unlockDirectly() {
-    adUnlocked = true;
+  /* ── Open HilltopAds direct link ── */
+  function openAd() {
+    try {
+      if (tg?.openLink) tg.openLink(AD_URL);
+      else window.open(AD_URL, '_blank');
+    } catch(e) { window.location.href = AD_URL; }
 
-    document.getElementById('countdown').style.display    = 'none';
-    document.getElementById('ad-icon').style.display      = 'none';
-    document.getElementById('success-icon').style.display = 'block';
-    document.getElementById('pulse-effect').style.display = 'none';
-
-    document.getElementById('status-text').innerText              = 'ACCESS GRANTED';
-    document.getElementById('status-dot').style.background        = 'var(--success)';
-    document.getElementById('status-box').style.borderColor       = 'var(--success)';
-    document.getElementById('status-box').style.color             = 'var(--success)';
-
-    document.getElementById('title').innerText       = 'Ready to Download!';
-    document.getElementById('description').innerText = 'Verification complete. Your file is ready — tap below to download for free.';
-
-    document.getElementById('btn-watch').style.display    = 'none';
-    document.getElementById('progress-wrap').style.display = 'none';
-    document.getElementById('btn-download').style.display = 'flex';
+    setTimeout(() => {
+      show('screen-return');
+      startReturnCountdown();
+    }, 400);
   }
 
+  function retryAd() {
+    try {
+      if (tg?.openLink) tg.openLink(AD_URL);
+      else window.open(AD_URL, '_blank');
+    } catch(e) { window.location.href = AD_URL; }
+    resetReturnCountdown();
+  }
+
+  /* ── Countdown ── */
+  function startReturnCountdown() {
+    returnSecs = 15;
+    updateCountdownLabel();
+    if (returnTimer) clearInterval(returnTimer);
+    returnTimer = setInterval(() => {
+      returnSecs--;
+      updateCountdownLabel();
+      if (returnSecs <= 0) { clearInterval(returnTimer); verifyReturn(); }
+    }, 1000);
+  }
+
+  function resetReturnCountdown() {
+    returnSecs = 15;
+    updateCountdownLabel();
+    if (returnTimer) clearInterval(returnTimer);
+    returnTimer = setInterval(() => {
+      returnSecs--;
+      updateCountdownLabel();
+      if (returnSecs <= 0) { clearInterval(returnTimer); verifyReturn(); }
+    }, 1000);
+  }
+
+  function updateCountdownLabel() {
+    const el = document.getElementById('return-countdown');
+    if (el) el.textContent = returnSecs > 0
+      ? 'Auto-verify in ' + returnSecs + 's'
+      : 'Verifying…';
+  }
+
+  /* ── STEP 2: Verify return ── */
+  function verifyReturn() {
+    if (returnTimer) clearInterval(returnTimer);
+    show('screen-verifying');
+    const bar = document.getElementById('verify-progress');
+    let p = 0;
+    const iv = setInterval(() => {
+      p = Math.min(p + 4, 100);
+      bar.style.width = p + '%';
+      if (p >= 100) { clearInterval(iv); show('screen-done'); }
+    }, 60);
+  }
+
+  /* ── STEP 3: Go to file ── */
   function goToDataset() {
     const url = DATASET_URL || 'https://pixeldrain.com';
     if (tg?.openLink) { tg.openLink(url); setTimeout(() => tg.close(), 600); }
     else window.location.href = url;
   }
+
+  /* ── Init ── */
+  window.addEventListener('load', populateFileUI);
 </script>
 </body>
 </html>
