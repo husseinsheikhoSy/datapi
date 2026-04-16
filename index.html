@@ -47,11 +47,9 @@
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Screens ── */
     .screen { display: none; }
     .screen.active { display: block; }
 
-    /* ── Status badge ── */
     .status-badge {
       display: inline-flex; align-items: center; gap: 8px;
       background: rgba(255,255,255,0.05);
@@ -61,7 +59,6 @@
       transition: all 0.4s ease;
     }
 
-    /* ── Icon area ── */
     .icon-wrap {
       position: relative; width: 100px; height: 100px;
       margin: 0 auto 24px;
@@ -81,7 +78,6 @@
     h1 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
     p  { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
 
-    /* ── File info ── */
     .file-info { margin-bottom: 20px; }
     .file-type-badge {
       display: inline-flex; align-items: center; gap: 5px;
@@ -105,7 +101,6 @@
       display: inline-block;
     }
 
-    /* ── Chips ── */
     .chips-row {
       display: flex; gap: 7px; flex-wrap: wrap;
       justify-content: center; margin-bottom: 20px;
@@ -118,7 +113,6 @@
       border-radius: 99px; padding: 5px 11px;
     }
 
-    /* ── Loading steps ── */
     .steps { text-align: left; margin-bottom: 24px; }
     .step-item {
       display: flex; align-items: center; gap: 12px;
@@ -137,7 +131,6 @@
     .step-item.done   .step-dot { background: var(--success); }
     .step-item.active .step-dot { background: var(--accent);  }
 
-    /* ── Loader dots ── */
     .dots { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px; }
     .dot {
       width: 10px; height: 10px; border-radius: 50%;
@@ -148,7 +141,6 @@
     .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes blink { 0%,100%{opacity:.3;transform:scale(.8)} 50%{opacity:1;transform:scale(1.2)} }
 
-    /* ── Progress ── */
     .progress-wrap {
       width: 100%; height: 6px; background: rgba(255,255,255,0.05);
       border-radius: 10px; margin-bottom: 24px;
@@ -158,7 +150,6 @@
       border-radius: 10px; transition: width 0.4s ease;
     }
 
-    /* ── Buttons ── */
     .btn {
       width: 100%; padding: 18px; border-radius: 20px; border: none;
       font-size: 16px; font-weight: 700; cursor: pointer;
@@ -175,7 +166,6 @@
       color: white; box-shadow: 0 10px 20px -5px rgba(16,185,129,0.5);
     }
 
-    /* ── Warning box ── */
     .warning-box {
       background: rgba(251,191,36,0.08);
       border: 1px solid rgba(251,191,36,0.2);
@@ -184,7 +174,6 @@
       margin-bottom: 20px; line-height: 1.6; text-align: left;
     }
 
-    /* ── Countdown badge ── */
     .countdown-badge {
       display: inline-block;
       background: rgba(139,92,246,0.15);
@@ -194,7 +183,6 @@
       margin-bottom: 16px; font-variant-numeric: tabular-nums;
     }
 
-    /* ── Footer ── */
     .footer-note {
       margin-top: 24px; font-size: 11px; color: var(--text-dim);
       opacity: 0.6; display: flex; align-items: center; justify-content: center; gap: 4px;
@@ -204,47 +192,37 @@
 <body>
 <div class="container">
 
-  <!-- ══════════════════════════════
-       SCREEN 1 — Pre-landing
-  ══════════════════════════════ -->
+  <!-- SCREEN 1 — Pre-landing -->
   <div class="screen active" id="screen-pre">
     <div class="status-badge">
       <span style="width:8px;height:8px;background:var(--accent);border-radius:50%"></span>
       FREE DOWNLOAD
     </div>
-
     <div class="icon-wrap">
       <div class="pulse-ring"></div>
       <div class="icon-main">📥</div>
     </div>
-
-    <!-- File info populated by JS -->
     <div class="file-info" id="file-info-pre">
       <div class="file-type-badge" id="type-badge-pre">📁 File</div>
       <span class="file-title-text" id="file-title-pre">Your File</span>
       <span class="free-tag">✦ 100% Free</span>
     </div>
-
     <div class="chips-row">
       <span class="chip">✅ No signup</span>
       <span class="chip">✅ No payment</span>
       <span class="chip" id="chip-size-pre">⏱ ~15 sec ad</span>
     </div>
-
     <div class="warning-box">
       ⚠️ <strong>How it works:</strong><br>
       You will be redirected to a brief ad page. After completing it, return here to download your file instantly.
     </div>
-
     <button class="btn btn-primary" onclick="startVerification()">
       🎬 &nbsp;Watch Ad &amp; Unlock Download
     </button>
     <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-  <!-- ══════════════════════════════
-       SCREEN 2 — Loading
-  ══════════════════════════════ -->
+  <!-- SCREEN 2 — Loading -->
   <div class="screen" id="screen-loading">
     <div class="status-badge">
       <span style="width:8px;height:8px;background:var(--accent);border-radius:50%"></span>
@@ -256,7 +234,6 @@
     </div>
     <h1>Preparing Your Access…</h1>
     <p>We're loading the sponsored content. Please wait a moment.</p>
-
     <div class="steps">
       <div class="step-item active" id="step-1">
         <span class="step-dot"></span> Connecting to ad network
@@ -268,15 +245,12 @@
         <span class="step-dot"></span> Verifying your access
       </div>
     </div>
-
     <div class="progress-wrap"><div class="progress-fill" id="load-progress"></div></div>
     <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
     <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-  <!-- ══════════════════════════════
-       SCREEN 3 — Return & Verify
-  ══════════════════════════════ -->
+  <!-- SCREEN 3 — Return & Verify -->
   <div class="screen" id="screen-return">
     <div class="status-badge" style="color:#fbbf24;border-color:rgba(251,191,36,0.3)">
       <span style="width:8px;height:8px;background:#fbbf24;border-radius:50%"></span>
@@ -287,9 +261,7 @@
     </div>
     <h1>Almost There!</h1>
     <p>Please <strong style="color:var(--text-main)">complete the ad page</strong> that opened in your browser, then tap the button below to verify and unlock your download.</p>
-
     <div class="countdown-badge" id="return-countdown">Auto-verify in 15s</div>
-
     <button class="btn btn-primary" onclick="verifyReturn()" style="margin-bottom:12px;">
       ✅ &nbsp;I Completed the Ad — Verify Now
     </button>
@@ -299,9 +271,7 @@
     <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-  <!-- ══════════════════════════════
-       SCREEN 4 — Verifying
-  ══════════════════════════════ -->
+  <!-- SCREEN 4 — Verifying -->
   <div class="screen" id="screen-verifying">
     <div class="status-badge" style="color:#10b981;border-color:rgba(16,185,129,0.3)">
       <span style="width:8px;height:8px;background:#10b981;border-radius:50%"></span>
@@ -317,9 +287,7 @@
     <div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
   </div>
 
-  <!-- ══════════════════════════════
-       SCREEN 5 — Access Granted
-  ══════════════════════════════ -->
+  <!-- SCREEN 5 — Access Granted -->
   <div class="screen" id="screen-done">
     <div class="status-badge" style="color:var(--success);border-color:rgba(16,185,129,0.3)">
       <span style="width:8px;height:8px;background:var(--success);border-radius:50%"></span>
@@ -328,13 +296,11 @@
     <div class="icon-wrap">
       <div class="icon-main">📥</div>
     </div>
-
     <div class="file-info" id="file-info-done">
       <div class="file-type-badge" id="type-badge-done">📁 File</div>
       <span class="file-title-text" id="file-title-done">Your File</span>
       <span class="free-tag">✦ 100% Free</span>
     </div>
-
     <h1>Ready to Download!</h1>
     <p>Verification complete. Your file is ready — tap below to download for free.</p>
     <button class="btn btn-success" onclick="goToDataset()">
@@ -343,16 +309,53 @@
     <div class="footer-note">🛡️ Powered by DataPi · @DATASCIENCEQ</div>
   </div>
 
-</div><!-- .container -->
+</div>
 
 <script>
   const tg = window.Telegram?.WebApp || null;
   if (tg) { tg.ready(); tg.expand(); }
 
-  /* ── Config ── */
-  const AD_URL = 'https://fluffy-machine.com/hy0AJ8';
-  let returnTimer = null;
-  let returnSecs  = 15;
+  /* ── Ad URLs by Tier ── */
+  const AD_TIER1 = 'https://fluffy-machine.com/Kp60r2'; // High-CPM countries
+  const AD_TIER2 = 'https://fluffy-machine.com/hy0AJ8'; // All others
+
+  /*
+   * Tier 1 — Top CPM countries
+   * North America, Western/Southern/Eastern Europe, Oceania,
+   * premium Asia-Pacific, Gulf states, and key LatAm markets
+   */
+  const TIER1_COUNTRIES = new Set([
+    'US','CA',
+    'GB','DE','FR','NL','SE','NO','DK','FI','CH','AT','BE','IE','LU',
+    'IT','ES','PT',
+    'PL','CZ','SK','HU','RO',
+    'AU','NZ',
+    'JP','SG','HK','KR','TW',
+    'AE','SA','QA','KW','BH',
+    'IL','ZA','BR','MX'
+  ]);
+
+  let resolvedAdUrl = null; // cached after geo detection
+  let returnTimer   = null;
+  let returnSecs    = 15;
+
+  /* ── Detect country via free IP API ── */
+  async function detectCountry() {
+    try {
+      const res  = await fetch('https://ipapi.co/json/', { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      return data.country_code || 'XX';
+    } catch (e) {
+      return 'XX'; // fallback → Tier 2
+    }
+  }
+
+  async function resolveAdUrl() {
+    if (resolvedAdUrl) return resolvedAdUrl;
+    const country = await detectCountry();
+    resolvedAdUrl = TIER1_COUNTRIES.has(country) ? AD_TIER1 : AD_TIER2;
+    return resolvedAdUrl;
+  }
 
   /* ── Decode params ── */
   function decodeB64(str) {
@@ -363,12 +366,12 @@
     } catch { return null; }
   }
 
-  const params     = new URLSearchParams(window.location.search);
-  const startParam = tg?.initDataUnsafe?.start_param
-                   || params.get('startapp')
-                   || params.get('tgWebAppStartParam');
-  const _decoded   = decodeB64(startParam) || '';
-  const _pipeIdx   = _decoded.indexOf('|');
+  const params      = new URLSearchParams(window.location.search);
+  const startParam  = tg?.initDataUnsafe?.start_param
+                    || params.get('startapp')
+                    || params.get('tgWebAppStartParam');
+  const _decoded    = decodeB64(startParam) || '';
+  const _pipeIdx    = _decoded.indexOf('|');
   const DATASET_URL = _pipeIdx === -1
     ? (_decoded || null)
     : (_decoded.slice(0, _pipeIdx) || null);
@@ -406,15 +409,11 @@
       titleText = decodeURIComponent(parts[parts.length - 1] || 'Dataset');
     }
 
-    // Pre-landing screen
     document.getElementById('type-badge-pre').textContent  = badge.emoji + ' ' + badge.label;
     document.getElementById('file-title-pre').textContent  = titleText;
-
-    // Done screen
     document.getElementById('type-badge-done').textContent = badge.emoji + ' ' + badge.label;
     document.getElementById('file-title-done').textContent = titleText;
 
-    // Pixeldrain file size
     if (DATASET_URL) {
       const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
       if (m) {
@@ -422,8 +421,7 @@
           .then(r => r.json())
           .then(d => {
             if (d.size) {
-              const label = '💾 ' + fmtBytes(d.size);
-              document.getElementById('chip-size-pre').textContent = label;
+              document.getElementById('chip-size-pre').textContent = '💾 ' + fmtBytes(d.size);
             }
           })
           .catch(() => {});
@@ -466,23 +464,24 @@
     }
     nextStep();
 
-    setTimeout(() => {
+    setTimeout(async () => {
       clearInterval(pIv);
       bar.style.width = '100%';
       if (steps[si-1]) {
         document.getElementById(steps[si-1]).classList.remove('active');
         document.getElementById(steps[si-1]).classList.add('done');
       }
-      openAd();
+      await openAd();
     }, 3000);
   }
 
-  /* ── Open HilltopAds direct link ── */
-  function openAd() {
+  /* ── Open ad (geo-targeted) ── */
+  async function openAd() {
+    const url = await resolveAdUrl();
     try {
-      if (tg?.openLink) tg.openLink(AD_URL);
-      else window.open(AD_URL, '_blank');
-    } catch(e) { window.location.href = AD_URL; }
+      if (tg?.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
+    } catch(e) { window.location.href = url; }
 
     setTimeout(() => {
       show('screen-return');
@@ -490,11 +489,12 @@
     }, 400);
   }
 
-  function retryAd() {
+  async function retryAd() {
+    const url = await resolveAdUrl();
     try {
-      if (tg?.openLink) tg.openLink(AD_URL);
-      else window.open(AD_URL, '_blank');
-    } catch(e) { window.location.href = AD_URL; }
+      if (tg?.openLink) tg.openLink(url);
+      else window.open(url, '_blank');
+    } catch(e) { window.location.href = url; }
     resetReturnCountdown();
   }
 
@@ -548,8 +548,11 @@
     else window.location.href = url;
   }
 
-  /* ── Init ── */
-  window.addEventListener('load', populateFileUI);
+  /* ── Init: populate UI + pre-fetch geo ── */
+  window.addEventListener('load', () => {
+    populateFileUI();
+    resolveAdUrl(); // pre-fetch in background so it's cached by the time user taps
+  });
 </script>
 </body>
 </html>
