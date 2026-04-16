@@ -80,18 +80,13 @@
     h1 { font-size: 24px; font-weight: 800; margin-bottom: 12px; letter-spacing: -0.5px; }
     p  { color: var(--text-dim); font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
 
-    .file-info {
-      display: none;
-      margin-bottom: 20px;
-    }
+    .file-info { display: none; margin-bottom: 20px; }
     .file-type-badge {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase;
-      color: #a78bfa;
-      background: rgba(108, 99, 255, 0.13);
+      color: #a78bfa; background: rgba(108, 99, 255, 0.13);
       border: 1px solid rgba(108, 99, 255, 0.22);
-      border-radius: 7px; padding: 3px 9px;
-      margin-bottom: 8px;
+      border-radius: 7px; padding: 3px 9px; margin-bottom: 8px;
     }
     .file-title-text {
       font-size: 17px; font-weight: 800; letter-spacing: -0.3px;
@@ -99,19 +94,13 @@
       margin-bottom: 8px; display: block;
     }
     .free-tag {
-      font-size: 11px; font-weight: 700;
-      color: #10b981;
+      font-size: 11px; font-weight: 700; color: #10b981;
       background: rgba(16, 185, 129, 0.10);
       border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 99px; padding: 3px 10px;
-      display: inline-block;
+      border-radius: 99px; padding: 3px 10px; display: inline-block;
     }
 
-    .chips-row {
-      display: none;
-      gap: 7px; flex-wrap: wrap;
-      justify-content: center; margin-bottom: 20px;
-    }
+    .chips-row { display: none; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 20px; }
     .chip {
       display: inline-flex; align-items: center; gap: 5px;
       font-size: 11px; color: var(--text-dim);
@@ -136,6 +125,11 @@
     .btn-success {
       background: linear-gradient(135deg, #10b981, #059669);
       color: white; box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.5);
+      display: none;
+    }
+    .btn-secondary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      color: white; box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.5);
       display: none;
     }
     .btn:active:not(:disabled) { transform: scale(0.97); }
@@ -220,7 +214,6 @@
     <div class="icon-display" id="ad-icon">🎬</div>
   </div>
 
-  <!-- File info -->
   <div class="file-info" id="file-info">
     <div class="file-type-badge" id="type-badge">📁 File</div>
     <span class="file-title-text" id="file-title">Your File</span>
@@ -230,7 +223,6 @@
   <h1 id="title">Verifying Connection</h1>
   <p id="description">We are searching for the best available offers to unlock your file for free.</p>
 
-  <!-- Chips -->
   <div class="chips-row" id="chips-row">
     <span class="chip">✅ No signup</span>
     <span class="chip">✅ No payment</span>
@@ -239,6 +231,10 @@
 
   <button class="btn btn-primary" id="btn-watch" onclick="handleWatchAd()" disabled style="display:none;">
     <span id="btn-text">Watch Ad to Unlock</span>
+  </button>
+
+  <button class="btn btn-secondary" id="btn-next-phase" onclick="startPhase2()">
+    <span>🔄</span> Go to Final Step
   </button>
 
   <button class="btn btn-success" id="btn-download" onclick="goToDataset()">
@@ -337,21 +333,16 @@
   let phaseStartTime = null;
   const PHASE_DURATION = 10;
 
-  // Called when user taps the overlay (first gesture)
   function onFirstTap() {
     if (gestureDone) return;
     gestureDone = true;
-
     const overlay = document.getElementById('tap-overlay');
     if (overlay) {
       overlay.style.transition = 'opacity .3s ease';
       overlay.style.opacity = '0';
       setTimeout(() => overlay.remove(), 320);
     }
-
-    if (adReady && adsCtrl) {
-      launchAd();
-    }
+    if (adReady && adsCtrl) launchAd();
   }
 
   window.addEventListener('load', () => {
@@ -364,13 +355,11 @@
         adsCtrl.initialize({ pubId: "1006337", appId: "7003" });
       } catch (e) { console.warn('Ads init failed:', e); }
     }
-
     checkInterval = setInterval(updateLogic, 500);
   });
 
   function updateLogic() {
     checkAttempts++;
-    
     const elapsed = Math.floor((Date.now() - phaseStartTime) / 1000);
     const secondsLeft = Math.max(0, PHASE_DURATION - elapsed);
     
@@ -388,9 +377,7 @@
     if (isAvailable && secondsLeft === 0 && !adReady) {
       adReady = true;
       clearInterval(checkInterval);
-      if (gestureDone) {
-        launchAd();
-      }
+      if (gestureDone) launchAd();
       return;
     }
 
@@ -404,8 +391,7 @@
         setTimeout(() => overlay.remove(), 320);
       }
       if (currentPhase === 1) {
-        currentPhase = 2;
-        resetPhase();
+        showPhaseTransitionUI();
       } else {
         unlockDirectly();
       }
@@ -424,6 +410,7 @@
     document.getElementById('success-icon').style.display = 'none';
     document.getElementById('progress-wrap').style.display = 'none';
     document.getElementById('btn-watch').style.display = 'none';
+    document.getElementById('btn-next-phase').style.display = 'none';
     document.getElementById('btn-download').style.display = 'none';
     
     document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - WAITING`;
@@ -440,8 +427,8 @@
     document.getElementById('status-text').innerText   = `PHASE ${currentPhase}/${REQUIRED_ADS} - AD READY`;
     document.getElementById('title').innerText         = `Watch Ad ${currentPhase} of ${REQUIRED_ADS}`;
     document.getElementById('description').innerText   = 'Loading your sponsored video, please wait.';
-
     document.getElementById('progress-wrap').style.display = 'block';
+
     let p = 0;
     const pIv = setInterval(() => { 
       p += 2; 
@@ -478,27 +465,41 @@
 
   function onAdCompleted() {
     adsWatched++;
-    
     if (adsWatched < REQUIRED_ADS) {
-      currentPhase++;
-      document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - PREPARING`;
-      document.getElementById('title').innerText = `Great! One more to go.`;
-      document.getElementById('description').innerText = `Preparing phase ${currentPhase}... Please wait.`;
-      
-      setTimeout(() => {
-        resetPhase();
-      }, 1500);
+      showPhaseTransitionUI();
     } else {
       unlockDirectly();
     }
+  }
+
+  function showPhaseTransitionUI() {
+    document.getElementById('countdown').style.display = 'none';
+    document.getElementById('ad-icon').style.display = 'none';
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('btn-watch').style.display = 'none';
+    document.getElementById('btn-download').style.display = 'none';
+    
+    const nextBtn = document.getElementById('btn-next-phase');
+    nextBtn.style.display = 'flex';
+    nextBtn.disabled = false;
+    
+    document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - COMPLETE`;
+    document.getElementById('title').innerText = `✅ Phase ${currentPhase} Complete!`;
+    document.getElementById('description').innerText = `Great progress! Click below to proceed to the final step and unlock your file.`;
+  }
+
+  function startPhase2() {
+    document.getElementById('btn-next-phase').style.display = 'none';
+    currentPhase = 2;
+    resetPhase();
   }
 
   async function handleWatchAd(phase = currentPhase) {
     const btn = document.getElementById('btn-watch');
     btn.disabled = true;
     document.getElementById('btn-text').innerText = `Loading ad ${phase}...`;
-
     document.getElementById('progress-wrap').style.display = 'block';
+
     let p = 0;
     const pIv = setInterval(() => { p += 2; if (p <= 95) document.getElementById('progress-bar').style.width = p + '%'; }, 200);
 
@@ -522,7 +523,6 @@
 
   function unlockDirectly() {
     adUnlocked = true;
-
     document.getElementById('countdown').style.display    = 'none';
     document.getElementById('ad-icon').style.display      = 'none';
     document.getElementById('success-icon').style.display = 'block';
@@ -537,6 +537,7 @@
     document.getElementById('description').innerText = 'Verification complete. Your file is ready — tap below to download for free.';
 
     document.getElementById('btn-watch').style.display    = 'none';
+    document.getElementById('btn-next-phase').style.display = 'none';
     document.getElementById('progress-wrap').style.display = 'none';
     document.getElementById('btn-download').style.display = 'flex';
   }
