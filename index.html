@@ -2,810 +2,468 @@
 <html lang="en" dir="ltr">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>DataPi — Free Download</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Premium Course Access</title>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://w.tads.me/widget.js"></script>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://w.tads.me/widget.js"></script>
 
-  <style>
-    :root {
-      --bg: #030712;
-      --card-bg: rgba(17, 24, 39, 0.8);
-      --accent: #8b5cf6;
-      --accent-glow: rgba(139, 92, 246, 0.3);
-      --success: #10b981;
-      --text-main: #f9fafb;
-      --text-dim: #9ca3af;
-      --border: rgba(255, 255, 255, 0.1);
-    }
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', -apple-system, sans-serif;
-    }
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-card: #ffffff;
+            --text-main: #111827;
+            --text-muted: #6b7280;
+            --primary: #3b82f6;
+            --success: #10b981;
+            --btn-bg: #e5e7eb;
+            --btn-text: #374151;
+            --item-bg: #f9fafb;
+            --border-color: #e5e7eb;
+        }
 
-    body {
-      background: var(--bg);
-      background-image:
-        radial-gradient(circle at 0% 0%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-        radial-gradient(circle at 100% 100%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
-      color: var(--text-main);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      overflow: hidden;
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
 
-    .container {
-      width: 100%;
-      max-width: 400px;
-      background: var(--card-bg);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid var(--border);
-      border-radius: 32px;
-      padding: 32px 24px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-      text-align: center;
-      position: relative;
-      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-    }
+        body {
+            background: var(--bg-body);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
 
-    @keyframes slideUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            animation: slideUp 0.5s ease-out;
+        }
 
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-    .status-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 6px 14px;
-      border-radius: 99px;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--accent);
-      margin-bottom: 20px;
-      border: 1px solid rgba(139, 92, 246, 0.2);
-    }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
 
-    .timer-circle {
-      position: relative;
-      width: 100px;
-      height: 100px;
-      margin: 0 auto 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        h1 {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
 
-    .timer-text {
-      font-size: 32px;
-      font-weight: 800;
-      color: var(--text-main);
-      text-shadow: 0 0 20px var(--accent-glow);
-    }
+        .progress-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-muted);
+        }
 
-    .icon-display {
-      font-size: 50px;
-      display: none;
-      animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-    }
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
 
-    @keyframes scaleIn {
-      from {
-        transform: scale(0);
-      }
+        /* Task List Styles */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
 
-      to {
-        transform: scale(1);
-      }
-    }
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--item-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
 
-    /* File Info Styles from index15 */
-    .file-info {
-      margin-bottom: 20px;
-    }
+        .task-item.disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
 
-    .file-type-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: .07em;
-      text-transform: uppercase;
-      color: #a78bfa;
-      background: rgba(108, 99, 255, 0.13);
-      border: 1px solid rgba(108, 99, 255, 0.22);
-      border-radius: 7px;
-      padding: 3px 9px;
-      margin-bottom: 8px;
-    }
+        .task-item.completed {
+            border-color: rgba(16, 185, 129, 0.3);
+            background: rgba(16, 185, 129, 0.05);
+        }
 
-    .file-title-text {
-      font-size: 17px;
-      font-weight: 800;
-      letter-spacing: -0.3px;
-      color: var(--text-main);
-      word-break: break-word;
-      margin-bottom: 8px;
-      display: block;
-    }
+        .task-info-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
 
-    .free-tag {
-      font-size: 11px;
-      font-weight: 700;
-      color: #10b981;
-      background: rgba(16, 185, 129, 0.10);
-      border: 1px solid rgba(16, 185, 129, 0.22);
-      border-radius: 99px;
-      padding: 3px 10px;
-      display: inline-block;
-    }
+        .task-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #e0e7ff;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
 
-    h1 {
-      font-size: 24px;
-      font-weight: 800;
-      margin-bottom: 12px;
-      letter-spacing: -0.5px;
-    }
+        .task-item.completed .task-icon {
+            background: #d1fae5;
+            color: var(--success);
+        }
 
-    p {
-      color: var(--text-dim);
-      font-size: 14px;
-      line-height: 1.6;
-      margin-bottom: 24px;
-    }
+        .task-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
 
-    .btn {
-      width: 100%;
-      padding: 18px;
-      border-radius: 20px;
-      border: none;
-      font-size: 16px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
+        .task-reward {
+            font-size: 12px;
+            font-weight: 500;
+            color: #f59e0b;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
 
-    .btn-primary {
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      color: white;
-      box-shadow: 0 10px 20px -5px rgba(109, 40, 217, 0.5);
-    }
+        /* Buttons */
+        .task-btn {
+            background: var(--btn-bg);
+            color: var(--btn-text);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
 
-    .btn-primary:disabled {
-      background: #374151;
-      color: #9ca3af;
-      box-shadow: none;
-      cursor: not-allowed;
-    }
+        .task-btn:not(:disabled):hover {
+            background: #d1d5db;
+        }
 
-    .btn-success {
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: white;
-      box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.5);
-      display: none;
-    }
+        .task-btn.done {
+            background: transparent;
+            color: var(--success);
+            font-size: 15px;
+            pointer-events: none;
+        }
 
-    .btn-secondary {
-      background: linear-gradient(135deg, #6366f1, #4f46e5);
-      color: white;
-      box-shadow: 0 10px 20px -5px rgba(79, 70, 229, 0.5);
-      display: none;
-    }
+        .main-btn {
+            width: 100%;
+            padding: 16px;
+            border-radius: 16px;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
 
-    .btn:active {
-      transform: scale(0.97);
-    }
+        .main-btn.disabled {
+            background: var(--btn-bg);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
 
-    .progress-container {
-      width: 100%;
-      height: 6px;
-      background: rgba(255, 255, 255, 0.05);
-      border-radius: 10px;
-      margin-top: 20px;
-      display: none;
-    }
+        .main-btn.active {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.6);
+            animation: pulse 2s infinite;
+        }
 
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: var(--accent);
-      border-radius: 10px;
-      transition: width 0.3s ease;
-    }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
 
-    .footer-note {
-      margin-top: 24px;
-      font-size: 11px;
-      color: var(--text-dim);
-      opacity: 0.6;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-    }
+        /* === TGB Ad Container Styles === */
+        .tgb-ad-wrapper {
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px dashed var(--border-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
 
-    .pulse-ring {
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      border: 2px solid var(--accent);
-      border-radius: 50%;
-      animation: ripple 2s infinite;
-      opacity: 0;
-    }
+        .tgb-ad-label {
+            font-size: 10px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.7;
+        }
 
-    @keyframes ripple {
-      0% {
-        transform: scale(0.8);
-        opacity: 0.5;
-      }
+        #tads-container-9637 {
+            width: 100%;
+            min-height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
 
-      100% {
-        transform: scale(1.5);
-        opacity: 0;
-      }
-    }
-
-    @keyframes fadeInOverlay {
-      from {
-        opacity: 0
-      }
-
-      to {
-        opacity: 1
-      }
-    }
-
-    @keyframes bounceHand {
-
-      0%,
-      100% {
-        transform: translateY(0)
-      }
-
-      50% {
-        transform: translateY(-8px)
-      }
-    }
-
-    @keyframes pulseCard {
-
-      0%,
-      100% {
-        box-shadow: 0 0 60px rgba(139, 92, 246, .2)
-      }
-
-      50% {
-        box-shadow: 0 0 80px rgba(139, 92, 246, .4)
-      }
-    }
-
-    @keyframes dot1 {
-
-      0%,
-      100% {
-        opacity: .3;
-        transform: scale(.8)
-      }
-
-      20% {
-        opacity: 1;
-        transform: scale(1.2)
-      }
-    }
-
-    @keyframes dot2 {
-
-      0%,
-      100% {
-        opacity: .3;
-        transform: scale(.8)
-      }
-
-      40% {
-        opacity: 1;
-        transform: scale(1.2)
-      }
-    }
-
-    @keyframes dot3 {
-
-      0%,
-      100% {
-        opacity: .3;
-        transform: scale(.8)
-      }
-
-      60% {
-        opacity: 1;
-        transform: scale(1.2)
-      }
-    }
-  </style>
+        /* Prevent layout shift while ad loads */
+        #tads-container-9637:empty {
+            display: none;
+        }
+    </style>
 </head>
 
 <body>
 
-  <div id="tap-overlay" style="
-  position:fixed; inset:0; z-index:9999;
-  display:flex; flex-direction:column; align-items:center; justify-content:center;
-  background:rgba(3,7,18,0.92);
-  backdrop-filter:blur(6px);
-  cursor:pointer;
-  animation:fadeInOverlay .4s ease;
-" onclick="onFirstTap()">
-    <div style="
-    background:rgba(17,24,39,0.9);
-    border:1px solid rgba(139,92,246,0.35);
-    border-radius:28px;
-    padding:36px 32px;
-    text-align:center;
-    max-width:320px;
-    animation:pulseCard 2s ease-in-out infinite;
-  ">
-      <div style="font-size:52px; margin-bottom:16px; animation:bounceHand 1.4s ease-in-out infinite;">👆</div>
-      <h2 style="font-size:20px; font-weight:800; color:#f9fafb; margin-bottom:10px; letter-spacing:-0.4px;">Tap to
-        Continue</h2>
-      <p style="font-size:13px; color:#9ca3af; line-height:1.6; margin:0;">Tap anywhere to unlock your<br>free file
-        download</p>
-      <div style="margin-top:20px; display:flex; align-items:center; justify-content:center; gap:6px;">
-        <span
-          style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot1 1.2s ease-in-out infinite;display:block;"></span>
-        <span
-          style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot2 1.2s ease-in-out infinite;display:block;"></span>
-        <span
-          style="width:6px;height:6px;border-radius:50%;background:#8b5cf6;animation:dot3 1.2s ease-in-out infinite;display:block;"></span>
-      </div>
-    </div>
-  </div>
+    <div class="container">
+        <div class="header-top">
+            <h1>Getting Started</h1>
+            <span class="progress-text" id="progress-text">0/2</span>
+        </div>
+        <p class="subtitle">Complete the tasks below to get your free course link.</p>
 
-  <div class="container" id="main-card">
-    <div class="status-badge" id="status-box">
-      <span id="status-dot" style="width:8px; height:8px; background:var(--accent); border-radius:50%"></span>
-      <span id="status-text">SYSTEM INITIALIZING</span>
-    </div>
+        <div class="task-list">
+            <div class="task-item" id="task1">
+                <div class="task-info-wrapper">
+                    <div class="task-icon" id="icon1">🎬</div>
+                    <div>
+                        <div class="task-title">Watch First Ad</div>
+                        <div class="task-reward">⭐ Required step</div>
+                    </div>
+                </div>
+                <button class="task-btn" id="btn-ad1" onclick="watchAd(1)">Start</button>
+            </div>
 
-    <div class="timer-circle">
-      <div class="pulse-ring" id="pulse-effect"></div>
-      <div class="timer-text" id="countdown">3</div>
-      <div class="icon-display" id="success-icon">📥</div>
-      <div class="icon-display" id="ad-icon">🎬</div>
+            <div class="task-item disabled" id="task2">
+                <div class="task-info-wrapper">
+                    <div class="task-icon" id="icon2">🎬</div>
+                    <div>
+                        <div class="task-title">Watch Second Ad</div>
+                        <div class="task-reward">⭐ Required step</div>
+                    </div>
+                </div>
+                <button class="task-btn" id="btn-ad2" onclick="watchAd(2)" disabled>Start</button>
+            </div>
+        </div>
+
+        <button class="main-btn disabled" id="btn-final" onclick="goToCourse()" disabled>
+            🔒 Complete tasks to unlock
+        </button>
+
+        <div class="tgb-ad-wrapper">
+            <span class="tgb-ad-label">Sponsored</span>
+            <div id="tads-container-9637"></div>
+        </div>
     </div>
 
-    <div class="file-info" id="file-info-block">
-      <div class="file-type-badge" id="type-badge">📁 File</div>
-      <span class="file-title-text" id="file-title">Your File</span>
-      <span class="free-tag" id="file-size-tag">✦ 100% Free</span>
-    </div>
+    <script>
+        // Initialize Telegram WebApp
+        const tg = window.Telegram?.WebApp || null;
+        if (tg) { tg.ready(); tg.expand(); }
 
-    <h1 id="title">Verifying Connection</h1>
-    <p id="description">Checking for available offers...</p>
+        // TADS Configuration
+        const FULLSCREEN_WIDGET_ID = "9607";
+        const TGB_WIDGET_ID = "9637";
+        const AD_TYPE_FULLSCREEN = "fullscreen";
+        const AD_TYPE_TGB = "static";
+        
+        let fullscreenAdController = null;
+        let tgbAdController = null;
 
-    <button class="btn btn-primary" id="btn-watch" onclick="handleWatchAd()" disabled style="display:none;">
-      <span id="btn-text">Watch Ad to Unlock</span>
-    </button>
+        // Task State
+        let currentStep = 1;
+        let isAdPlaying = false;
 
-    <button class="btn btn-secondary" id="btn-next-phase" onclick="startPhase2()">
-      <span>🔄</span> Go to Final Step
-    </button>
-
-    <button class="btn btn-success" id="btn-enroll" onclick="goToDataset()">
-      <span>📥</span> DOWNLOAD FOR FREE
-    </button>
-
-    <div class="progress-container" id="progress-wrap">
-      <div class="progress-fill" id="progress-bar"></div>
-    </div>
-
-    <div class="footer-note">
-      <span>🛡️</span> Powered by DataPi · @DATASCIENCEQ
-    </div>
-  </div>
-
-  <script>
-    const tg = window.Telegram?.WebApp || null;
-    if (tg) { tg.ready(); tg.expand(); }
-
-    // ⚙️ TADS Configuration
-    const WIDGET_ID = "9607";
-    const AD_TYPE = "fullscreen";
-    const IS_DEBUG = false;
-
-    // ⏱️ Timer Settings - 3 seconds max wait
-    const MAX_WAIT_SECONDS = 3;
-    const CHECK_INTERVAL_MS = 300;
-
-    let adController = null;
-    let adUnlocked = false;
-    let adReady = false;
-    let adLoading = false;
-    let gestureDone = false;
-    let checkAttempts = 0;
-    let checkInterval = null;
-    let preloadPromise = null;
-
-    // Multi-Ad System
-    const REQUIRED_ADS = 2;
-    let adsWatched = 0;
-    let currentPhase = 1;
-    let phaseStartTime = null;
-
-    /* ── Decode params & File Info Logic ── */
-    function decodeB64(str) {
-      if (!str) return null;
-      try {
-        const p = str + '=='.slice(0, (4 - str.length % 4) % 4);
-        return atob(p.replace(/-/g, '+').replace(/_/g, '/'));
-      } catch { return null; }
-    }
-
-    const params = new URLSearchParams(window.location.search);
-    const startParam = tg?.initDataUnsafe?.start_param || params.get('startapp') || params.get('tgWebAppStartParam');
-    const _decoded = decodeB64(startParam) || '';
-    const _pipeIdx = _decoded.indexOf('|');
-    const DATASET_URL = _pipeIdx === -1 ? (_decoded || null) : (_decoded.slice(0, _pipeIdx) || null);
-
-    const rawTitle = params.get('title');
-    const PAGE_TITLE = rawTitle ? (decodeB64(rawTitle) || decodeURIComponent(rawTitle)) : null;
-
-    function detectBadge(url) {
-      if (!url) return { emoji: '📁', label: 'File' };
-      const u = url.toLowerCase();
-      if (u.includes('.pdf')) return { emoji: '📕', label: 'PDF Book' };
-      if (u.match(/\.(mp4|mkv|avi|mov|webm)/)) return { emoji: '🎬', label: 'Video' };
-      if (u.match(/\.(mp3|wav|ogg|flac|m4a)/)) return { emoji: '🎧', label: 'Audio' };
-      if (u.match(/\.(zip|rar|7z|tar|gz)/)) return { emoji: '🗜', label: 'Archive' };
-      if (u.match(/\.(csv|xlsx|xls)/)) return { emoji: '📊', label: 'Dataset' };
-      return { emoji: '📁', label: 'File' };
-    }
-
-    function fmtBytes(n) {
-      const units = ['B', 'KB', 'MB', 'GB'];
-      for (const u of units) { if (n < 1024) return n.toFixed(1) + ' ' + u; n /= 1024; }
-      return n.toFixed(1) + ' TB';
-    }
-
-    function populateFileUI() {
-      const badge = detectBadge(DATASET_URL);
-      let titleText = 'Your File';
-      if (PAGE_TITLE) {
-        titleText = PAGE_TITLE;
-      } else if (DATASET_URL) {
-        const parts = DATASET_URL.split('/');
-        titleText = decodeURIComponent(parts[parts.length - 1] || 'Dataset');
-      }
-
-      document.getElementById('type-badge').textContent = badge.emoji + ' ' + badge.label;
-      document.getElementById('file-title').textContent = titleText;
-
-      if (DATASET_URL) {
-        const m = DATASET_URL.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
-        if (m) {
-          fetch(`https://pixeldrain.com/api/file/${m[1]}/info`)
-            .then(r => r.json())
-            .then(d => {
-              if (d.size) {
-                document.getElementById('file-size-tag').textContent = '💾 ' + fmtBytes(d.size) + ' • Free';
-              }
-            }).catch(() => { });
+        // Retrieve Course URL
+        function getCourseUrl() {
+            const code = tg?.initDataUnsafe?.start_param || new URLSearchParams(window.location.search).get('startapp');
+            if (!code) return 'https://www.udemy.com/';
+            try {
+                const decoded = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
+                return decoded.startsWith('http') ? decoded : 'https://www.udemy.com/';
+            } catch (e) { return 'https://www.udemy.com/'; }
         }
-      }
-    }
+        const COURSE_URL = getCourseUrl();
 
-    // 🎯 TADS Callbacks
-    const onShowRewardCallback = (result) => {
-      console.log('✅ Ad completed:', result);
-      onAdCompleted();
-    };
-
-    const onAdsNotFound = () => {
-      console.log('⚠️ No ads found');
-      handleNoAdAvailable();
-    };
-
-    const onAdError = (error) => {
-      console.log('❌ Ad error:', error);
-      handleNoAdAvailable();
-    };
-
-    function onFirstTap() {
-      if (gestureDone) return;
-      gestureDone = true;
-      const overlay = document.getElementById('tap-overlay');
-      if (overlay) {
-        overlay.style.transition = 'opacity .3s ease';
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 320);
-      }
-      if (adReady && !adLoading) launchAd();
-    }
-
-    window.addEventListener('load', () => {
-      populateFileUI();
-      phaseStartTime = Date.now();
-      initializeTads();
-    });
-
-    function initializeTads() {
-      if (window.tads && typeof window.tads.init === 'function') {
-        initAdController();
-      } else {
-        const tadsInterval = setInterval(() => {
-          if (window.tads && typeof window.tads.init === 'function') {
-            clearInterval(tadsInterval);
-            initAdController();
-          }
-        }, 100);
-        setTimeout(() => {
-          clearInterval(tadsInterval);
-          if (!adController) {
-            console.warn('⚠️ TADS fallback mode');
-            startAdCheckLoop();
-          }
-        }, 2000);
-      }
-    }
-
-    function initAdController() {
-      try {
-        adController = window.tads.init({
-          widgetId: WIDGET_ID,
-          type: AD_TYPE,
-          debug: IS_DEBUG,
-          onShowReward: onShowRewardCallback,
-          onAdsNotFound: onAdsNotFound,
-          onError: onAdError
+        // Initialize Ads on Page Load
+        window.addEventListener('load', () => {
+            initFullscreenAd();
+            initTGBAd();
         });
-        console.log('✅ TADS initialized');
-        startAdCheckLoop();
-      } catch (e) {
-        console.warn('❌ TADS init failed:', e);
-        startAdCheckLoop();
-      }
-    }
 
-    // 🔄 Smart Ad Check Loop
-    function startAdCheckLoop() {
-      checkAttempts = 0;
-      checkInterval = setInterval(() => {
-        checkAttempts++;
-        const elapsed = Math.floor((Date.now() - phaseStartTime) / 1000);
-        const secondsLeft = Math.max(0, MAX_WAIT_SECONDS - elapsed);
-
-        if (!adReady && !adLoading) {
-          document.getElementById('countdown').innerText = secondsLeft;
-          document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - CHECKING`;
+        // Initialize Fullscreen Ad
+        function initFullscreenAd() {
+            let checkTads = setInterval(() => {
+                if (window.tads && typeof window.tads.init === 'function') {
+                    clearInterval(checkTads);
+                    fullscreenAdController = window.tads.init({
+                        widgetId: FULLSCREEN_WIDGET_ID,
+                        type: AD_TYPE_FULLSCREEN,
+                        debug: false,
+                        onShowReward: () => handleAdSuccess(),
+                        onAdsNotFound: () => handleAdFallback(),
+                        onError: (err) => {
+                            console.error("Fullscreen Ad Error:", err);
+                            resetButtonState();
+                        }
+                    });
+                }
+            }, 100);
         }
 
-        if (secondsLeft === 0 || adReady) {
-          clearInterval(checkInterval);
-          if (!adReady && !adLoading) tryPreloadAd();
-          return;
+        // Initialize TGB Ad (Static Type)
+        function initTGBAd() {
+            const adsNotFoundCallback = () => {
+                console.log('TGB: No ads found to show');
+                // Hide the container if there is no ad
+                const container = document.getElementById(`tads-container-${TGB_WIDGET_ID}`);
+                if (container) container.style.display = 'none';
+            };
+
+            function initTGBController() {
+                if (!window.tads || typeof window.tads.init !== 'function') return;
+                
+                tgbAdController = window.tads.init({
+                    widgetId: TGB_WIDGET_ID,
+                    type: AD_TYPE_TGB, 
+                    debug: false,
+                    onAdsNotFound: adsNotFoundCallback
+                });
+
+                // Load and show the TGB ad
+                if (tgbAdController && typeof tgbAdController.loadAd === 'function') {
+                    tgbAdController.loadAd()
+                        .then(() => tgbAdController.showAd())
+                        .catch((err) => {
+                            console.log("TGB Ad load error:", err);
+                            adsNotFoundCallback();
+                        });
+                }
+            }
+
+            // Check if tads is ready, otherwise wait
+            if (window.tads && window.tads.init) {
+                initTGBController();
+            } else {
+                let tadsInterval = setInterval(() => {
+                    if (window.tads && window.tads.init) {
+                        clearInterval(tadsInterval);
+                        initTGBController();
+                    }
+                }, 100);
+            }
         }
 
-        if (!adLoading && !preloadPromise) {
-          tryPreloadAd();
+        // Trigger Fullscreen Ad tied to the button
+        function watchAd(stepNumber) {
+            if (stepNumber !== currentStep || isAdPlaying) return;
+
+            isAdPlaying = true;
+            let btn = document.getElementById(`btn-ad${stepNumber}`);
+
+            // Change button state to loading
+            btn.innerText = "⏳ Wait";
+            btn.disabled = true;
+
+            if (fullscreenAdController) {
+                fullscreenAdController.showAd().catch((err) => {
+                    console.error("Failed to display fullscreen ad:", err);
+                    handleAdFallback();
+                });
+            } else {
+                handleAdFallback();
+            }
         }
-      }, CHECK_INTERVAL_MS);
-    }
 
-    function tryPreloadAd() {
-      if (!adController || adLoading) return;
+        // Success Handler (When fullscreen ad finishes)
+        function handleAdSuccess() {
+            isAdPlaying = false;
 
-      adLoading = true;
-      preloadPromise = adController.loadAd()
-        .then(() => {
-          adReady = true;
-          adLoading = false;
-          preloadPromise = null;
+            let currentBtn = document.getElementById(`btn-ad${currentStep}`);
+            let currentItem = document.getElementById(`task${currentStep}`);
+            let currentIcon = document.getElementById(`icon${currentStep}`);
 
-          document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - AD READY`;
-          document.getElementById('countdown').style.display = 'none';
-          document.getElementById('ad-icon').style.display = 'block';
+            currentBtn.innerText = "✅";
+            currentBtn.classList.add('done');
+            currentItem.classList.add('completed');
+            currentIcon.innerText = "✓";
 
-          if (gestureDone) launchAd();
-        })
-        .catch((err) => {
-          adLoading = false;
-          preloadPromise = null;
-        });
-    }
+            document.getElementById('progress-text').innerText = `${currentStep}/2`;
 
-    function handleNoAdAvailable() {
-      clearInterval(checkInterval);
-      adReady = true;
+            currentStep++;
 
-      const overlay = document.getElementById('tap-overlay');
-      if (overlay && !gestureDone) {
-        overlay.style.transition = 'opacity .3s ease';
-        overlay.style.opacity = '0';
-        setTimeout(() => overlay.remove(), 320);
-      }
-
-      if (currentPhase === 1) showPhaseTransitionUI();
-      else unlockDirectly();
-    }
-
-    function resetPhase() {
-      adReady = false;
-      adUnlocked = false;
-      adLoading = false;
-      preloadPromise = null;
-      checkAttempts = 0;
-      phaseStartTime = Date.now();
-
-      document.getElementById('countdown').style.display = 'block';
-      document.getElementById('countdown').innerText = MAX_WAIT_SECONDS;
-      document.getElementById('ad-icon').style.display = 'none';
-      document.getElementById('success-icon').style.display = 'none';
-      document.getElementById('progress-wrap').style.display = 'none';
-      document.getElementById('btn-watch').style.display = 'none';
-      document.getElementById('btn-next-phase').style.display = 'none';
-      document.getElementById('btn-enroll').style.display = 'none';
-
-      document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - CHECKING`;
-      document.getElementById('title').innerText = `Preparing Phase ${currentPhase}...`;
-      document.getElementById('description').innerText = `Checking for ad ${currentPhase} of ${REQUIRED_ADS}...`;
-
-      clearInterval(checkInterval);
-      startAdCheckLoop();
-    }
-
-    function launchAd() {
-      if (adLoading) return;
-
-      document.getElementById('countdown').style.display = 'none';
-      document.getElementById('ad-icon').style.display = 'block';
-      document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - SHOWING`;
-      document.getElementById('title').innerText = `Watch Ad ${currentPhase} of ${REQUIRED_ADS}`;
-      document.getElementById('description').innerText = 'Loading your sponsored video...';
-      document.getElementById('progress-wrap').style.display = 'block';
-
-      let p = 0;
-      const pIv = setInterval(() => {
-        p += 3;
-        if (p <= 95) document.getElementById('progress-bar').style.width = p + '%';
-      }, 150);
-
-      if (adController && typeof adController.showAd === 'function') {
-        adController.showAd()
-          .then(() => {
-            clearInterval(pIv);
-            document.getElementById('progress-bar').style.width = '100%';
-          })
-          .catch(err => {
-            clearInterval(pIv);
-            handleAdError(err);
-          });
-      } else {
-        clearInterval(pIv);
-        onAdCompleted();
-      }
-    }
-
-    function handleAdError(err) {
-      const msg = String(err).toLowerCase();
-      if (msg.includes('skip') || msg.includes('close') || msg.includes('cancel')) {
-        document.getElementById('ad-icon').style.display = 'none';
-        document.getElementById('countdown').style.display = 'block';
-        document.getElementById('countdown').innerText = '!';
-        document.getElementById('status-text').innerText = 'AD SKIPPED';
-        document.getElementById('title').innerText = 'Action Required!';
-        document.getElementById('description').innerText = `Please watch ad ${currentPhase} to proceed.`;
-        document.getElementById('progress-wrap').style.display = 'none';
-
-        const btn = document.getElementById('btn-watch');
-        btn.style.display = 'flex';
-        btn.disabled = false;
-        document.getElementById('btn-text').innerText = `▶ Watch Ad ${currentPhase}`;
-        btn.onclick = () => handleWatchAd(currentPhase);
-      } else {
-        onAdCompleted();
-      }
-    }
-
-    function onAdCompleted() {
-      adsWatched++;
-      if (adsWatched < REQUIRED_ADS) showPhaseTransitionUI();
-      else unlockDirectly();
-    }
-
-    function showPhaseTransitionUI() {
-      document.getElementById('countdown').style.display = 'none';
-      document.getElementById('ad-icon').style.display = 'none';
-      document.getElementById('progress-wrap').style.display = 'none';
-      document.getElementById('btn-watch').style.display = 'none';
-      document.getElementById('btn-enroll').style.display = 'none';
-
-      const nextBtn = document.getElementById('btn-next-phase');
-      nextBtn.style.display = 'flex';
-      nextBtn.disabled = false;
-
-      document.getElementById('status-text').innerText = `PHASE ${currentPhase}/${REQUIRED_ADS} - COMPLETE`;
-      document.getElementById('title').innerText = `✅ Phase ${currentPhase} Complete!`;
-      document.getElementById('description').innerText = `Click below to proceed to the final step.`;
-    }
-
-    function startPhase2() {
-      document.getElementById('btn-next-phase').style.display = 'none';
-      currentPhase = 2;
-      resetPhase();
-    }
-
-    async function handleWatchAd(phase = currentPhase) {
-      const btn = document.getElementById('btn-watch');
-      btn.disabled = true;
-      document.getElementById('btn-text').innerText = `Loading...`;
-      document.getElementById('progress-wrap').style.display = 'block';
-
-      let p = 0;
-      const pIv = setInterval(() => { p += 3; if (p <= 95) document.getElementById('progress-bar').style.width = p + '%'; }, 150);
-
-      try {
-        if (adController) {
-          await adController.loadAd();
-          await adController.showAd();
-        } else {
-          clearInterval(pIv);
-          onAdCompleted();
+            if (currentStep === 2) {
+                let nextBtn = document.getElementById('btn-ad2');
+                let nextItem = document.getElementById('task2');
+                nextItem.classList.remove('disabled');
+                nextBtn.disabled = false;
+            } else if (currentStep > 2) {
+                let finalBtn = document.getElementById('btn-final');
+                finalBtn.classList.remove('disabled');
+                finalBtn.classList.add('active');
+                finalBtn.disabled = false;
+                finalBtn.innerHTML = "🚀 Enter Course Now";
+            }
         }
-      } catch (err) {
-        clearInterval(pIv);
-        handleAdError(err);
-      }
-    }
 
-    function unlockDirectly() {
-      adUnlocked = true;
-      document.getElementById('countdown').style.display = 'none';
-      document.getElementById('ad-icon').style.display = 'none';
-      document.getElementById('success-icon').style.display = 'block';
-      document.getElementById('pulse-effect').style.display = 'none';
+        // Fallback skip if ads are unavailable
+        function handleAdFallback() {
+            console.warn("Using fallback skip due to unavailable ad");
+            setTimeout(() => {
+                handleAdSuccess();
+            }, 1000);
+        }
 
-      document.getElementById('status-text').innerText = 'ACCESS GRANTED';
-      document.getElementById('status-dot').style.background = 'var(--success)';
-      document.getElementById('status-box').style.borderColor = 'var(--success)';
-      document.getElementById('status-box').style.color = 'var(--success)';
+        // Reset button state if ad is closed prematurely
+        function resetButtonState() {
+            isAdPlaying = false;
+            let btn = document.getElementById(`btn-ad${currentStep}`);
+            btn.innerText = "Start";
+            btn.disabled = false;
+        }
 
-      document.getElementById('title').innerText = 'Ready to Download!';
-      document.getElementById('description').innerText = 'Verification complete. Your file is ready to download.';
-
-      document.getElementById('btn-watch').style.display = 'none';
-      document.getElementById('btn-next-phase').style.display = 'none';
-      document.getElementById('progress-wrap').style.display = 'none';
-      document.getElementById('btn-enroll').style.display = 'flex';
-    }
-
-    function goToDataset() {
-      const url = DATASET_URL || 'https://pixeldrain.com';
-      if (tg?.openLink) { tg.openLink(url); setTimeout(() => tg.close(), 600); }
-      else window.location.href = url;
-    }
-  </script>
+        // Open final course link
+        function goToCourse() {
+            if (tg?.openLink) {
+                tg.openLink(COURSE_URL);
+                setTimeout(() => tg.close(), 1000);
+            } else {
+                window.location.href = COURSE_URL;
+            }
+        }
+    </script>
 </body>
-
 </html>
