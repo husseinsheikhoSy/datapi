@@ -14,7 +14,7 @@
         window.TelegramAdsController = new TelegramAdsController();
         window.TelegramAdsController.initialize({
             pubId: "1006337",
-            appId: "7003",  // ✅ إعدادات RichAds
+            appId: "7003",
         });
     </script>
     
@@ -25,27 +25,21 @@
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
 
         :root {
-            /* 🎨 Reddit-inspired Color Scheme */
             --bg-body: #dae0e6;
             --bg-card: #ffffff;
             --text-main: #1c1c1c;
             --text-muted: #7c7c7c;
-            --primary: #ff4500;        /* ✅ Reddit Orange */
+            --primary: #ff4500;
             --primary-hover: #e03d00;
-            --primary-light: #ff6b35;
-            --success: #46d160;         /* ✅ Reddit Green */
+            --success: #46d160;
             --success-hover: #3dc154;
-            --success-dark: #2e7d32;    /* ✅ WhatsApp Green Style */
             --btn-bg: #edeff1;
             --btn-text: #1c1c1c;
-            --btn-hover: #dcdee1;
             --item-bg: #f8f9fa;
             --border-color: #ccc;
             --border-light: #e6e6e6;
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --upvote-color: #ff4500;
-            --link-color: #0079d3;      /* ✅ Reddit Blue */
-            --whatsapp-green: #25D366;  /* ✅ WhatsApp Official Green */
+            --whatsapp-green: #25D366;
             --whatsapp-dark: #128C7E;
         }
 
@@ -78,14 +72,14 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* === WhatsApp Button Styles === */
+        /* === WhatsApp Button Styles - COMPACT === */
         .whatsapp-banner {
-            margin-bottom: 20px;
-            padding: 16px;
+            margin-bottom: 16px;
+            padding: 10px;
             background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark));
-            border-radius: 8px;
+            border-radius: 6px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            box-shadow: 0 2px 8px rgba(37, 211, 102, 0.25);
             animation: slideDown 0.5s ease-out;
         }
 
@@ -98,26 +92,27 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 14px 20px;
+            padding: 10px 16px;
             background: white;
             color: var(--whatsapp-dark);
             border: none;
             border-radius: 99px;
-            font-size: 14px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             text-decoration: none;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+            letter-spacing: 0.3px;
+            transition: all 0.25s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+            line-height: 1.2;
         }
 
         .whatsapp-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
         }
 
         .whatsapp-btn:active {
@@ -125,7 +120,7 @@
         }
 
         .whatsapp-icon {
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .header-top {
@@ -229,7 +224,7 @@
         .task-reward {
             font-size: 11px;
             font-weight: 500;
-            color: var(--upvote-color);
+            color: var(--primary);
             display: flex;
             align-items: center;
             gap: 3px;
@@ -346,14 +341,14 @@
 <body>
 
     <div class="container">
-        <!-- ✅ زر واتساب الأخضر في الأعلى -->
+        <!-- ✅ زر واتساب المدمج -->
         <div class="whatsapp-banner">
             <a href="https://whatsapp.com/channel/0029VaC7Weq29753hpcggW2A" 
                class="whatsapp-btn" 
                target="_blank"
                onclick="joinWhatsappChannel(event)">
                 <span class="whatsapp-icon">📚</span>
-                <span>Join WhatsApp Channel - Download Book</span>
+                <span>Join Channel - Get Book</span>
             </a>
         </div>
 
@@ -364,7 +359,6 @@
         <p class="subtitle">Complete the tasks below to get your free book link.</p>
 
         <div class="task-list">
-            <!-- ✅ الزر الأول: RichAds -->
             <div class="task-item" id="task1">
                 <div class="task-info-wrapper">
                     <div class="task-icon" id="icon1">🎬</div>
@@ -376,7 +370,6 @@
                 <button class="task-btn" id="btn-ad1" onclick="watchAd(1)">Start</button>
             </div>
 
-            <!-- ✅ الزر الثاني: tads.me Fullscreen -->
             <div class="task-item disabled" id="task2">
                 <div class="task-info-wrapper">
                     <div class="task-icon" id="icon2">🎬</div>
@@ -393,7 +386,6 @@
             🔒 Complete tasks to unlock
         </button>
 
-        <!-- ✅ إعلان TGB السفلي -->
         <div class="tgb-ad-wrapper">
             <span class="tgb-ad-label">Sponsored</span>
             <div id="tads-container-9637"></div>
@@ -404,7 +396,6 @@
         const tg = window.Telegram?.WebApp || null;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // ⚙️ إعدادات Tads (للزر الثاني والإعلان السفلي)
         const FULLSCREEN_WIDGET_ID = "9607";
         const TGB_WIDGET_ID = "9637";
         const AD_TYPE_FULLSCREEN = "fullscreen";
@@ -415,7 +406,6 @@
         let currentStep = 1;
         let isAdPlaying = false;
 
-        // رابط الكتاب
         const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/0029VaC7Weq29753hpcggW2A";
 
         function getBookUrl() {
@@ -433,7 +423,6 @@
             initTGBAd();
         });
 
-        // ✅ تهيئة Tads Fullscreen (للزر الثاني فقط)
         function initTadsFullscreen() {
             let checkTads = setInterval(() => {
                 if (window.tads && typeof window.tads.init === 'function') {
@@ -453,7 +442,6 @@
             }, 100);
         }
 
-        // ✅ تهيئة TGB Ad (للقسم السفلي)
         function initTGBAd() {
             const adsNotFoundCallback = () => {
                 console.log('TGB: No ads found to show');
@@ -493,7 +481,6 @@
             }
         }
 
-        // 🎯 الدالة الرئيسية لمشاهدة الإعلان
         function watchAd(stepNumber) {
             if (stepNumber !== currentStep || isAdPlaying) return;
             isAdPlaying = true;
@@ -502,10 +489,8 @@
             btn.disabled = true;
 
             if (stepNumber === 1) {
-                // ✅ الزر الأول: RichAds
                 showRichAds();
             } else if (stepNumber === 2) {
-                // ✅ الزر الثاني: Tads.me Fullscreen
                 if (fullscreenAdController) {
                     fullscreenAdController.showAd().catch((err) => {
                         console.error("Failed to display fullscreen ad:", err);
@@ -517,7 +502,6 @@
             }
         }
 
-        // ✅ دالة عرض إعلان RichAds (للزر الأول)
         function showRichAds() {
             if (window.TelegramAdsController && typeof window.TelegramAdsController.showAd === 'function') {
                 try {
@@ -553,7 +537,6 @@
             }
         }
 
-        // ✅ معالجة نجاح الإعلان (مشتركة)
         function handleAdSuccess() {
             if (!isAdPlaying) return;
             isAdPlaying = false;
@@ -584,7 +567,6 @@
             }
         }
 
-        // ⚠️ آلية احتياطية في حال فشل الإعلان
         function handleAdFallback() {
             console.warn("Using fallback skip due to unavailable ad or error");
             setTimeout(() => {
@@ -592,7 +574,6 @@
             }, 1500);
         }
 
-        // 🔁 إعادة زر الإعلان لحالته عند الخطأ
         function resetButtonState() {
             isAdPlaying = false;
             let btn = document.getElementById(`btn-ad${currentStep}`);
@@ -602,7 +583,6 @@
             }
         }
 
-        // الانضمام لقناة واتساب
         function joinWhatsappChannel(event) {
             if (tg?.openLink) {
                 tg.openLink(WHATSAPP_CHANNEL_URL);
@@ -611,7 +591,6 @@
             }
         }
 
-        // فتح رابط الكتاب
         function goToBook() {
             if (tg?.openLink) {
                 tg.openLink(BOOK_URL);
