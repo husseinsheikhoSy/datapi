@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Premium Course Access</title>
+    <title>Premium Book Access</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
@@ -35,6 +35,7 @@
             --primary-light: #ff6b35;
             --success: #46d160;         /* ✅ Reddit Green */
             --success-hover: #3dc154;
+            --success-dark: #2e7d32;    /* ✅ WhatsApp Green Style */
             --btn-bg: #edeff1;
             --btn-text: #1c1c1c;
             --btn-hover: #dcdee1;
@@ -44,6 +45,8 @@
             --shadow-color: rgba(0, 0, 0, 0.1);
             --upvote-color: #ff4500;
             --link-color: #0079d3;      /* ✅ Reddit Blue */
+            --whatsapp-green: #25D366;  /* ✅ WhatsApp Official Green */
+            --whatsapp-dark: #128C7E;
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -62,7 +65,7 @@
             width: 100%;
             max-width: 400px;
             background: var(--bg-card);
-            border-radius: 8px;           /* ✅ Reddit-style rounded corners */
+            border-radius: 8px;
             padding: 24px;
             box-shadow: 0 1px 4px var(--shadow-color);
             border: 1px solid var(--border-color);
@@ -73,6 +76,56 @@
         @keyframes slideUp {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* === WhatsApp Button Styles === */
+        .whatsapp-banner {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--whatsapp-green), var(--whatsapp-dark));
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .whatsapp-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 14px 20px;
+            background: white;
+            color: var(--whatsapp-dark);
+            border: none;
+            border-radius: 99px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .whatsapp-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .whatsapp-btn:active {
+            transform: translateY(0);
+        }
+
+        .whatsapp-icon {
+            font-size: 20px;
         }
 
         .header-top {
@@ -121,7 +174,7 @@
             justify-content: space-between;
             background: var(--item-bg);
             border: 1px solid var(--border-light);
-            border-radius: 4px;           /* ✅ Reddit-style sharp corners */
+            border-radius: 4px;
             padding: 12px 14px;
             transition: all 0.2s ease;
         }
@@ -186,7 +239,7 @@
             background: var(--primary);
             color: white;
             border: none;
-            border-radius: 99px;          /* ✅ Reddit pill buttons */
+            border-radius: 99px;
             padding: 6px 16px;
             font-size: 12px;
             font-weight: 700;
@@ -293,6 +346,17 @@
 <body>
 
     <div class="container">
+        <!-- ✅ زر واتساب الأخضر في الأعلى -->
+        <div class="whatsapp-banner">
+            <a href="https://whatsapp.com/channel/0029VaC7Weq29753hpcggW2A" 
+               class="whatsapp-btn" 
+               target="_blank"
+               onclick="joinWhatsappChannel(event)">
+                <span class="whatsapp-icon">📚</span>
+                <span>Join WhatsApp Channel - Download Book</span>
+            </a>
+        </div>
+
         <div class="header-top">
             <h1>Getting Started</h1>
             <span class="progress-text" id="progress-text">0/2</span>
@@ -325,7 +389,7 @@
             </div>
         </div>
 
-        <button class="main-btn disabled" id="btn-final" onclick="goToCourse()" disabled>
+        <button class="main-btn disabled" id="btn-final" onclick="goToBook()" disabled>
             🔒 Complete tasks to unlock
         </button>
 
@@ -351,15 +415,18 @@
         let currentStep = 1;
         let isAdPlaying = false;
 
-        function getCourseUrl() {
+        // رابط الكتاب
+        const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/0029VaC7Weq29753hpcggW2A";
+
+        function getBookUrl() {
             const code = tg?.initDataUnsafe?.start_param || new URLSearchParams(window.location.search).get('startapp');
-            if (!code) return 'https://www.udemy.com/';
+            if (!code) return WHATSAPP_CHANNEL_URL;
             try {
                 const decoded = atob(code.replace(/-/g, '+').replace(/_/g, '/'));
-                return decoded.startsWith('http') ? decoded : 'https://www.udemy.com/';
-            } catch (e) { return 'https://www.udemy.com/'; }
+                return decoded.startsWith('http') ? decoded : WHATSAPP_CHANNEL_URL;
+            } catch (e) { return WHATSAPP_CHANNEL_URL; }
         }
-        const COURSE_URL = getCourseUrl();
+        const BOOK_URL = getBookUrl();
 
         window.addEventListener('load', () => {
             initTadsFullscreen();
@@ -535,12 +602,22 @@
             }
         }
 
-        function goToCourse() {
+        // الانضمام لقناة واتساب
+        function joinWhatsappChannel(event) {
             if (tg?.openLink) {
-                tg.openLink(COURSE_URL);
+                tg.openLink(WHATSAPP_CHANNEL_URL);
+            } else {
+                window.open(WHATSAPP_CHANNEL_URL, '_blank');
+            }
+        }
+
+        // فتح رابط الكتاب
+        function goToBook() {
+            if (tg?.openLink) {
+                tg.openLink(BOOK_URL);
                 setTimeout(() => tg.close(), 1000);
             } else {
-                window.location.href = COURSE_URL;
+                window.location.href = BOOK_URL;
             }
         }
     </script>
