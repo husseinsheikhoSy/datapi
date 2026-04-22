@@ -7,30 +7,46 @@
     <title>Premium Course Access</title>
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <!-- ✅ RichAds Script (للزر الأول) -->
+    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
+    <script>
+        window.TelegramAdsController = new TelegramAdsController();
+        window.TelegramAdsController.initialize({
+            pubId: "1006337",
+            appId: "7003",  // ✅ إعدادات RichAds
+        });
+    </script>
+    
+    <!-- ✅ tads.me Script (للزر الثاني + الإعلان السفلي) -->
     <script src="https://w.tads.me/widget.js"></script>
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
 
         :root {
-            --bg-body: #f3f4f6;
+            /* 🎨 Reddit-inspired Color Scheme */
+            --bg-body: #dae0e6;
             --bg-card: #ffffff;
-            --text-main: #111827;
-            --text-muted: #6b7280;
-            --primary: #3b82f6;
-            --success: #10b981;
-            --btn-bg: #e5e7eb;
-            --btn-text: #374151;
-            --item-bg: #f9fafb;
-            --border-color: #e5e7eb;
+            --text-main: #1c1c1c;
+            --text-muted: #7c7c7c;
+            --primary: #ff4500;        /* ✅ Reddit Orange */
+            --primary-hover: #e03d00;
+            --primary-light: #ff6b35;
+            --success: #46d160;         /* ✅ Reddit Green */
+            --success-hover: #3dc154;
+            --btn-bg: #edeff1;
+            --btn-text: #1c1c1c;
+            --btn-hover: #dcdee1;
+            --item-bg: #f8f9fa;
+            --border-color: #ccc;
+            --border-light: #e6e6e6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --upvote-color: #ff4500;
+            --link-color: #0079d3;      /* ✅ Reddit Blue */
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
             background: var(--bg-body);
@@ -46,9 +62,10 @@
             width: 100%;
             max-width: 400px;
             background: var(--bg-card);
-            border-radius: 24px;
+            border-radius: 8px;           /* ✅ Reddit-style rounded corners */
             padding: 24px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 4px var(--shadow-color);
+            border: 1px solid var(--border-color);
             position: relative;
             animation: slideUp 0.5s ease-out;
         }
@@ -63,33 +80,38 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--border-light);
         }
 
         h1 {
-            font-size: 22px;
-            font-weight: 800;
+            font-size: 20px;
+            font-weight: 700;
             color: var(--text-main);
-            letter-spacing: -0.5px;
+            letter-spacing: -0.3px;
         }
 
         .progress-text {
-            font-size: 16px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text-muted);
+            background: var(--btn-bg);
+            padding: 4px 10px;
+            border-radius: 16px;
+            border: 1px solid var(--border-light);
         }
 
         p.subtitle {
             color: var(--text-muted);
             font-size: 14px;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             line-height: 1.5;
         }
 
-        /* Task List Styles */
         .task-list {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             margin-bottom: 24px;
         }
 
@@ -98,10 +120,14 @@
             align-items: center;
             justify-content: space-between;
             background: var(--item-bg);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 12px 16px;
-            transition: all 0.3s ease;
+            border: 1px solid var(--border-light);
+            border-radius: 4px;           /* ✅ Reddit-style sharp corners */
+            padding: 12px 14px;
+            transition: all 0.2s ease;
+        }
+
+        .task-item:hover {
+            border-color: var(--primary);
         }
 
         .task-item.disabled {
@@ -110,8 +136,8 @@
         }
 
         .task-item.completed {
-            border-color: rgba(16, 185, 129, 0.3);
-            background: rgba(16, 185, 129, 0.05);
+            border-color: var(--success);
+            background: rgba(70, 209, 96, 0.08);
         }
 
         .task-info-wrapper {
@@ -121,102 +147,118 @@
         }
 
         .task-icon {
-            width: 40px;
-            height: 40px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            background: #e0e7ff;
+            background: var(--btn-bg);
             color: var(--primary);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
+            border: 1px solid var(--border-light);
         }
 
         .task-item.completed .task-icon {
-            background: #d1fae5;
-            color: var(--success);
+            background: var(--success);
+            color: white;
+            border-color: var(--success-hover);
         }
 
         .task-title {
-            font-size: 15px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 600;
             color: var(--text-main);
-            margin-bottom: 4px;
+            margin-bottom: 3px;
         }
 
         .task-reward {
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
-            color: #f59e0b;
+            color: var(--upvote-color);
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
-        /* Buttons */
         .task-btn {
-            background: var(--btn-bg);
-            color: var(--btn-text);
+            background: var(--primary);
+            color: white;
             border: none;
-            border-radius: 10px;
-            padding: 8px 16px;
-            font-size: 14px;
+            border-radius: 99px;          /* ✅ Reddit pill buttons */
+            padding: 6px 16px;
+            font-size: 12px;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
         .task-btn:not(:disabled):hover {
-            background: #d1d5db;
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .task-btn:active {
+            transform: translateY(0);
         }
 
         .task-btn.done {
             background: transparent;
             color: var(--success);
-            font-size: 15px;
+            font-size: 14px;
             pointer-events: none;
+            border: 2px solid var(--success);
+            border-radius: 99px;
         }
 
         .main-btn {
             width: 100%;
-            padding: 16px;
-            border-radius: 16px;
+            padding: 12px;
+            border-radius: 99px;
             border: none;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .main-btn.disabled {
             background: var(--btn-bg);
-            color: var(--text-muted);
+            color: var(--btn-text);
             cursor: not-allowed;
+            border: 1px solid var(--border-light);
         }
 
         .main-btn.active {
-            background: var(--success);
+            background: var(--primary);
             color: white;
-            box-shadow: 0 8px 20px -6px rgba(16, 185, 129, 0.6);
+            box-shadow: 0 4px 12px rgba(255, 69, 0, 0.3);
             animation: pulse 2s infinite;
         }
 
-        @keyframes pulse {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        .main-btn.active:hover {
+            background: var(--primary-hover);
         }
 
-        /* === TGB Ad Container Styles === */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(255, 69, 0, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(255, 69, 0, 0); }
+        }
+
         .tgb-ad-wrapper {
-            margin-top: 24px;
-            padding-top: 20px;
-            border-top: 1px dashed var(--border-color);
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border-light);
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -228,7 +270,10 @@
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 0.5px;
-            opacity: 0.7;
+            opacity: 0.8;
+            background: var(--btn-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
         }
 
         #tads-container-9637 {
@@ -239,7 +284,6 @@
             align-items: center;
         }
 
-        /* Prevent layout shift while ad loads */
         #tads-container-9637:empty {
             display: none;
         }
@@ -256,23 +300,25 @@
         <p class="subtitle">Complete the tasks below to get your free course link.</p>
 
         <div class="task-list">
+            <!-- ✅ الزر الأول: RichAds -->
             <div class="task-item" id="task1">
                 <div class="task-info-wrapper">
                     <div class="task-icon" id="icon1">🎬</div>
                     <div>
-                        <div class="task-title">Watch First Ad</div>
-                        <div class="task-reward">⭐ Required step</div>
+                        <div class="task-title">Watch First Ad (RichAds)</div>
+                        <div class="task-reward">▲ Required step</div>
                     </div>
                 </div>
                 <button class="task-btn" id="btn-ad1" onclick="watchAd(1)">Start</button>
             </div>
 
+            <!-- ✅ الزر الثاني: tads.me Fullscreen -->
             <div class="task-item disabled" id="task2">
                 <div class="task-info-wrapper">
                     <div class="task-icon" id="icon2">🎬</div>
                     <div>
-                        <div class="task-title">Watch Second Ad</div>
-                        <div class="task-reward">⭐ Required step</div>
+                        <div class="task-title">Watch Second Ad (Tads)</div>
+                        <div class="task-reward">▲ Required step</div>
                     </div>
                 </div>
                 <button class="task-btn" id="btn-ad2" onclick="watchAd(2)" disabled>Start</button>
@@ -283,6 +329,7 @@
             🔒 Complete tasks to unlock
         </button>
 
+        <!-- ✅ إعلان TGB السفلي -->
         <div class="tgb-ad-wrapper">
             <span class="tgb-ad-label">Sponsored</span>
             <div id="tads-container-9637"></div>
@@ -290,11 +337,10 @@
     </div>
 
     <script>
-        // Initialize Telegram WebApp
         const tg = window.Telegram?.WebApp || null;
         if (tg) { tg.ready(); tg.expand(); }
 
-        // TADS Configuration
+        // ⚙️ إعدادات Tads (للزر الثاني والإعلان السفلي)
         const FULLSCREEN_WIDGET_ID = "9607";
         const TGB_WIDGET_ID = "9637";
         const AD_TYPE_FULLSCREEN = "fullscreen";
@@ -302,12 +348,9 @@
         
         let fullscreenAdController = null;
         let tgbAdController = null;
-
-        // Task State
         let currentStep = 1;
         let isAdPlaying = false;
 
-        // Retrieve Course URL
         function getCourseUrl() {
             const code = tg?.initDataUnsafe?.start_param || new URLSearchParams(window.location.search).get('startapp');
             if (!code) return 'https://www.udemy.com/';
@@ -318,14 +361,13 @@
         }
         const COURSE_URL = getCourseUrl();
 
-        // Initialize Ads on Page Load
         window.addEventListener('load', () => {
-            initFullscreenAd();
+            initTadsFullscreen();
             initTGBAd();
         });
 
-        // Initialize Fullscreen Ad
-        function initFullscreenAd() {
+        // ✅ تهيئة Tads Fullscreen (للزر الثاني فقط)
+        function initTadsFullscreen() {
             let checkTads = setInterval(() => {
                 if (window.tads && typeof window.tads.init === 'function') {
                     clearInterval(checkTads);
@@ -336,7 +378,7 @@
                         onShowReward: () => handleAdSuccess(),
                         onAdsNotFound: () => handleAdFallback(),
                         onError: (err) => {
-                            console.error("Fullscreen Ad Error:", err);
+                            console.error("Tads Fullscreen Error:", err);
                             resetButtonState();
                         }
                     });
@@ -344,11 +386,10 @@
             }, 100);
         }
 
-        // Initialize TGB Ad (Static Type)
+        // ✅ تهيئة TGB Ad (للقسم السفلي)
         function initTGBAd() {
             const adsNotFoundCallback = () => {
                 console.log('TGB: No ads found to show');
-                // Hide the container if there is no ad
                 const container = document.getElementById(`tads-container-${TGB_WIDGET_ID}`);
                 if (container) container.style.display = 'none';
             };
@@ -358,12 +399,11 @@
                 
                 tgbAdController = window.tads.init({
                     widgetId: TGB_WIDGET_ID,
-                    type: AD_TYPE_TGB, 
+                    type: AD_TYPE_TGB,
                     debug: false,
                     onAdsNotFound: adsNotFoundCallback
                 });
 
-                // Load and show the TGB ad
                 if (tgbAdController && typeof tgbAdController.loadAd === 'function') {
                     tgbAdController.loadAd()
                         .then(() => tgbAdController.showAd())
@@ -374,7 +414,6 @@
                 }
             }
 
-            // Check if tads is ready, otherwise wait
             if (window.tads && window.tads.init) {
                 initTGBController();
             } else {
@@ -387,42 +426,81 @@
             }
         }
 
-        // Trigger Fullscreen Ad tied to the button
+        // 🎯 الدالة الرئيسية لمشاهدة الإعلان
         function watchAd(stepNumber) {
             if (stepNumber !== currentStep || isAdPlaying) return;
-
             isAdPlaying = true;
             let btn = document.getElementById(`btn-ad${stepNumber}`);
-
-            // Change button state to loading
             btn.innerText = "⏳ Wait";
             btn.disabled = true;
 
-            if (fullscreenAdController) {
-                fullscreenAdController.showAd().catch((err) => {
-                    console.error("Failed to display fullscreen ad:", err);
+            if (stepNumber === 1) {
+                // ✅ الزر الأول: RichAds
+                showRichAds();
+            } else if (stepNumber === 2) {
+                // ✅ الزر الثاني: Tads.me Fullscreen
+                if (fullscreenAdController) {
+                    fullscreenAdController.showAd().catch((err) => {
+                        console.error("Failed to display fullscreen ad:", err);
+                        handleAdFallback();
+                    });
+                } else {
                     handleAdFallback();
-                });
+                }
+            }
+        }
+
+        // ✅ دالة عرض إعلان RichAds (للزر الأول)
+        function showRichAds() {
+            if (window.TelegramAdsController && typeof window.TelegramAdsController.showAd === 'function') {
+                try {
+                    window.TelegramAdsController.showAd({
+                        onAdWatched: function() {
+                            console.log("RichAds: Ad watched successfully");
+                            handleAdSuccess();
+                        },
+                        onReward: function() {
+                            console.log("RichAds: Reward granted");
+                            handleAdSuccess();
+                        },
+                        onError: function(err) {
+                            console.error("RichAds Error:", err);
+                            handleAdFallback(); 
+                        },
+                        onClose: function() {
+                            setTimeout(() => {
+                                if (isAdPlaying) {
+                                    console.warn("RichAds: Ad closed without reward callback");
+                                    resetButtonState();
+                                }
+                            }, 1000);
+                        }
+                    });
+                } catch (e) {
+                    console.error("RichAds initialization error:", e);
+                    handleAdFallback();
+                }
             } else {
+                console.warn("RichAds controller not ready, using fallback");
                 handleAdFallback();
             }
         }
 
-        // Success Handler (When fullscreen ad finishes)
+        // ✅ معالجة نجاح الإعلان (مشتركة)
         function handleAdSuccess() {
+            if (!isAdPlaying) return;
             isAdPlaying = false;
-
+            
             let currentBtn = document.getElementById(`btn-ad${currentStep}`);
             let currentItem = document.getElementById(`task${currentStep}`);
             let currentIcon = document.getElementById(`icon${currentStep}`);
 
-            currentBtn.innerText = "✅";
+            currentBtn.innerText = "✓";
             currentBtn.classList.add('done');
             currentItem.classList.add('completed');
             currentIcon.innerText = "✓";
 
             document.getElementById('progress-text').innerText = `${currentStep}/2`;
-
             currentStep++;
 
             if (currentStep === 2) {
@@ -439,23 +517,24 @@
             }
         }
 
-        // Fallback skip if ads are unavailable
+        // ⚠️ آلية احتياطية في حال فشل الإعلان
         function handleAdFallback() {
-            console.warn("Using fallback skip due to unavailable ad");
+            console.warn("Using fallback skip due to unavailable ad or error");
             setTimeout(() => {
                 handleAdSuccess();
-            }, 1000);
+            }, 1500);
         }
 
-        // Reset button state if ad is closed prematurely
+        // 🔁 إعادة زر الإعلان لحالته عند الخطأ
         function resetButtonState() {
             isAdPlaying = false;
             let btn = document.getElementById(`btn-ad${currentStep}`);
-            btn.innerText = "Start";
-            btn.disabled = false;
+            if (btn) {
+                btn.innerText = "Start";
+                btn.disabled = false;
+            }
         }
 
-        // Open final course link
         function goToCourse() {
             if (tg?.openLink) {
                 tg.openLink(COURSE_URL);
