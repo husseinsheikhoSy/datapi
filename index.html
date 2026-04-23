@@ -8,14 +8,8 @@
 
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     
-    <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script>
-    <script>
-        window.TelegramAdsController = new TelegramAdsController();
-        window.TelegramAdsController.initialize({
-            pubId: "1006337",
-            appId: "7003",
-        });
-    </script>
+    <!-- ✅ تم حذف RichAds -->
+    <!-- <script src="https://richinfo.co/richpartners/telegram/js/tg-ob.js"></script> -->
     
     <script src="https://w.tads.me/widget.js"></script>
 
@@ -354,12 +348,13 @@
         <p class="subtitle">Complete the tasks below to get your free book link.</p>
 
         <div class="task-list">
+            <!-- ✅ المهمة الأولى: HilltopAds Popup -->
             <div class="task-item" id="task1">
                 <div class="task-info-wrapper">
                     <div class="task-icon" id="icon1">🎬</div>
                     <div>
-                        <div class="task-title">Watch First Ad (RichAds)</div>
-                        <div class="task-reward">▲ Required step</div>
+                        <div class="task-title">Watch First Ad (Popup)</div>
+                        <div class="task-reward">⭐ Required step</div>
                     </div>
                 </div>
                 <button class="task-btn" id="btn-ad1" onclick="watchAd(1)">Start</button>
@@ -370,7 +365,7 @@
                     <div class="task-icon" id="icon2">🎬</div>
                     <div>
                         <div class="task-title">Watch Second Ad (Tads)</div>
-                        <div class="task-reward">▲ Required step</div>
+                        <div class="task-reward">⭐ Required step</div>
                     </div>
                 </div>
                 <button class="task-btn" id="btn-ad2" onclick="watchAd(2)" disabled>Start</button>
@@ -391,15 +386,17 @@
         const tg = window.Telegram?.WebApp || null;
         if (tg) { tg.ready(); tg.expand(); }
 
-        const FULLSCREEN_WIDGET_ID = "9607";
+        // ✅ HilltopAds Direct Link
+        const HILLTOPADS_LINK = "https://fluffy-machine.com/hy0AJ8";
+        
         const TGB_WIDGET_ID = "9637";
-        const AD_TYPE_FULLSCREEN = "fullscreen";
         const AD_TYPE_TGB = "static";
         
         let fullscreenAdController = null;
         let tgbAdController = null;
         let currentStep = 1;
         let isAdPlaying = false;
+        let hilltopPopup = null;
 
         const WHATSAPP_CHANNEL_URL = "https://whatsapp.com/channel/0029VaC7Weq29753hpcggW2A";
 
@@ -414,28 +411,10 @@
         const BOOK_URL = getBookUrl();
 
         window.addEventListener('load', () => {
-            initTadsFullscreen();
             initTGBAd();
         });
 
-        function initTadsFullscreen() {
-            let checkTads = setInterval(() => {
-                if (window.tads && typeof window.tads.init === 'function') {
-                    clearInterval(checkTads);
-                    fullscreenAdController = window.tads.init({
-                        widgetId: FULLSCREEN_WIDGET_ID,
-                        type: AD_TYPE_FULLSCREEN,
-                        debug: false,
-                        onShowReward: () => handleAdSuccess(),
-                        onAdsNotFound: () => handleAdFallback(),
-                        onError: (err) => {
-                            console.error("Tads Fullscreen Error:", err);
-                            resetButtonState();
-                        }
-                    });
-                }
-            }, 100);
-        }
+        // ✅ تم حذف initTadsFullscreen() الخاصة بـ RichAds
 
         function initTGBAd() {
             const adsNotFoundCallback = () => {
@@ -484,7 +463,8 @@
             btn.disabled = true;
 
             if (stepNumber === 1) {
-                showRichAds();
+                // ✅ فتح HilltopAds كنافذة منبثقة
+                openHilltopAdsPopup();
             } else if (stepNumber === 2) {
                 if (fullscreenAdController) {
                     fullscreenAdController.showAd().catch((err) => {
@@ -497,39 +477,49 @@
             }
         }
 
-        function showRichAds() {
-            if (window.TelegramAdsController && typeof window.TelegramAdsController.showAd === 'function') {
-                try {
-                    window.TelegramAdsController.showAd({
-                        onAdWatched: function() {
-                            console.log("RichAds: Ad watched successfully");
-                            handleAdSuccess();
-                        },
-                        onReward: function() {
-                            console.log("RichAds: Reward granted");
-                            handleAdSuccess();
-                        },
-                        onError: function(err) {
-                            console.error("RichAds Error:", err);
-                            handleAdFallback(); 
-                        },
-                        onClose: function() {
-                            setTimeout(() => {
-                                if (isAdPlaying) {
-                                    console.warn("RichAds: Ad closed without reward callback");
-                                    resetButtonState();
-                                }
-                            }, 1000);
-                        }
-                    });
-                } catch (e) {
-                    console.error("RichAds initialization error:", e);
-                    handleAdFallback();
+        // ✅ دالة جديدة لفتح HilltopAds Popup
+        function openHilltopAdsPopup() {
+            try {
+                // فتح النافذة المنبثقة
+                hilltopPopup = window.open(HILLTOPADS_LINK, '_blank', 'width=400,height=600');
+                
+                // التحقق مما إذا تم حظر النافذة المنبثقة
+                if (!hilltopPopup || hilltopPopup.closed || typeof hilltopPopup.closed === 'undefined') {
+                    console.warn('Popup blocked, using fallback');
+                    handlePopupFallback();
+                    return;
                 }
-            } else {
-                console.warn("RichAds controller not ready, using fallback");
-                handleAdFallback();
+
+                // مراقبة إغلاق النافذة لتفعيل الخطوة التالية
+                const checkClosed = setInterval(() => {
+                    if (hilltopPopup && hilltopPopup.closed) {
+                        clearInterval(checkClosed);
+                        console.log('HilltopAds popup closed');
+                        handleAdSuccess();
+                    }
+                }, 1000);
+
+                // فاصل زمني احتياطي في حال لم يتم اكتشاف الإغلاق
+                setTimeout(() => {
+                    if (isAdPlaying && currentStep === 1) {
+                        console.log('HilltopAds: Timeout fallback');
+                        handleAdSuccess();
+                    }
+                }, 15000);
+
+            } catch (e) {
+                console.error('Error opening HilltopAds popup:', e);
+                handlePopupFallback();
             }
+        }
+
+        function handlePopupFallback() {
+            // فallback في حال فشل فتح النافذة
+            setTimeout(() => {
+                if (isAdPlaying && currentStep === 1) {
+                    handleAdSuccess();
+                }
+            }, 3000);
         }
 
         function handleAdSuccess() {
@@ -578,10 +568,8 @@
             }
         }
 
-        // ✅ تم الإصلاح: منع فتح نافذتين
         function joinWhatsappChannel(event) {
-            event.preventDefault(); // منع السلوك الافتراضي للرابط
-            
+            event.preventDefault();
             if (tg?.openLink) {
                 tg.openLink(WHATSAPP_CHANNEL_URL);
             } else {
