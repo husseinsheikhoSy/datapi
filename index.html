@@ -408,14 +408,7 @@
     try {
       const b64     = param.replace(/-/g,'+').replace(/_/g,'/');
       const decoded = decodeURIComponent(escape(atob(b64)));
-      if (!decoded.startsWith('http')) return 'https://pixeldrain.com/';
-
-      // تحويل رابط صفحة العرض /u/ID إلى رابط التحميل المباشر /api/file/ID
-      const viewMatch = decoded.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
-      if (viewMatch) {
-        return 'https://pixeldrain.com/api/file/' + viewMatch[1] + '?download';
-      }
-      return decoded;
+      return decoded.startsWith('http') ? decoded : 'https://pixeldrain.com/';
     } catch(e) { return 'https://pixeldrain.com/'; }
   }
 
@@ -628,11 +621,20 @@
   // ── Download ─────────────────────────────────────────────────
   function downloadNow() {
     if (!step1Done || !step2Done) return;
-    // فتح الرابط في المتصفح الخارجي دائماً لتجنب خطأ hotlink من داخل التطبيق المصغر
-    if (tg?.openLink) {
+    // استخدام tg.openLink مع try_instant_view: false يفتح في المتصفح الخارجي
+    // وليس داخل Webview تيليغرام — هذا يحل مشكلة hotlink وعرض صفحة pixeldrain
+    if (tg && tg.openLink) {
       tg.openLink(FILE_URL, { try_instant_view: false });
+    } else if (tg && tg.openTelegramLink) {
+      tg.openTelegramLink(FILE_URL);
     } else {
-      window.open(FILE_URL, '_blank');
+      const a = document.createElement('a');
+      a.href = FILE_URL;
+      a.target = '_blank';
+      a.rel = 'noopener noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
     }
   }
   document.getElementById('btn-download').addEventListener('click', downloadNow);
