@@ -275,6 +275,40 @@
     #tads-container-9637 { width:100%; min-height:80px; display:flex; align-items:center; justify-content:center; }
     #tads-container-9637:empty { display:none; }
 
+    /* ── Link box ── */
+    .link-box {
+      display: none;
+      margin-top: 14px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      animation: fadeIn .4s ease;
+    }
+    .link-box.visible { display: block; }
+    .link-box-label {
+      font-size: 11px; font-weight: 700; color: var(--text-muted);
+      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px;
+    }
+    .link-row {
+      display: flex; align-items: center; gap: 8px;
+    }
+    .link-text {
+      flex: 1; font-size: 12px; font-weight: 700; color: var(--brand-red);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      background: #fde6e4; border-radius: 7px; padding: 7px 10px;
+      cursor: text; user-select: all;
+    }
+    .copy-btn {
+      background: var(--brand-red); color: #fff; border: none;
+      border-radius: 8px; padding: 8px 14px;
+      font-size: 12px; font-weight: 800; cursor: pointer;
+      flex-shrink: 0; transition: background .2s, transform .1s;
+      white-space: nowrap;
+    }
+    .copy-btn:active { transform: scale(.95); }
+    .copy-btn.copied { background: var(--step-done-text); }
+
     @media (max-width:380px) {
       .card { padding:16px 14px; }
       .step-btn { padding:7px 11px; font-size:12px; }
@@ -373,6 +407,15 @@
 
     <div class="success-msg" id="success-msg">
       🎉 You're all set! Click above to download.
+    </div>
+
+    <!-- Link box -->
+    <div class="link-box" id="link-box">
+      <div class="link-box-label">🔗 Direct Download Link</div>
+      <div class="link-row">
+        <span class="link-text" id="link-display"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+      </div>
     </div>
 
   </div>
@@ -616,6 +659,35 @@
     btn.className = 'cta-btn unlocked';
     btn.innerHTML = '📥 Download Now';
     document.getElementById('success-msg').classList.add('visible');
+
+    // إظهار رابط التحميل مع زر النسخ
+    const directUrl = getDirectDownloadUrl(FILE_URL);
+    document.getElementById('link-display').textContent = directUrl;
+    document.getElementById('link-box').classList.add('visible');
+  }
+
+  function copyLink() {
+    const directUrl = getDirectDownloadUrl(FILE_URL);
+    const btn = document.getElementById('copy-btn');
+    navigator.clipboard.writeText(directUrl).then(() => {
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copy';
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      // fallback للأجهزة التي لا تدعم clipboard API
+      const ta = document.createElement('textarea');
+      ta.value = directUrl;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select(); document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✓ Copied!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+    });
   }
 
   // ── Download ─────────────────────────────────────────────────
