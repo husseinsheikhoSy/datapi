@@ -422,7 +422,7 @@
     if (img) {
       const thumb = document.getElementById('file-thumb');
       const decoded = decodeURIComponent(img);
-      thumb.innerHTML = `<img src="${decoded}" alt="cover"
+      thumb.innerHTML = `<img src="${decoded}" alt="cover" referrerpolicy="no-referrer"
         onerror="this.parentElement.innerHTML='📦'" />`;
     }
     if (cat)  document.getElementById('file-cat').textContent = decodeURIComponent(cat);
