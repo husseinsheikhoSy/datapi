@@ -699,13 +699,11 @@
 
   function downloadNow() {
     if (!step1Done || !step2Done) return;
-    const directUrl = getDirectDownloadUrl(FILE_URL);
     if (tg && tg.openLink) {
-      tg.openLink(directUrl, { try_instant_view: false });
+      tg.openLink(FILE_URL, { try_instant_view: false });
     } else {
       const a = document.createElement('a');
-      a.href = directUrl;
-      a.download = '';
+      a.href = FILE_URL;
       a.target = '_blank';
       document.body.appendChild(a);
       a.click();
