@@ -619,19 +619,23 @@
   }
 
   // ── Download ─────────────────────────────────────────────────
+  function getDirectDownloadUrl(url) {
+    // تحويل https://pixeldrain.com/u/ID إلى https://pixeldrain.com/api/file/ID
+    const match = url.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
+    if (match) return 'https://pixeldrain.com/api/file/' + match[1];
+    return url;
+  }
+
   function downloadNow() {
     if (!step1Done || !step2Done) return;
-    // استخدام tg.openLink مع try_instant_view: false يفتح في المتصفح الخارجي
-    // وليس داخل Webview تيليغرام — هذا يحل مشكلة hotlink وعرض صفحة pixeldrain
+    const directUrl = getDirectDownloadUrl(FILE_URL);
     if (tg && tg.openLink) {
-      tg.openLink(FILE_URL, { try_instant_view: false });
-    } else if (tg && tg.openTelegramLink) {
-      tg.openTelegramLink(FILE_URL);
+      tg.openLink(directUrl, { try_instant_view: false });
     } else {
       const a = document.createElement('a');
-      a.href = FILE_URL;
+      a.href = directUrl;
+      a.download = '';
       a.target = '_blank';
-      a.rel = 'noopener noreferrer';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
