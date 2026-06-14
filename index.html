@@ -660,16 +660,15 @@
     btn.innerHTML = '📥 Download Now';
     document.getElementById('success-msg').classList.add('visible');
 
-    // إظهار رابط التحميل مع زر النسخ
-    const directUrl = getDirectDownloadUrl(FILE_URL);
-    document.getElementById('link-display').textContent = directUrl;
+    // عرض الرابط الأصلي /u/ في الصندوق للمستخدم
+    document.getElementById('link-display').textContent = FILE_URL;
     document.getElementById('link-box').classList.add('visible');
   }
 
   function copyLink() {
-    const directUrl = getDirectDownloadUrl(FILE_URL);
+    // نسخ الرابط الأصلي /u/ وليس رابط API
     const btn = document.getElementById('copy-btn');
-    navigator.clipboard.writeText(directUrl).then(() => {
+    navigator.clipboard.writeText(FILE_URL).then(() => {
       btn.textContent = '✓ Copied!';
       btn.classList.add('copied');
       setTimeout(() => {
@@ -679,7 +678,7 @@
     }).catch(() => {
       // fallback للأجهزة التي لا تدعم clipboard API
       const ta = document.createElement('textarea');
-      ta.value = directUrl;
+      ta.value = FILE_URL;
       ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta);
       ta.select(); document.execCommand('copy');
