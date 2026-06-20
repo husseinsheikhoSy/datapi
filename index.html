@@ -30,60 +30,97 @@
 
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-    body {
+    html, body {
       font-family: 'Mulish', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 18px 12px;
-      overflow-x: hidden;
+      padding: 8px;
     }
 
-    /* ── App shell ──
-       Keeps top-bar, card and banner visually unified as one
-       consistent "app" on every screen size — phone, tablet, desktop. */
+    /* ── App shell ── */
     .app-shell {
       width: 100%;
-      max-width: 440px;
+      max-width: 420px;
+      max-height: 100vh;
       margin: 0 auto;
       background: var(--bg);
-      border-radius: 20px;
+      border-radius: 16px;
       overflow: hidden;
       box-shadow: 0 12px 44px rgba(213,43,30,.16);
+      display: flex;
+      flex-direction: column;
     }
+
     @media (max-width: 480px) {
       body { padding: 0; justify-content: flex-start; }
-      .app-shell { border-radius: 0; box-shadow: none; max-width: 100%; }
+      .app-shell {
+        border-radius: 0;
+        box-shadow: none;
+        max-width: 100%;
+        max-height: 100vh;
+        height: 100vh;
+      }
     }
 
     /* ── Top bar ── */
     .top-bar {
       width: 100%;
       background: var(--brand-red);
-      padding: 14px 20px 12px;
-      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px 9px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
     }
     .logo-u {
-      width: 32px; height: 32px; border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; font-weight: 900; color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--brand-red);
       flex-shrink: 0;
     }
     .logo-text {
-      font-size: 14px; font-weight: 800; color: #fff;
-      flex: 1; min-width: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .badge-free {
       margin-left: auto;
-      background: #ffffff; color: var(--brand-red);
-      font-size: 11px; font-weight: 800;
-      padding: 4px 10px; border-radius: 20px;
+      background: #ffffff;
+      color: var(--brand-red);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
+    }
+
+    /* ── Scrollable content area ── */
+    .scroll-area {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
     }
 
     /* ── Loading skeleton ── */
@@ -92,23 +129,22 @@
       width: 100%;
       margin: 0;
       background: var(--card);
-      border-radius: 0;
-      box-shadow: none;
-      padding: 22px 20px;
+      padding: 16px 16px;
     }
     .skeleton.visible { display: block; }
     .skel-line {
       background: linear-gradient(90deg, #f0dedd 25%, #faf3f2 50%, #f0dedd 75%);
       background-size: 200% 100%;
-      border-radius: 6px; margin-bottom: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
       animation: shimmer 1.4s infinite;
     }
     @keyframes shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-    .skel-thumb { width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0; }
-    .skel-row { display: flex; gap: 12px; margin-bottom: 18px; }
+    .skel-thumb { width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0; }
+    .skel-row { display: flex; gap: 10px; margin-bottom: 14px; }
     .skel-lines { flex: 1; }
 
     /* ── Main card ── */
@@ -116,9 +152,7 @@
       width: 100%;
       margin: 0;
       background: var(--card);
-      border-radius: 0;
-      box-shadow: none;
-      padding: 20px 18px 18px;
+      padding: 14px 14px 12px;
       animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
       display: none;
     }
@@ -130,140 +164,188 @@
 
     /* ── File info ── */
     .file-info {
-      display: flex; gap: 12px;
-      margin-bottom: 14px; padding-bottom: 14px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
     .file-thumb {
-      width: 64px; height: 64px; border-radius: 10px;
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
       background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
       flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 28px; overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      overflow: hidden;
     }
-    .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+    .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
     .file-meta { flex:1; min-width:0; }
     .file-title {
-      font-size: 14px; font-weight: 800; color: var(--text);
-      white-space: normal; word-break: break-word; line-height: 1.35;
-      margin-bottom: 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.35;
+      margin-bottom: 4px;
     }
-    .file-tags { display:flex; gap:6px; flex-wrap:wrap; }
+    .file-tags { display:flex; gap:5px; flex-wrap:wrap; }
     .tag {
-      font-size: 11px; font-weight: 700;
-      padding: 3px 8px; border-radius: 5px;
-      background: #fde6e4; color: var(--brand-red);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #fde6e4;
+      color: var(--brand-red);
     }
     .tag.free-tag { background: var(--brand-red); color: #fff; }
-    .file-size-row { font-size: 12px; font-weight: 800; margin-top: 6px; color: var(--text-muted); }
+    .file-size-row { font-size: 11px; font-weight: 700; margin-top: 4px; color: var(--text-muted); }
 
     /* ── Headline ── */
     .unlock-headline { text-align: center; margin-bottom: 6px; }
-    .unlock-headline h2 { font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.3; }
-    .unlock-headline p  { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+    .unlock-headline h2 { font-size: 15px; font-weight: 900; color: var(--text); line-height: 1.3; }
+    .unlock-headline p  { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
 
     /* ── Ad notice ── */
     .ad-notice {
       background: #fde6e4;
       border: 1.5px solid var(--brand-red);
-      border-radius: 10px;
-      padding: 8px 12px;
-      margin-bottom: 12px;
-      font-size: 11.5px;
+      border-radius: 8px;
+      padding: 6px 10px;
+      margin-bottom: 10px;
+      font-size: 10.5px;
       color: var(--brand-red-dark);
       font-weight: 700;
       text-align: center;
-      line-height: 1.45;
+      line-height: 1.4;
     }
 
     /* ── Progress bar ── */
-    .progress-wrap { margin: 12px 0; display: flex; align-items: center; gap: 10px; }
-    .progress-bar-bg { flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden; }
+    .progress-wrap { margin: 8px 0; display: flex; align-items: center; gap: 8px; }
+    .progress-bar-bg { flex:1; height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
     .progress-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 10px; width: 0%;
+      border-radius: 10px;
+      width: 0%;
       transition: width .5s ease;
     }
-    .progress-label { font-size:12px; font-weight:800; color:var(--brand-red); min-width:30px; text-align:right; }
+    .progress-label { font-size:11px; font-weight:800; color:var(--brand-red); min-width:28px; text-align:right; }
 
     /* ── Steps ── */
-    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .steps { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
     .step {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 8px 10px;
       transition: border-color .3s, background .3s;
     }
     .step.locked { opacity:.5; pointer-events:none; }
     .step.done   { border-color:#c3e6cb; background:var(--step-done-bg); }
 
     .step-num {
-      width: 32px; height: 32px; border-radius: 50%;
-      background: #fde6e4; color: var(--brand-red);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 14px; font-weight: 900; flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fde6e4;
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      flex-shrink: 0;
       transition: background .3s, color .3s;
       position: relative;
     }
-    .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:16px; }
+    .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:14px; }
 
     /* countdown ring */
     .countdown-ring {
-      position: absolute; top: 0; left: 0;
-      width: 32px; height: 32px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 28px;
       transform: rotate(-90deg);
       pointer-events: none;
-      opacity: 0; transition: opacity .2s;
+      opacity: 0;
+      transition: opacity .2s;
     }
     .countdown-ring.active { opacity: 1; }
     .countdown-ring circle {
-      fill: none; stroke: var(--brand-red-dark);
+      fill: none;
+      stroke: var(--brand-red-dark);
       stroke-width: 3;
-      stroke-dasharray: 100;
-      stroke-dashoffset: 100;
+      stroke-dasharray: 88;
+      stroke-dashoffset: 88;
       stroke-linecap: round;
       transition: stroke-dashoffset .95s linear;
     }
 
     .step-body { flex:1; min-width:0; }
-    .step-title { font-size:14px; font-weight:800; color:var(--text); }
+    .step-title { font-size:12px; font-weight:800; color:var(--text); }
     .step.done .step-title { color:var(--step-done-text); }
-    .step-sub   { font-size:11px; color:var(--text-muted); margin-top:2px; }
+    .step-sub   { font-size:10px; color:var(--text-muted); margin-top:1px; }
 
     .step-btn {
-      background: var(--brand-red); color: #fff; border: none;
-      border-radius: var(--radius-btn); padding: 7px 14px;
-      font-size: 12.5px; font-weight: 800;
-      cursor: pointer; flex-shrink: 0;
+      background: var(--brand-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 5px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
       transition: background .2s, transform .1s;
-      min-width: 60px; text-align: center;
+      min-width: 48px;
+      text-align: center;
     }
     .step-btn:active  { transform: scale(.96); }
     .step-btn:disabled { background: #f2c5c1; cursor: not-allowed; }
     .step-btn.watching { background: #f59e0b; pointer-events: none; }
     .step-btn.done-mark {
-      background: transparent; color: var(--step-done-text);
-      font-size: 20px; pointer-events: none; padding: 0 12px;
+      background: transparent;
+      color: var(--step-done-text);
+      font-size: 18px;
+      pointer-events: none;
+      padding: 0 10px;
     }
 
     /* ── CTA ── */
     .cta-btn {
-      width: 100%; padding: 14px; border-radius: 14px; border: none;
-      font-size: 15px; font-weight: 900; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%;
+      padding: 11px;
+      border-radius: 12px;
+      border: none;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all .3s;
     }
     .cta-btn.locked  { background:var(--border); color:var(--text-muted); cursor:not-allowed; }
     .cta-btn.unlocked {
       background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
       color: #fff;
-      box-shadow: 0 6px 18px -4px rgba(213,43,30,.6);
+      box-shadow: 0 4px 14px -3px rgba(213,43,30,.6);
       animation: pulseRed 2.2s infinite;
     }
     @keyframes pulseRed {
       0%  { box-shadow: 0 0 0 0   rgba(213,43,30,.45); }
-      60% { box-shadow: 0 0 0 12px rgba(213,43,30,0);  }
+      60% { box-shadow: 0 0 0 10px rgba(213,43,30,0);  }
       100%{ box-shadow: 0 0 0 0   rgba(213,43,30,0);   }
     }
 
@@ -271,12 +353,13 @@
     .success-msg {
       display: none;
       text-align: center;
-      margin-top: 14px;
-      padding: 12px 16px;
+      margin-top: 10px;
+      padding: 8px 12px;
       background: var(--step-done-bg);
       border: 1.5px solid #c3e6cb;
-      border-radius: 12px;
-      font-size: 13px; font-weight: 700;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 700;
       color: var(--step-done-text);
       animation: fadeIn .4s ease;
     }
@@ -286,32 +369,52 @@
     /* ── Link box ── */
     .link-box {
       display: none;
-      margin-top: 14px;
+      margin-top: 10px;
       background: var(--bg);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 10px 12px;
+      border-radius: 10px;
+      padding: 8px 10px;
       animation: fadeIn .4s ease;
     }
     .link-box.visible { display: block; }
     .link-box-label {
-      font-size: 11px; font-weight: 700; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 4px;
     }
     .link-row {
-      display: flex; align-items: center; gap: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     .link-text {
-      flex: 1; font-size: 12px; font-weight: 700; color: var(--brand-red);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      background: #fde6e4; border-radius: 7px; padding: 7px 10px;
-      cursor: text; user-select: all;
+      flex: 1;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand-red);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #fde6e4;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: text;
+      user-select: all;
     }
     .copy-btn {
-      background: var(--brand-red); color: #fff; border: none;
-      border-radius: 8px; padding: 8px 14px;
-      font-size: 12px; font-weight: 800; cursor: pointer;
-      flex-shrink: 0; transition: background .2s, transform .1s;
+      background: var(--brand-red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .2s, transform .1s;
       white-space: nowrap;
     }
     .copy-btn:active { transform: scale(.95); }
@@ -320,73 +423,121 @@
     /* ── HelloEncyclo banner ── */
     .encyclo-section {
       width: 100%;
-      margin: 0;
-      padding: 14px 18px 18px;
+      padding: 10px 14px 12px;
       background: var(--bg);
+      flex-shrink: 0;
     }
     .encyclo-banner {
       background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 16px;
-      padding: 13px 16px;
+      border-radius: 14px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
       text-decoration: none;
-      box-shadow: 0 4px 16px rgba(213,43,30,.25);
+      box-shadow: 0 3px 12px rgba(213,43,30,.25);
       transition: transform .2s, box-shadow .2s;
     }
     .encyclo-banner:active { transform: scale(.98); }
     .encyclo-icon {
-      width: 48px; height: 48px; border-radius: 12px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
     }
     .encyclo-text { flex: 1; }
     .encyclo-title {
-      font-size: 13px; font-weight: 900; color: #fff;
-      margin-bottom: 3px;
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 2px;
     }
     .encyclo-sub {
-      font-size: 11px; color: rgba(255,255,255,.8);
-      font-weight: 600; line-height: 1.4;
+      font-size: 10px;
+      color: rgba(255,255,255,.8);
+      font-weight: 600;
+      line-height: 1.3;
     }
     .encyclo-arrow {
       background: #ffffff;
       color: var(--brand-red);
-      border-radius: 8px;
-      padding: 6px 10px;
-      font-size: 13px;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
       font-weight: 900;
       flex-shrink: 0;
     }
 
     /* ── Confetti canvas ── */
     #confetti-canvas {
-      position: fixed; top:0; left:0;
-      width:100%; height:100%;
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
       pointer-events: none;
       z-index: 999;
       display: none;
     }
 
-    @media (max-width:380px) {
-      .card { padding:16px 14px; }
-      .step-btn { padding:6px 10px; font-size:11.5px; min-width:52px; }
-      .cta-btn { font-size:14px; padding:13px; }
-      .file-title { font-size:13px; }
+    /* ── Desktop optimization ── */
+    @media (min-width: 768px) {
+      body {
+        padding: 12px;
+        align-items: center;
+        justify-content: center;
+      }
+      .app-shell {
+        max-width: 400px;
+        max-height: 85vh;
+        border-radius: 20px;
+      }
+      .scroll-area {
+        scrollbar-width: thin;
+        scrollbar-color: var(--brand-red-light) transparent;
+      }
+      .scroll-area::-webkit-scrollbar {
+        width: 4px;
+      }
+      .scroll-area::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .scroll-area::-webkit-scrollbar-thumb {
+        background: var(--brand-red-light);
+        border-radius: 4px;
+      }
     }
 
-    /* Short viewports (e.g. Telegram desktop's compact window) —
-       trim spacing further so the whole card fits without scrolling */
-    @media (max-height:720px) {
-      body { padding: 10px 12px; }
-      .unlock-headline h2 { font-size:16px; }
-      .unlock-headline p  { font-size:11.5px; margin-top:3px; }
-      .steps { gap:6px; margin-bottom:12px; }
-      .step  { padding:8px 12px; }
+    @media (max-width:380px) {
+      .card { padding:12px 12px; }
+      .step-btn { padding:4px 8px; font-size:10px; min-width:44px; }
+      .cta-btn { font-size:12px; padding:10px; }
+      .file-title { font-size:12px; }
+    }
+
+    /* Short viewports */
+    @media (max-height:700px) {
+      body { padding: 4px; }
+      .unlock-headline h2 { font-size:14px; }
+      .unlock-headline p  { font-size:10.5px; margin-top:2px; }
+      .steps { gap:5px; margin-bottom:10px; }
+      .step  { padding:6px 10px; }
+      .file-info { margin-bottom: 8px; padding-bottom: 8px; }
+      .ad-notice { padding: 5px 8px; margin-bottom: 8px; }
+      .cta-btn { padding: 9px; }
+    }
+
+    @media (max-height:600px) {
+      .unlock-headline { display: none; }
+      .ad-notice { font-size: 10px; padding: 4px 8px; }
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
@@ -399,103 +550,105 @@
     <span class="badge-free">FREE</span>
   </div>
 
-  <!-- Skeleton loader (shown while JS runs) -->
-  <div class="skeleton visible" id="skeleton">
-    <div class="skel-row">
-      <div class="skel-line skel-thumb"></div>
-      <div class="skel-lines">
-        <div class="skel-line" style="height:14px;width:80%;"></div>
-        <div class="skel-line" style="height:11px;width:55%;margin-top:6px;"></div>
-        <div class="skel-line" style="height:11px;width:40%;margin-top:6px;"></div>
-      </div>
-    </div>
-    <div class="skel-line" style="height:16px;width:60%;margin:0 auto 10px;"></div>
-    <div class="skel-line" style="height:10px;width:90%;margin:0 auto 18px;"></div>
-    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
-    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
-    <div class="skel-line" style="height:52px;border-radius:14px;margin-top:4px;"></div>
-  </div>
-
-  <!-- Main card -->
-  <div class="card" id="main-card">
-
-    <div class="file-info">
-      <div class="file-thumb" id="file-thumb">📦</div>
-      <div class="file-meta">
-        <div class="file-title" id="file-title">DataPi26 File</div>
-        <div class="file-tags">
-          <span class="tag free-tag">100% FREE</span>
-          <span class="tag" id="file-cat">File</span>
+  <div class="scroll-area">
+    <!-- Skeleton loader -->
+    <div class="skeleton visible" id="skeleton">
+      <div class="skel-row">
+        <div class="skel-line skel-thumb"></div>
+        <div class="skel-lines">
+          <div class="skel-line" style="height:12px;width:80%;"></div>
+          <div class="skel-line" style="height:10px;width:55%;margin-top:5px;"></div>
+          <div class="skel-line" style="height:10px;width:40%;margin-top:5px;"></div>
         </div>
-        <div class="file-size-row" id="file-size"></div>
       </div>
+      <div class="skel-line" style="height:14px;width:60%;margin:0 auto 8px;"></div>
+      <div class="skel-line" style="height:9px;width:90%;margin:0 auto 14px;"></div>
+      <div class="skel-line" style="height:48px;border-radius:12px;"></div>
+      <div class="skel-line" style="height:48px;border-radius:12px;"></div>
+      <div class="skel-line" style="height:44px;border-radius:12px;margin-top:3px;"></div>
     </div>
 
-    <div class="unlock-headline">
-      <h2>🔓 Unlock Your Free Download</h2>
-      <p>Visit 2 advertiser pages briefly, then return here to get your free download link.</p>
-    </div>
+    <!-- Main card -->
+    <div class="card" id="main-card">
 
-    <div class="ad-notice" id="ad-notice">
-      📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progress-fill"></div>
-      </div>
-      <span class="progress-label" id="progress-label">0/2</span>
-    </div>
-
-    <div class="steps">
-      <!-- Step 1 -->
-      <div class="step" id="step-1">
-        <div class="step-num" id="num-1">
-          1
-          <svg class="countdown-ring" id="ring-1" viewBox="0 0 32 32">
-            <circle cx="16" cy="16" r="13" id="ring-circle-1"/>
-          </svg>
+      <div class="file-info">
+        <div class="file-thumb" id="file-thumb">📦</div>
+        <div class="file-meta">
+          <div class="file-title" id="file-title">DataPi26 File</div>
+          <div class="file-tags">
+            <span class="tag free-tag">100% FREE</span>
+            <span class="tag" id="file-cat">File</span>
+          </div>
+          <div class="file-size-row" id="file-size"></div>
         </div>
-        <div class="step-body">
-          <div class="step-title">Visit Sponsor Page #1</div>
-          <div class="step-sub" id="sub-1">~4 seconds • returns automatically</div>
-        </div>
-        <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
       </div>
 
-      <!-- Step 2 -->
-      <div class="step locked" id="step-2">
-        <div class="step-num" id="num-2">
-          2
-          <svg class="countdown-ring" id="ring-2" viewBox="0 0 32 32">
-            <circle cx="16" cy="16" r="13" id="ring-circle-2"/>
-          </svg>
-        </div>
-        <div class="step-body">
-          <div class="step-title">Visit Sponsor Page #2</div>
-          <div class="step-sub" id="sub-2">~4 seconds • returns automatically</div>
-        </div>
-        <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
+      <div class="unlock-headline">
+        <h2>🔓 Unlock Your Free Download</h2>
+        <p>Visit 2 advertiser pages briefly, then return here to get your free download link.</p>
       </div>
-    </div>
 
-    <button class="cta-btn locked" id="btn-download" disabled>
-      🔒 Complete both steps to download
-    </button>
-
-    <div class="success-msg" id="success-msg">
-      🎉 You're all set! Click above to download.
-    </div>
-
-    <!-- Link box -->
-    <div class="link-box" id="link-box">
-      <div class="link-box-label">🔗 Direct Download Link</div>
-      <div class="link-row">
-        <span class="link-text" id="link-display"></span>
-        <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+      <div class="ad-notice" id="ad-notice">
+        📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
       </div>
-    </div>
 
+      <div class="progress-wrap">
+        <div class="progress-bar-bg">
+          <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-label" id="progress-label">0/2</span>
+      </div>
+
+      <div class="steps">
+        <!-- Step 1 -->
+        <div class="step" id="step-1">
+          <div class="step-num" id="num-1">
+            1
+            <svg class="countdown-ring" id="ring-1" viewBox="0 0 28 28">
+              <circle cx="14" cy="14" r="11" id="ring-circle-1"/>
+            </svg>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Visit Sponsor Page #1</div>
+            <div class="step-sub" id="sub-1">~4 seconds • returns automatically</div>
+          </div>
+          <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step locked" id="step-2">
+          <div class="step-num" id="num-2">
+            2
+            <svg class="countdown-ring" id="ring-2" viewBox="0 0 28 28">
+              <circle cx="14" cy="14" r="11" id="ring-circle-2"/>
+            </svg>
+          </div>
+          <div class="step-body">
+            <div class="step-title">Visit Sponsor Page #2</div>
+            <div class="step-sub" id="sub-2">~4 seconds • returns automatically</div>
+          </div>
+          <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
+        </div>
+      </div>
+
+      <button class="cta-btn locked" id="btn-download" disabled>
+        🔒 Complete both steps to download
+      </button>
+
+      <div class="success-msg" id="success-msg">
+        🎉 You're all set! Click above to download.
+      </div>
+
+      <!-- Link box -->
+      <div class="link-box" id="link-box">
+        <div class="link-box-label">🔗 Direct Download Link</div>
+        <div class="link-row">
+          <span class="link-text" id="link-display"></span>
+          <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+        </div>
+      </div>
+
+    </div>
   </div>
 
   <!-- HelloEncyclo Grant Banner -->
@@ -521,32 +674,28 @@
   if (tg) { tg.ready(); tg.expand(); }
 
   // ── HilltopAds direct links ──────────────────────────────────
-  // Tier-1: real, non-proxied traffic from the approved country list
   const TIER1_LINKS = [
-    "https://massive-hall.com/GQtbhS",   // Step 1
-    "https://massive-hall.com/ovT8hP"    // Step 2
+    "https://massive-hall.com/GQtbhS",
+    "https://massive-hall.com/ovT8hP"
   ];
-  // Tier-2: everyone else, or any VPN/proxy/Tor traffic
   const TIER2_LINKS = [
-    "https://fluffy-machine.com/Kp60r2", // Step 1
-    "https://fluffy-machine.com/hy0AJ8"  // Step 2
+    "https://fluffy-machine.com/Kp60r2",
+    "https://fluffy-machine.com/hy0AJ8"
   ];
 
-  // US + North & South America, China, Japan, Russia, France, Belgium,
-  // Spain, Italy, Netherlands, Ukraine, Germany, UK, Australia
   const TIER1_COUNTRIES = new Set([
-    "US","CA","MX",                                       // North America
-    "GT","BZ","SV","HN","NI","CR","PA",                   // Central America
-    "CU","DO","JM","HT","TT","BS","PR",                   // Caribbean
-    "BR","AR","CL","CO","PE","VE","EC","BO","PY","UY","GY","SR", // South America
-    "CN","JP","AU",                                       // Asia-Pacific
-    "RU","UA",                                             // Russia / Ukraine
-    "FR","BE","ES","IT","NL","DE","GB"                    // Western Europe
+    "US","CA","MX",
+    "GT","BZ","SV","HN","NI","CR","PA",
+    "CU","DO","JM","HT","TT","BS","PR",
+    "BR","AR","CL","CO","PE","VE","EC","BO","PY","UY","GY","SR",
+    "CN","JP","AU",
+    "RU","UA",
+    "FR","BE","ES","IT","NL","DE","GB"
   ]);
 
-  const AD_DURATION_SEC = 4;  // countdown seconds
+  const AD_DURATION_SEC = 4;
 
-  let adLinks = TIER2_LINKS; // default until geo check
+  let adLinks = TIER2_LINKS;
   let geoChecked = false;
 
   // ── Geo + VPN check ──────────────────────────────────────────
@@ -562,19 +711,15 @@
         adLinks = TIER2_LINKS;
       }
     } catch(e) {
-      adLinks = TIER2_LINKS; // safe default on error
+      adLinks = TIER2_LINKS;
     }
     geoChecked = true;
   }
 
   // ── start_param decode ──────────────────────────────────────────
-  // Telegram ONLY forwards the single "startapp" parameter to a Mini
-  // App (as tgWebAppStartParam / initDataUnsafe.start_param). Any other
-  // query params on the t.me deep link (title=, img=, size=, ...) get
-  // silently dropped before the page ever loads — that's why only the
-  // file URL (smuggled inside startapp) used to come through.
-  // Fix: the bot now packs everything into ONE base64url-encoded JSON
-  // object and puts that whole blob into startapp.
+  // Telegram Mini Apps only pass the single `startapp` parameter.
+  // We encode ALL data (title, image, file URL, category, size) into
+  // one base64url-encoded JSON object inside startapp.
   function b64urlDecode(str) {
     const b64     = str.replace(/-/g, '+').replace(/_/g, '/');
     const padded  = b64 + '='.repeat((4 - b64.length % 4) % 4);
@@ -584,14 +729,16 @@
   }
 
   function getStartParam() {
-    return tg?.initDataUnsafe?.start_param
-        || new URLSearchParams(window.location.search).get('startapp')
-        || new URLSearchParams(window.location.search).get('tgWebAppStartParam')
-        || null;
+    // Try Telegram WebApp first
+    if (tg?.initDataUnsafe?.start_param) {
+      return tg.initDataUnsafe.start_param;
+    }
+    // Fallback for direct browser testing
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('startapp') || urlParams.get('tgWebAppStartParam') || null;
   }
 
-  // Decoded JSON payload from the bot: { u: url, t: title, i: img,
-  // c: category, s: size }. Null if absent/old format.
+  // Decoded JSON payload: { u: url, t: title, i: img, c: category, s: size }
   let fileData = null;
 
   function resolveFileUrl() {
@@ -605,12 +752,13 @@
         fileData = parsed;
         return parsed.u;
       }
-    } catch (e) { /* not JSON — fall through to legacy plain-URL format */ }
-
-    try {
-      const decoded = b64urlDecode(raw);
-      if (decoded.startsWith('http')) return decoded;
-    } catch (e) {}
+    } catch (e) {
+      // Not JSON — try legacy plain-URL format
+      try {
+        const decoded = b64urlDecode(raw);
+        if (decoded.startsWith('http')) return decoded;
+      } catch (e2) {}
+    }
 
     return 'https://pixeldrain.com/';
   }
@@ -619,24 +767,36 @@
   function loadFileMeta() {
     let title, img, cat, size;
 
+    console.log("[DataPi26] fileData:", fileData);
+    console.log("[DataPi26] FILE_URL:", FILE_URL);
+
     if (fileData) {
-      // Came from the startapp JSON payload — already plain text
-      ({ t: title, i: img, c: cat, s: size } = fileData);
+      // From the startapp JSON payload
+      title = fileData.t;
+      img = fileData.i;
+      cat = fileData.c;
+      size = fileData.s;
     } else {
-      // Fallback for direct browser testing with separate ?title=&size= etc.
+      // Fallback for direct browser testing
       const p = new URLSearchParams(window.location.search);
       const get = k => p.get(k) ? decodeURIComponent(p.get(k)) : null;
-      title = get('title'); img = get('img'); cat = get('cat'); size = get('size');
+      title = get('title');
+      img = get('img');
+      cat = get('cat');
+      size = get('size');
     }
 
     if (title) {
       document.getElementById('file-title').textContent = title;
       document.getElementById('logo-text').textContent = title;
+      document.title = title + " — DataPi26";
     }
     if (img) {
+      console.log("[DataPi26] Setting cover image:", img);
       const thumb = document.getElementById('file-thumb');
-      thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer"
-        onerror="this.parentElement.innerHTML='📦'" />`;
+      thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer" crossorigin="anonymous"
+        onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='📦';" 
+        style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />`;
     }
     if (cat)  document.getElementById('file-cat').textContent = cat;
     if (size) document.getElementById('file-size').textContent = '💾 ' + size;
@@ -653,7 +813,10 @@
       const raw = localStorage.getItem(CACHE_KEY);
       if (!raw) return null;
       const obj = JSON.parse(raw);
-      if (Date.now() - obj.ts > CACHE_TTL) { localStorage.removeItem(CACHE_KEY); return null; }
+      if (Date.now() - obj.ts > CACHE_TTL) {
+        localStorage.removeItem(CACHE_KEY);
+        return null;
+      }
       return obj;
     } catch(e) { return null; }
   }
@@ -675,15 +838,13 @@
   }
 
   // ── Countdown ring animation ─────────────────────────────────
-  // Auto-completes when: (1) countdown hits 0, OR (2) user returns
-  // to this page — whichever comes first. No extra tap needed.
   function startCountdownRing(n, onDone) {
     const ring   = document.getElementById(`ring-${n}`);
     const circle = document.getElementById(`ring-circle-${n}`);
     const btn    = document.getElementById(`btn-${n}`);
     const sub    = document.getElementById(`sub-${n}`);
 
-    const circumference = 2 * Math.PI * 13;
+    const circumference = 2 * Math.PI * 11;
     circle.style.strokeDasharray  = circumference;
     circle.style.strokeDashoffset = circumference;
     ring.classList.add('active');
@@ -701,10 +862,9 @@
       onDone();
     }
 
-    // Auto-complete the moment the user switches back to this tab/mini-app
     function onVisible() {
       if (document.visibilityState === 'visible') {
-        setTimeout(finish, 250); // tiny grace so tab animation settles
+        setTimeout(finish, 250);
       }
     }
     document.addEventListener('visibilitychange', onVisible);
@@ -718,7 +878,7 @@
         btn.textContent = remaining;
         sub.textContent = `${remaining}s • return here after visiting`;
       } else {
-        finish(); // countdown expired — complete immediately
+        finish();
       }
     }, 1000);
 
@@ -742,7 +902,6 @@
     btn.classList.add('watching');
     btn.textContent = '⏳';
 
-    // Open the sponsor link in external browser / new tab
     const link = adLinks[n - 1];
     if (tg?.openLink) {
       tg.openLink(link);
@@ -750,7 +909,6 @@
       window.open(link, '_blank');
     }
 
-    // Auto-completes on return — user does NOT need to tap anything
     startCountdownRing(n, () => onAdComplete(n));
   }
 
@@ -802,7 +960,6 @@
     document.getElementById('success-msg').classList.add('visible');
     document.getElementById('ad-notice').style.display = 'none';
 
-    // عرض الرابط الأصلي /u/ في الصندوق للمستخدم
     document.getElementById('link-display').textContent = FILE_URL;
     document.getElementById('link-box').classList.add('visible');
   }
@@ -888,10 +1045,8 @@
   window.addEventListener('load', () => {
     loadFileMeta();
 
-    // Check localStorage cache
     const cached = loadProgress();
     if (cached?.step1 && cached?.step2) {
-      // Already completed within 5 min — skip ads
       step1Done = true; step2Done = true;
       showCard();
       updateProgress();
@@ -906,7 +1061,6 @@
       unlockDownload();
     } else {
       showCard();
-      // Run geo detection in background — non-blocking
       detectGeoAndVPN();
     }
   });
