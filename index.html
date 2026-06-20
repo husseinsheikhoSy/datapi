@@ -6,7 +6,6 @@
   <title>DataPi26 — Free File Access</title>
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
-  <script src="https://w.tads.me/widget.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -39,8 +38,26 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0 0 32px;
+      justify-content: center;
+      padding: 18px 12px;
       overflow-x: hidden;
+    }
+
+    /* ── App shell ──
+       Keeps top-bar, card and banner visually unified as one
+       consistent "app" on every screen size — phone, tablet, desktop. */
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      background: var(--bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 44px rgba(213,43,30,.16);
+    }
+    @media (max-width: 480px) {
+      body { padding: 0; justify-content: flex-start; }
+      .app-shell { border-radius: 0; box-shadow: none; max-width: 100%; }
     }
 
     /* ── Top bar ── */
@@ -57,7 +74,11 @@
       font-size: 18px; font-weight: 900; color: var(--brand-red);
       flex-shrink: 0;
     }
-    .logo-text { font-size: 15px; font-weight: 800; color: #fff; }
+    .logo-text {
+      font-size: 14px; font-weight: 800; color: #fff;
+      flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
     .badge-free {
       margin-left: auto;
       background: #ffffff; color: var(--brand-red);
@@ -68,11 +89,11 @@
     /* ── Loading skeleton ── */
     .skeleton {
       display: none;
-      width: calc(100% - 28px); max-width: 440px;
-      margin: 20px auto 0;
+      width: 100%;
+      margin: 0;
       background: var(--card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-card);
+      border-radius: 0;
+      box-shadow: none;
       padding: 22px 20px;
     }
     .skeleton.visible { display: block; }
@@ -92,12 +113,12 @@
 
     /* ── Main card ── */
     .card {
-      width: calc(100% - 28px); max-width: 440px;
-      margin: 20px auto 0;
+      width: 100%;
+      margin: 0;
       background: var(--card);
-      border-radius: var(--radius-card);
-      box-shadow: var(--shadow-card);
-      padding: 22px 20px 20px;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 20px 18px 18px;
       animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
       display: none;
     }
@@ -110,7 +131,7 @@
     /* ── File info ── */
     .file-info {
       display: flex; gap: 12px;
-      margin-bottom: 18px; padding-bottom: 18px;
+      margin-bottom: 14px; padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
     }
     .file-thumb {
@@ -124,8 +145,8 @@
     .file-meta { flex:1; min-width:0; }
     .file-title {
       font-size: 14px; font-weight: 800; color: var(--text);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      margin-bottom: 5px;
+      white-space: normal; word-break: break-word; line-height: 1.35;
+      margin-bottom: 6px;
     }
     .file-tags { display:flex; gap:6px; flex-wrap:wrap; }
     .tag {
@@ -141,8 +162,22 @@
     .unlock-headline h2 { font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.3; }
     .unlock-headline p  { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
 
+    /* ── Ad notice ── */
+    .ad-notice {
+      background: #fde6e4;
+      border: 1.5px solid var(--brand-red);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      color: var(--brand-red-dark);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.45;
+    }
+
     /* ── Progress bar ── */
-    .progress-wrap { margin: 14px 0; display: flex; align-items: center; gap: 10px; }
+    .progress-wrap { margin: 12px 0; display: flex; align-items: center; gap: 10px; }
     .progress-bar-bg { flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden; }
     .progress-bar-fill {
       height: 100%;
@@ -153,30 +188,30 @@
     .progress-label { font-size:12px; font-weight:800; color:var(--brand-red); min-width:30px; text-align:right; }
 
     /* ── Steps ── */
-    .steps { display:flex; flex-direction:column; gap:10px; margin-bottom:18px; }
+    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
     .step {
-      display: flex; align-items: center; gap: 12px;
+      display: flex; align-items: center; gap: 10px;
       background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 12px 14px;
+      border-radius: 14px; padding: 10px 12px;
       transition: border-color .3s, background .3s;
     }
     .step.locked { opacity:.5; pointer-events:none; }
     .step.done   { border-color:#c3e6cb; background:var(--step-done-bg); }
 
     .step-num {
-      width: 36px; height: 36px; border-radius: 50%;
+      width: 32px; height: 32px; border-radius: 50%;
       background: #fde6e4; color: var(--brand-red);
       display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 900; flex-shrink: 0;
+      font-size: 14px; font-weight: 900; flex-shrink: 0;
       transition: background .3s, color .3s;
       position: relative;
     }
-    .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:18px; }
+    .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:16px; }
 
     /* countdown ring */
     .countdown-ring {
       position: absolute; top: 0; left: 0;
-      width: 36px; height: 36px;
+      width: 32px; height: 32px;
       transform: rotate(-90deg);
       pointer-events: none;
       opacity: 0; transition: opacity .2s;
@@ -198,11 +233,11 @@
 
     .step-btn {
       background: var(--brand-red); color: #fff; border: none;
-      border-radius: var(--radius-btn); padding: 8px 16px;
-      font-size: 13px; font-weight: 800;
+      border-radius: var(--radius-btn); padding: 7px 14px;
+      font-size: 12.5px; font-weight: 800;
       cursor: pointer; flex-shrink: 0;
       transition: background .2s, transform .1s;
-      min-width: 68px; text-align: center;
+      min-width: 60px; text-align: center;
     }
     .step-btn:active  { transform: scale(.96); }
     .step-btn:disabled { background: #f2c5c1; cursor: not-allowed; }
@@ -214,8 +249,8 @@
 
     /* ── CTA ── */
     .cta-btn {
-      width: 100%; padding: 16px; border-radius: 14px; border: none;
-      font-size: 16px; font-weight: 900; cursor: pointer;
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      font-size: 15px; font-weight: 900; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: all .3s;
     }
@@ -230,15 +265,6 @@
       0%  { box-shadow: 0 0 0 0   rgba(213,43,30,.45); }
       60% { box-shadow: 0 0 0 12px rgba(213,43,30,0);  }
       100%{ box-shadow: 0 0 0 0   rgba(213,43,30,0);   }
-    }
-
-    /* ── Confetti canvas ── */
-    #confetti-canvas {
-      position: fixed; top:0; left:0;
-      width:100%; height:100%;
-      pointer-events: none;
-      z-index: 999;
-      display: none;
     }
 
     /* ── Success message ── */
@@ -256,24 +282,6 @@
     }
     .success-msg.visible { display: block; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
-
-    /* ── TGB ad ── */
-    .ad-section {
-      width: calc(100% - 28px); max-width: 440px;
-      margin: 16px auto 0;
-    }
-    .ad-label {
-      font-size: 10px; font-weight: 700; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: .8px;
-      text-align: center; margin-bottom: 8px;
-    }
-    .ad-slot {
-      width: 100%; min-height: 80px; border-radius: 14px; overflow: hidden;
-      display: flex; align-items: center; justify-content: center;
-      background: var(--card); box-shadow: 0 2px 10px rgba(0,0,0,.05);
-    }
-    #tads-container-9637 { width:100%; min-height:80px; display:flex; align-items:center; justify-content:center; }
-    #tads-container-9637:empty { display:none; }
 
     /* ── Link box ── */
     .link-box {
@@ -309,19 +317,85 @@
     .copy-btn:active { transform: scale(.95); }
     .copy-btn.copied { background: var(--step-done-text); }
 
+    /* ── HelloEncyclo banner ── */
+    .encyclo-section {
+      width: 100%;
+      margin: 0;
+      padding: 14px 18px 18px;
+      background: var(--bg);
+    }
+    .encyclo-banner {
+      background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
+      border-radius: 16px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(213,43,30,.25);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .encyclo-banner:active { transform: scale(.98); }
+    .encyclo-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: #ffffff;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .encyclo-text { flex: 1; }
+    .encyclo-title {
+      font-size: 13px; font-weight: 900; color: #fff;
+      margin-bottom: 3px;
+    }
+    .encyclo-sub {
+      font-size: 11px; color: rgba(255,255,255,.8);
+      font-weight: 600; line-height: 1.4;
+    }
+    .encyclo-arrow {
+      background: #ffffff;
+      color: var(--brand-red);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 900;
+      flex-shrink: 0;
+    }
+
+    /* ── Confetti canvas ── */
+    #confetti-canvas {
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
+      pointer-events: none;
+      z-index: 999;
+      display: none;
+    }
+
     @media (max-width:380px) {
       .card { padding:16px 14px; }
-      .step-btn { padding:7px 11px; font-size:12px; }
-      .cta-btn { font-size:15px; }
+      .step-btn { padding:6px 10px; font-size:11.5px; min-width:52px; }
+      .cta-btn { font-size:14px; padding:13px; }
+      .file-title { font-size:13px; }
+    }
+
+    /* Short viewports (e.g. Telegram desktop's compact window) —
+       trim spacing further so the whole card fits without scrolling */
+    @media (max-height:720px) {
+      body { padding: 10px 12px; }
+      .unlock-headline h2 { font-size:16px; }
+      .unlock-headline p  { font-size:11.5px; margin-top:3px; }
+      .steps { gap:6px; margin-bottom:12px; }
+      .step  { padding:8px 12px; }
     }
   </style>
 </head>
 <body>
 
+<div class="app-shell">
+
   <!-- Top bar -->
   <div class="top-bar">
     <div class="logo-u">P</div>
-    <span class="logo-text">DataPi26 Free Access</span>
+    <span class="logo-text" id="logo-text">DataPi26 Free Access</span>
     <span class="badge-free">FREE</span>
   </div>
 
@@ -358,8 +432,12 @@
     </div>
 
     <div class="unlock-headline">
-      <h2>Unlock Your Free Download</h2>
-      <p>Watch 2 short ads to activate your free download link.</p>
+      <h2>🔓 Unlock Your Free Download</h2>
+      <p>Visit 2 advertiser pages briefly, then return here to get your free download link.</p>
+    </div>
+
+    <div class="ad-notice" id="ad-notice">
+      📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
     </div>
 
     <div class="progress-wrap">
@@ -374,30 +452,30 @@
       <div class="step" id="step-1">
         <div class="step-num" id="num-1">
           1
-          <svg class="countdown-ring" id="ring-1" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="15" id="ring-circle-1"/>
+          <svg class="countdown-ring" id="ring-1" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-1"/>
           </svg>
         </div>
         <div class="step-body">
-          <div class="step-title">Watch Ad #1</div>
-          <div class="step-sub" id="sub-1">~10 seconds • tads.me</div>
+          <div class="step-title">Visit Sponsor Page #1</div>
+          <div class="step-sub" id="sub-1">~4 seconds • returns automatically</div>
         </div>
-        <button class="step-btn" id="btn-1" onclick="startStep(1)">Watch</button>
+        <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
       </div>
 
       <!-- Step 2 -->
       <div class="step locked" id="step-2">
         <div class="step-num" id="num-2">
           2
-          <svg class="countdown-ring" id="ring-2" viewBox="0 0 36 36">
-            <circle cx="18" cy="18" r="15" id="ring-circle-2"/>
+          <svg class="countdown-ring" id="ring-2" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-2"/>
           </svg>
         </div>
         <div class="step-body">
-          <div class="step-title">Watch Ad #2</div>
-          <div class="step-sub" id="sub-2">~10 seconds • tads.me</div>
+          <div class="step-title">Visit Sponsor Page #2</div>
+          <div class="step-sub" id="sub-2">~4 seconds • returns automatically</div>
         </div>
-        <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Watch</button>
+        <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
       </div>
     </div>
 
@@ -420,13 +498,19 @@
 
   </div>
 
-  <!-- TGB banner -->
-  <div class="ad-section" id="ad-section-wrapper">
-    <div class="ad-label">Sponsored</div>
-    <div class="ad-slot">
-      <div id="tads-container-9637"></div>
-    </div>
+  <!-- HelloEncyclo Grant Banner -->
+  <div class="encyclo-section">
+    <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
+      <div class="encyclo-icon">🎓</div>
+      <div class="encyclo-text">
+        <div class="encyclo-title">Join HelloEncyclo Grant</div>
+        <div class="encyclo-sub">Free scholarship to learn Programming &amp; AI</div>
+      </div>
+      <span class="encyclo-arrow">Join →</span>
+    </a>
   </div>
+
+</div>
 
   <!-- Confetti canvas -->
   <canvas id="confetti-canvas"></canvas>
@@ -436,43 +520,129 @@
   const tg = window.Telegram?.WebApp || null;
   if (tg) { tg.ready(); tg.expand(); }
 
-  // ── Widget IDs (tads.me) ───────────────────────────────────
-  const FULLSCREEN_ID_1 = "9607";
-  const FULLSCREEN_ID_2 = "9969";
-  const TGB_ID          = "9637";
-  const AD_DURATION_SEC = 10;   // عدد ثواني الكاونت داون
+  // ── HilltopAds direct links ──────────────────────────────────
+  // Tier-1: real, non-proxied traffic from the approved country list
+  const TIER1_LINKS = [
+    "https://massive-hall.com/GQtbhS",   // Step 1
+    "https://massive-hall.com/ovT8hP"    // Step 2
+  ];
+  // Tier-2: everyone else, or any VPN/proxy/Tor traffic
+  const TIER2_LINKS = [
+    "https://fluffy-machine.com/Kp60r2", // Step 1
+    "https://fluffy-machine.com/hy0AJ8"  // Step 2
+  ];
 
-  // ── File URL decode (startapp = base64 of Pixeldrain link) ──
-  function getFileUrl() {
-    const param = tg?.initDataUnsafe?.start_param
-               || new URLSearchParams(window.location.search).get('startapp')
-               || new URLSearchParams(window.location.search).get('tgWebAppStartParam');
-    if (!param) return 'https://pixeldrain.com/';
+  // US + North & South America, China, Japan, Russia, France, Belgium,
+  // Spain, Italy, Netherlands, Ukraine, Germany, UK, Australia
+  const TIER1_COUNTRIES = new Set([
+    "US","CA","MX",                                       // North America
+    "GT","BZ","SV","HN","NI","CR","PA",                   // Central America
+    "CU","DO","JM","HT","TT","BS","PR",                   // Caribbean
+    "BR","AR","CL","CO","PE","VE","EC","BO","PY","UY","GY","SR", // South America
+    "CN","JP","AU",                                       // Asia-Pacific
+    "RU","UA",                                             // Russia / Ukraine
+    "FR","BE","ES","IT","NL","DE","GB"                    // Western Europe
+  ]);
+
+  const AD_DURATION_SEC = 4;  // countdown seconds
+
+  let adLinks = TIER2_LINKS; // default until geo check
+  let geoChecked = false;
+
+  // ── Geo + VPN check ──────────────────────────────────────────
+  async function detectGeoAndVPN() {
     try {
-      const b64     = param.replace(/-/g,'+').replace(/_/g,'/');
-      const decoded = decodeURIComponent(escape(atob(b64)));
-      return decoded.startsWith('http') ? decoded : 'https://pixeldrain.com/';
-    } catch(e) { return 'https://pixeldrain.com/'; }
+      const res  = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
+      const data = await res.json();
+      const cc   = (data.country_code || "").toUpperCase();
+      const vpn  = data.security?.vpn || data.security?.proxy || data.security?.tor || false;
+      if (!vpn && TIER1_COUNTRIES.has(cc)) {
+        adLinks = TIER1_LINKS;
+      } else {
+        adLinks = TIER2_LINKS;
+      }
+    } catch(e) {
+      adLinks = TIER2_LINKS; // safe default on error
+    }
+    geoChecked = true;
   }
 
-  // ── File meta from URL params ────────────────────────────────
-  function loadFileMeta() {
-    const p = new URLSearchParams(window.location.search);
-    const title = p.get('title'), img = p.get('img'),
-          cat   = p.get('cat'),   size = p.get('size');
+  // ── start_param decode ──────────────────────────────────────────
+  // Telegram ONLY forwards the single "startapp" parameter to a Mini
+  // App (as tgWebAppStartParam / initDataUnsafe.start_param). Any other
+  // query params on the t.me deep link (title=, img=, size=, ...) get
+  // silently dropped before the page ever loads — that's why only the
+  // file URL (smuggled inside startapp) used to come through.
+  // Fix: the bot now packs everything into ONE base64url-encoded JSON
+  // object and puts that whole blob into startapp.
+  function b64urlDecode(str) {
+    const b64     = str.replace(/-/g, '+').replace(/_/g, '/');
+    const padded  = b64 + '='.repeat((4 - b64.length % 4) % 4);
+    const binary  = atob(padded);
+    const bytes   = Uint8Array.from(binary, c => c.charCodeAt(0));
+    return new TextDecoder('utf-8').decode(bytes);
+  }
 
-    if (title) document.getElementById('file-title').textContent = decodeURIComponent(title);
+  function getStartParam() {
+    return tg?.initDataUnsafe?.start_param
+        || new URLSearchParams(window.location.search).get('startapp')
+        || new URLSearchParams(window.location.search).get('tgWebAppStartParam')
+        || null;
+  }
+
+  // Decoded JSON payload from the bot: { u: url, t: title, i: img,
+  // c: category, s: size }. Null if absent/old format.
+  let fileData = null;
+
+  function resolveFileUrl() {
+    const raw = getStartParam();
+    if (!raw) return 'https://pixeldrain.com/';
+
+    try {
+      const text = b64urlDecode(raw);
+      const parsed = JSON.parse(text);
+      if (parsed && typeof parsed === 'object' && parsed.u) {
+        fileData = parsed;
+        return parsed.u;
+      }
+    } catch (e) { /* not JSON — fall through to legacy plain-URL format */ }
+
+    try {
+      const decoded = b64urlDecode(raw);
+      if (decoded.startsWith('http')) return decoded;
+    } catch (e) {}
+
+    return 'https://pixeldrain.com/';
+  }
+
+  // ── File meta ────────────────────────────────────────────────
+  function loadFileMeta() {
+    let title, img, cat, size;
+
+    if (fileData) {
+      // Came from the startapp JSON payload — already plain text
+      ({ t: title, i: img, c: cat, s: size } = fileData);
+    } else {
+      // Fallback for direct browser testing with separate ?title=&size= etc.
+      const p = new URLSearchParams(window.location.search);
+      const get = k => p.get(k) ? decodeURIComponent(p.get(k)) : null;
+      title = get('title'); img = get('img'); cat = get('cat'); size = get('size');
+    }
+
+    if (title) {
+      document.getElementById('file-title').textContent = title;
+      document.getElementById('logo-text').textContent = title;
+    }
     if (img) {
       const thumb = document.getElementById('file-thumb');
-      const decoded = decodeURIComponent(img);
-      thumb.innerHTML = `<img src="${decoded}" alt="cover" referrerpolicy="no-referrer"
+      thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer"
         onerror="this.parentElement.innerHTML='📦'" />`;
     }
-    if (cat)  document.getElementById('file-cat').textContent = decodeURIComponent(cat);
-    if (size) document.getElementById('file-size').textContent = '💾 ' + decodeURIComponent(size);
+    if (cat)  document.getElementById('file-cat').textContent = cat;
+    if (size) document.getElementById('file-size').textContent = '💾 ' + size;
   }
 
-  const FILE_URL = getFileUrl();
+  const FILE_URL = resolveFileUrl();
 
   // ── localStorage progress cache (5 min) ─────────────────────
   const CACHE_KEY = 'dp_progress_' + FILE_URL.slice(-20);
@@ -496,46 +666,7 @@
 
   // ── State ────────────────────────────────────────────────────
   let step1Done = false, step2Done = false;
-  let adController1 = null, adController2 = null;
   let adPlaying = false;
-
-  // ── Init ─────────────────────────────────────────────────────
-  function waitForTads(cb) {
-    if (window.tads && typeof window.tads.init === 'function') { cb(); return; }
-    const t = setInterval(() => {
-      if (window.tads && typeof window.tads.init === 'function') { clearInterval(t); cb(); }
-    }, 80);
-  }
-
-  function initAdControllers() {
-    adController1 = window.tads.init({
-      widgetId: FULLSCREEN_ID_1, type: 'fullscreen', debug: false,
-      onShowReward:  () => onAdComplete(1),
-      onAdsNotFound: () => onAdFallback(1),
-      onError:       () => onAdFallback(1),
-    });
-    adController2 = window.tads.init({
-      widgetId: FULLSCREEN_ID_2, type: 'fullscreen', debug: false,
-      onShowReward:  () => onAdComplete(2),
-      onAdsNotFound: () => onAdFallback(2),
-      onError:       () => onAdFallback(2),
-    });
-  }
-
-  function initTGBBanner() {
-    const ctrl = window.tads.init({
-      widgetId: TGB_ID, type: 'static', debug: false,
-      onAdsNotFound: hideTGB,
-    });
-    if (ctrl && typeof ctrl.loadAd === 'function') {
-      ctrl.loadAd().then(() => ctrl.showAd()).catch(hideTGB);
-    }
-  }
-
-  function hideTGB() {
-    const el = document.getElementById('ad-section-wrapper');
-    if (el) el.style.display = 'none';
-  }
 
   // ── Show skeleton → card transition ─────────────────────────
   function showCard() {
@@ -544,19 +675,39 @@
   }
 
   // ── Countdown ring animation ─────────────────────────────────
-  function startCountdownRing(n) {
+  // Auto-completes when: (1) countdown hits 0, OR (2) user returns
+  // to this page — whichever comes first. No extra tap needed.
+  function startCountdownRing(n, onDone) {
     const ring   = document.getElementById(`ring-${n}`);
     const circle = document.getElementById(`ring-circle-${n}`);
     const btn    = document.getElementById(`btn-${n}`);
     const sub    = document.getElementById(`sub-${n}`);
 
-    const circumference = 2 * Math.PI * 15; // r=15
+    const circumference = 2 * Math.PI * 13;
     circle.style.strokeDasharray  = circumference;
     circle.style.strokeDashoffset = circumference;
     ring.classList.add('active');
 
     let remaining = AD_DURATION_SEC;
+    let finished  = false;
     btn.textContent = remaining;
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      clearInterval(iv);
+      document.removeEventListener('visibilitychange', onVisible);
+      stopCountdownRing(n);
+      onDone();
+    }
+
+    // Auto-complete the moment the user switches back to this tab/mini-app
+    function onVisible() {
+      if (document.visibilityState === 'visible') {
+        setTimeout(finish, 250); // tiny grace so tab animation settles
+      }
+    }
+    document.addEventListener('visibilitychange', onVisible);
 
     const iv = setInterval(() => {
       remaining--;
@@ -565,15 +716,12 @@
 
       if (remaining > 0) {
         btn.textContent = remaining;
-        sub.textContent = `${remaining}s remaining…`;
+        sub.textContent = `${remaining}s • return here after visiting`;
       } else {
-        clearInterval(iv);
-        btn.textContent = '⏳';
-        sub.textContent = 'Loading…';
+        finish(); // countdown expired — complete immediately
       }
     }, 1000);
 
-    // store interval id to cancel if ad completes early
     window[`_cd_${n}`] = iv;
   }
 
@@ -592,25 +740,23 @@
     adPlaying = true;
     const btn = document.getElementById(`btn-${n}`);
     btn.classList.add('watching');
+    btn.textContent = '⏳';
 
-    startCountdownRing(n);
+    // Open the sponsor link in external browser / new tab
+    const link = adLinks[n - 1];
+    if (tg?.openLink) {
+      tg.openLink(link);
+    } else {
+      window.open(link, '_blank');
+    }
 
-    const controller = n === 1 ? adController1 : adController2;
-    if (!controller) { setTimeout(() => onAdFallback(n), 1200); return; }
-
-    controller.showAd().catch(() => onAdFallback(n));
-
-    // safety net 22s
-    window[`_safety_${n}`] = setTimeout(() => {
-      if (adPlaying) { console.warn(`Step ${n}: safety net`); onAdComplete(n); }
-    }, 22000);
+    // Auto-completes on return — user does NOT need to tap anything
+    startCountdownRing(n, () => onAdComplete(n));
   }
 
   // ── Ad complete ──────────────────────────────────────────────
   function onAdComplete(n) {
-    clearTimeout(window[`_safety_${n}`]);
     stopCountdownRing(n);
-    if (!adPlaying) return;
     adPlaying = false;
 
     const btn  = document.getElementById(`btn-${n}`);
@@ -618,7 +764,7 @@
     const num  = document.getElementById(`num-${n}`);
     const sub  = document.getElementById(`sub-${n}`);
 
-    btn.classList.remove('watching');
+    btn.onclick = null;
     btn.className = 'step-btn done-mark';
     btn.textContent = '✓';
     step.classList.add('done');
@@ -642,11 +788,6 @@
     }
   }
 
-  function onAdFallback(n) {
-    console.warn(`Ad ${n} fallback`);
-    setTimeout(() => onAdComplete(n), 800);
-  }
-
   function updateProgress() {
     const done = (step1Done?1:0) + (step2Done?1:0);
     document.getElementById('progress-fill').style.width  = `${done*50}%`;
@@ -659,6 +800,7 @@
     btn.className = 'cta-btn unlocked';
     btn.innerHTML = '📥 Download Now';
     document.getElementById('success-msg').classList.add('visible');
+    document.getElementById('ad-notice').style.display = 'none';
 
     // عرض الرابط الأصلي /u/ في الصندوق للمستخدم
     document.getElementById('link-display').textContent = FILE_URL;
@@ -666,7 +808,6 @@
   }
 
   function copyLink() {
-    // نسخ الرابط الأصلي /u/ وليس رابط API
     const btn = document.getElementById('copy-btn');
     navigator.clipboard.writeText(FILE_URL).then(() => {
       btn.textContent = '✓ Copied!';
@@ -676,7 +817,6 @@
         btn.classList.remove('copied');
       }, 2000);
     }).catch(() => {
-      // fallback للأجهزة التي لا تدعم clipboard API
       const ta = document.createElement('textarea');
       ta.value = FILE_URL;
       ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -690,16 +830,9 @@
   }
 
   // ── Download ─────────────────────────────────────────────────
-  function getDirectDownloadUrl(url) {
-    // تحويل https://pixeldrain.com/u/ID إلى https://pixeldrain.com/api/file/ID
-    const match = url.match(/pixeldrain\.com\/u\/([a-zA-Z0-9]+)/);
-    if (match) return 'https://pixeldrain.com/api/file/' + match[1];
-    return url;
-  }
-
   function downloadNow() {
     if (!step1Done || !step2Done) return;
-    if (tg && tg.openLink) {
+    if (tg?.openLink) {
       tg.openLink(FILE_URL, { try_instant_view: false });
     } else {
       const a = document.createElement('a');
@@ -762,7 +895,6 @@
       step1Done = true; step2Done = true;
       showCard();
       updateProgress();
-      // mark steps visually
       [1,2].forEach(n => {
         const btn  = document.getElementById(`btn-${n}`);
         const step = document.getElementById(`step-${n}`);
@@ -774,10 +906,8 @@
       unlockDownload();
     } else {
       showCard();
-      waitForTads(() => {
-        initAdControllers();
-        initTGBBanner();
-      });
+      // Run geo detection in background — non-blocking
+      detectGeoAndVPN();
     }
   });
   </script>
