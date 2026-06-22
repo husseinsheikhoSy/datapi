@@ -152,7 +152,7 @@
       width: 100%;
       margin: 0;
       background: var(--card);
-      padding: 14px 14px 12px;
+      padding: 18px 16px 14px;
       animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
       display: none;
     }
@@ -185,7 +185,7 @@
     .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
     .file-meta { flex:1; min-width:0; }
     .file-title {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       color: var(--text);
       white-space: normal;
@@ -207,17 +207,17 @@
 
     /* ── Headline ── */
     .unlock-headline { text-align: center; margin-bottom: 6px; }
-    .unlock-headline h2 { font-size: 15px; font-weight: 900; color: var(--text); line-height: 1.3; }
-    .unlock-headline p  { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+    .unlock-headline h2 { font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.3; }
+    .unlock-headline p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
 
     /* ── Ad notice ── */
     .ad-notice {
       background: #fde6e4;
       border: 1.5px solid var(--brand-red);
-      border-radius: 8px;
-      padding: 6px 10px;
-      margin-bottom: 10px;
-      font-size: 10.5px;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 12.5px;
       color: var(--brand-red-dark);
       font-weight: 700;
       text-align: center;
@@ -241,11 +241,11 @@
     .step {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       background: var(--bg);
       border: 1.5px solid var(--border);
-      border-radius: 12px;
-      padding: 8px 10px;
+      border-radius: 14px;
+      padding: 12px 14px;
       transition: border-color .3s, background .3s;
     }
     .step.locked { opacity:.5; pointer-events:none; }
@@ -292,22 +292,22 @@
     }
 
     .step-body { flex:1; min-width:0; }
-    .step-title { font-size:12px; font-weight:800; color:var(--text); }
+    .step-title { font-size:14px; font-weight:800; color:var(--text); }
     .step.done .step-title { color:var(--step-done-text); }
-    .step-sub   { font-size:10px; color:var(--text-muted); margin-top:1px; }
+    .step-sub   { font-size:12px; color:var(--text-muted); margin-top:2px; }
 
     .step-btn {
       background: var(--brand-red);
       color: #fff;
       border: none;
       border-radius: var(--radius-btn);
-      padding: 5px 10px;
-      font-size: 11px;
+      padding: 8px 14px;
+      font-size: 13px;
       font-weight: 800;
       cursor: pointer;
       flex-shrink: 0;
       transition: background .2s, transform .1s;
-      min-width: 48px;
+      min-width: 58px;
       text-align: center;
     }
     .step-btn:active  { transform: scale(.96); }
@@ -324,10 +324,10 @@
     /* ── CTA ── */
     .cta-btn {
       width: 100%;
-      padding: 11px;
-      border-radius: 12px;
+      padding: 14px;
+      border-radius: 14px;
       border: none;
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 900;
       cursor: pointer;
       display: flex;
@@ -473,6 +473,38 @@
       flex-shrink: 0;
     }
 
+    /* ── Wait overlay ── */
+    #wait-overlay {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,20,40,0.70);
+      backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeIn .25s ease;
+    }
+    #wait-overlay.fade-out { animation: fadeOutOv .4s ease forwards; }
+    @keyframes fadeOutOv { to { opacity: 0; } }
+    .wait-box {
+      background: var(--card); border-radius: 20px;
+      padding: 30px 24px; text-align: center;
+      box-shadow: 0 12px 40px rgba(213,43,30,.3);
+      max-width: 290px; width: 88%;
+      animation: popIn .3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(.82);} to{opacity:1;transform:scale(1);} }
+    .wait-icon    { font-size: 42px; margin-bottom: 8px; }
+    .wait-title   { font-size: 17px; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+    .wait-sub     { font-size: 13px; color: var(--text-muted); font-weight: 600; line-height: 1.5; margin-bottom: 14px; }
+    .wait-countdown {
+      font-size: 54px; font-weight: 900; color: var(--brand-red);
+      line-height: 1; margin-bottom: 14px;
+      animation: pulseNum 1s ease infinite;
+    }
+    @keyframes pulseNum { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+    .wait-hint {
+      font-size: 11px; color: var(--text-muted); font-weight: 600;
+      background: #fde6e4; border-radius: 8px; padding: 8px 12px; line-height: 1.5;
+    }
+
     /* ── Confetti canvas ── */
     #confetti-canvas {
       position: fixed;
@@ -589,7 +621,7 @@
       </div>
 
       <div class="ad-notice" id="ad-notice">
-        📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
+        📋 <strong>How it works:</strong> Click <strong>Visit</strong> → stay on the advertiser page for <strong>7 seconds</strong> → come back here and the next step unlocks <strong>automatically</strong>.
       </div>
 
       <div class="progress-wrap">
@@ -597,6 +629,12 @@
           <div class="progress-bar-fill" id="progress-fill"></div>
         </div>
         <span class="progress-label" id="progress-label">0/2</span>
+      </div>
+
+      <!-- Adsterra Native Banner -->
+      <div style="margin:10px 0 12px; overflow:hidden; border-radius:10px;">
+        <script async="async" data-cfasync="false" src="https://pl29841411.effectivecpmnetwork.com/7351fc3b8698105b3544395f015ba9fb/invoke.js"></script>
+        <div id="container-7351fc3b8698105b3544395f015ba9fb"></div>
       </div>
 
       <div class="steps">
@@ -610,7 +648,7 @@
           </div>
           <div class="step-body">
             <div class="step-title">Visit Sponsor Page #1</div>
-            <div class="step-sub" id="sub-1">~4 seconds • returns automatically</div>
+            <div class="step-sub" id="sub-1">~7 seconds • returns automatically</div>
           </div>
           <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
         </div>
@@ -625,7 +663,7 @@
           </div>
           <div class="step-body">
             <div class="step-title">Visit Sponsor Page #2</div>
-            <div class="step-sub" id="sub-2">~4 seconds • returns automatically</div>
+            <div class="step-sub" id="sub-2">~7 seconds • returns automatically</div>
           </div>
           <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
         </div>
@@ -651,6 +689,22 @@
     </div>
   </div>
 
+  <!-- Adsterra Banner 300x250 -->
+  <div style="display:flex; justify-content:center; padding:12px 14px 0; background:var(--bg);">
+    <div style="width:300px; height:250px; overflow:hidden; border-radius:10px;">
+      <script>
+        atOptions = {
+          'key' : 'c22f33e0192916eaa77bd8b5038a5cd5',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highperformanceformat.com/c22f33e0192916eaa77bd8b5038a5cd5/invoke.js"></script>
+    </div>
+  </div>
+
   <!-- HelloEncyclo Grant Banner -->
   <div class="encyclo-section">
     <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
@@ -673,48 +727,14 @@
   const tg = window.Telegram?.WebApp || null;
   if (tg) { tg.ready(); tg.expand(); }
 
-  // ── HilltopAds direct links ──────────────────────────────────
-  const TIER1_LINKS = [
-    "https://massive-hall.com/GQtbhS",
-    "https://massive-hall.com/ovT8hP"
-  ];
-  const TIER2_LINKS = [
-    "https://fluffy-machine.com/Kp60r2",
-    "https://fluffy-machine.com/hy0AJ8"
+  // ── Adsterra Smartlinks ──────────────────────────────────────
+  // Adsterra handles geo-targeting automatically per visitor
+  const adLinks = [
+    "https://www.effectivecpmnetwork.com/v6czsbiv9?key=a4ccd15a1755a9ec8a86e88432b4e609",   // Step 1
+    "https://www.effectivecpmnetwork.com/vq2xubkbf?key=1e22371f6fdde47e5f5c9cfd365d7ef8"    // Step 2
   ];
 
-  const TIER1_COUNTRIES = new Set([
-    "US","CA","MX",
-    "GT","BZ","SV","HN","NI","CR","PA",
-    "CU","DO","JM","HT","TT","BS","PR",
-    "BR","AR","CL","CO","PE","VE","EC","BO","PY","UY","GY","SR",
-    "CN","JP","AU",
-    "RU","UA",
-    "FR","BE","ES","IT","NL","DE","GB"
-  ]);
-
-  const AD_DURATION_SEC = 4;
-
-  let adLinks = TIER2_LINKS;
-  let geoChecked = false;
-
-  // ── Geo + VPN check ──────────────────────────────────────────
-  async function detectGeoAndVPN() {
-    try {
-      const res  = await fetch("https://ipapi.co/json/", { signal: AbortSignal.timeout(4000) });
-      const data = await res.json();
-      const cc   = (data.country_code || "").toUpperCase();
-      const vpn  = data.security?.vpn || data.security?.proxy || data.security?.tor || false;
-      if (!vpn && TIER1_COUNTRIES.has(cc)) {
-        adLinks = TIER1_LINKS;
-      } else {
-        adLinks = TIER2_LINKS;
-      }
-    } catch(e) {
-      adLinks = TIER2_LINKS;
-    }
-    geoChecked = true;
-  }
+  const AD_DURATION_SEC = 7;  // minimum seconds user must spend on ad page
 
   // ── start_param decode ──────────────────────────────────────────
   // Telegram Mini Apps only pass the single `startapp` parameter.
@@ -862,9 +882,18 @@
       onDone();
     }
 
+    const departureTime = Date.now();
+
     function onVisible() {
-      if (document.visibilityState === 'visible') {
-        setTimeout(finish, 250);
+      if (document.visibilityState !== 'visible') return;
+      document.removeEventListener('visibilitychange', onVisible);
+      const elapsedSec = (Date.now() - departureTime) / 1000;
+      const shortfall  = Math.ceil(AD_DURATION_SEC - elapsedSec);
+      if (shortfall <= 0) {
+        setTimeout(finish, 200);
+      } else {
+        sub.textContent = 'Returned too early — please wait…';
+        showWaitOverlay(shortfall, finish);
       }
     }
     document.addEventListener('visibilitychange', onVisible);
@@ -883,6 +912,34 @@
     }, 1000);
 
     window[`_cd_${n}`] = iv;
+  }
+
+  // ── Wait overlay (early-return blocker) ──────────────────────
+  function showWaitOverlay(secondsLeft, onExpired) {
+    let existing = document.getElementById('wait-overlay');
+    if (existing) existing.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'wait-overlay';
+    overlay.innerHTML = `
+      <div class="wait-box">
+        <div class="wait-icon">&#x23F3;</div>
+        <div class="wait-title">Please wait…</div>
+        <div class="wait-sub">You returned too early.<br>Step unlocks in:</div>
+        <div class="wait-countdown" id="wait-num">${secondsLeft}</div>
+        <div class="wait-hint">Stay on the sponsor page longer next time.</div>
+      </div>`;
+    document.body.appendChild(overlay);
+    let rem = secondsLeft;
+    const iv = setInterval(function() {
+      rem--;
+      const el = document.getElementById('wait-num');
+      if (el) el.textContent = rem;
+      if (rem <= 0) {
+        clearInterval(iv);
+        overlay.classList.add('fade-out');
+        setTimeout(function() { overlay.remove(); onExpired(); }, 400);
+      }
+    }, 1000);
   }
 
   function stopCountdownRing(n) {
@@ -1061,7 +1118,6 @@
       unlockDownload();
     } else {
       showCard();
-      detectGeoAndVPN();
     }
   });
   </script>
