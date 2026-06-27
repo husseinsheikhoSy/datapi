@@ -688,6 +688,22 @@
 
     </div>
 
+  <!-- Adsterra Banner 300x250 -->
+  <div style="display:flex; justify-content:center; padding:12px 14px 0; background:var(--bg);">
+    <div style="width:300px; height:250px; overflow:hidden; border-radius:10px;">
+      <script>
+        atOptions = {
+          'key' : 'c22f33e0192916eaa77bd8b5038a5cd5',
+          'format' : 'iframe',
+          'height' : 250,
+          'width' : 300,
+          'params' : {}
+        };
+      </script>
+      <script src="https://www.highperformanceformat.com/c22f33e0192916eaa77bd8b5038a5cd5/invoke.js"></script>
+    </div>
+  </div>
+
   <!-- HelloEncyclo Grant Banner -->
   <div class="encyclo-section">
     <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
@@ -716,9 +732,12 @@
   const ADSBITVEX_SRC    = `https://sdk.adsbitvex.com/functions/v1/ad-script?appid=${ADSBITVEX_APP_ID}`;
 
   // Loads (or re-loads) the adsbitvex SDK script fresh each time.
+  // Passing destroyPrev=true removes any existing script tag + clears
+  // window.showadsbitvex so the new instance is fully independent.
   function loadAdsbitvexSDK(destroyPrev) {
     return new Promise((resolve, reject) => {
       if (destroyPrev) {
+        // Destroy existing instance
         const old = document.getElementById('adsbitvex-sdk');
         if (old) old.remove();
         delete window.showadsbitvex;
@@ -727,7 +746,7 @@
       }
       const script = document.createElement('script');
       script.id  = 'adsbitvex-sdk';
-      script.src = ADSBITVEX_SRC + '&_t=' + Date.now();
+      script.src = ADSBITVEX_SRC + '&_t=' + Date.now(); // cache-bust
       script.onload = () => {
         window.__adsbitvex_loaded = true;
         resolve();
@@ -737,9 +756,12 @@
     });
   }
 
-  const AD_DURATION_SEC = 15;
+  const AD_DURATION_SEC = 15;  // adsbitvex reward ad countdown
 
   // ── start_param decode ──────────────────────────────────────────
+  // Telegram Mini Apps only pass the single `startapp` parameter.
+  // We encode ALL data (title, image, file URL, category, size) into
+  // one base64url-encoded JSON object inside startapp.
   function b64urlDecode(str) {
     const b64     = str.replace(/-/g, '+').replace(/_/g, '/');
     const padded  = b64 + '='.repeat((4 - b64.length % 4) % 4);
@@ -749,13 +771,16 @@
   }
 
   function getStartParam() {
+    // Try Telegram WebApp first
     if (tg?.initDataUnsafe?.start_param) {
       return tg.initDataUnsafe.start_param;
     }
+    // Fallback for direct browser testing
     const urlParams = new URLSearchParams(window.location.search);
     return urlParams.get('startapp') || urlParams.get('tgWebAppStartParam') || null;
   }
 
+  // Decoded JSON payload: { u: url, t: title, i: img, c: category, s: size }
   let fileData = null;
 
   function resolveFileUrl() {
@@ -770,6 +795,7 @@
         return parsed.u;
       }
     } catch (e) {
+      // Not JSON — try legacy plain-URL format
       try {
         const decoded = b64urlDecode(raw);
         if (decoded.startsWith('http')) return decoded;
@@ -783,12 +809,17 @@
   function loadFileMeta() {
     let title, img, cat, size;
 
+    console.log("[DataPi26] fileData:", fileData);
+    console.log("[DataPi26] FILE_URL:", FILE_URL);
+
     if (fileData) {
+      // From the startapp JSON payload
       title = fileData.t;
       img = fileData.i;
       cat = fileData.c;
       size = fileData.s;
     } else {
+      // Fallback for direct browser testing
       const p = new URLSearchParams(window.location.search);
       const get = k => p.get(k) ? decodeURIComponent(p.get(k)) : null;
       title = get('title');
@@ -803,6 +834,7 @@
       document.title = title + " — DataPi26";
     }
     if (img) {
+      console.log("[DataPi26] Setting cover image:", img);
       const thumb = document.getElementById('file-thumb');
       thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer" crossorigin="anonymous"
         onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='📦';" 
@@ -938,85 +970,6 @@
     if (ring) ring.classList.remove('active');
   }
 
-  // ── 🔒 Link Patcher: prevents Mini App from closing ─────────
-  // Intercepts window.open / location.href so ads open externally
-  // ────────────────────────────────────────────────────────────
-  function patchOpenLinks() {
-    const originals = {
-      open: window.open.bind(window),
-      assign: window.location.assign.bind(window.location),
-      replace: window.location.replace.bind(window.location),
-      hrefDesc: Object.getOwnPropertyDescriptor(window.location, 'href')
-    };
-
-    // window.open → tg.openLink
-    window.open = function(url, target, features) {
-      if (tg?.openLink && url) {
-        tg.openLink(url.toString(), { try_instant_view: false });
-        return null;
-      }
-      return originals.open(url, target, features);
-    };
-
-    // location.assign
-    window.location.assign = function(url) {
-      if (tg?.openLink && url) {
-        tg.openLink(url.toString(), { try_instant_view: false });
-        return;
-      }
-      originals.assign(url);
-    };
-
-    // location.replace
-    window.location.replace = function(url) {
-      if (tg?.openLink && url) {
-        tg.openLink(url.toString(), { try_instant_view: false });
-        return;
-      }
-      originals.replace(url);
-    };
-
-    // location.href setter
-    if (originals.hrefDesc && originals.hrefDesc.set) {
-      Object.defineProperty(window.location, 'href', {
-        set: function(url) {
-          if (tg?.openLink && url) {
-            tg.openLink(url.toString(), { try_instant_view: false });
-            return;
-          }
-          originals.hrefDesc.set.call(this, url);
-        },
-        get: originals.hrefDesc.get,
-        configurable: true
-      });
-    }
-
-    // Also patch top-level if inside iframe (Telegram WebView)
-    try {
-      if (window.top !== window.self) {
-        const topOpen = window.top.open.bind(window.top);
-        window.top.open = function(url, target, features) {
-          if (tg?.openLink && url) {
-            tg.openLink(url.toString(), { try_instant_view: false });
-            return null;
-          }
-          return topOpen(url, target, features);
-        };
-      }
-    } catch(e) {}
-
-    return {
-      restore: function() {
-        window.open = originals.open;
-        window.location.assign = originals.assign;
-        window.location.replace = originals.replace;
-        if (originals.hrefDesc) {
-          Object.defineProperty(window.location, 'href', originals.hrefDesc);
-        }
-      }
-    };
-  }
-
   // ── Start step ───────────────────────────────────────────────
   async function startStep(n) {
     if (adPlaying) return;
@@ -1028,12 +981,14 @@
     btn.classList.add('watching');
     btn.textContent = '⏳';
 
+    // For step 2: destroy step-1 instance → create fresh instance
     const destroyPrev = (n === 2);
-    let linkPatcher = null;
 
     try {
+      // Load (or reload) SDK
       await loadAdsbitvexSDK(destroyPrev);
 
+      // Wait until showadsbitvex is available (max 5s)
       await new Promise((resolve, reject) => {
         let attempts = 0;
         const check = setInterval(() => {
@@ -1050,22 +1005,20 @@
 
       startCountdownRing(n, () => onAdComplete(n));
 
-      // 🔒 Activate patch before showing ad
-      linkPatcher = patchOpenLinks();
-
+      // Show the reward ad — resolves when user closes it
       window.showadsbitvex()
         .then(() => {
-          if (linkPatcher) linkPatcher.restore();
+          // Ad watched successfully — ring will complete naturally
         })
         .catch(e => {
           console.warn('Ad error:', e);
-          if (linkPatcher) linkPatcher.restore();
+          // Still complete the step even on ad error
           onAdComplete(n);
         });
 
     } catch (err) {
       console.error('adsbitvex load error:', err);
-      if (linkPatcher) linkPatcher.restore();
+      // Fallback: complete step anyway so user isn't blocked
       btn.classList.remove('watching');
       adPlaying = false;
       startCountdownRing(n, () => onAdComplete(n));
