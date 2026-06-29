@@ -10,23 +10,12 @@
   <!-- ══ INTERCEPTORS — يجب أن تكون قبل أي SDK إعلانات ══ -->
   <script>
   (function() {
-    var _origOpen    = window.open;
-    var _origAssign  = window.location ? window.location.assign.bind(window.location) : null;
+    var _origOpen   = window.open;
+    var _origAssign = window.location ? window.location.assign.bind(window.location) : null;
     var _origReplace = window.location ? window.location.replace.bind(window.location) : null;
-
-    // النطاقات المستثناة — SDKs الإعلانية تحتاج تعمل بحرية تامة
-    function isAdSdkUrl(url) {
-      if (!url || typeof url !== 'string') return false;
-      return url.indexOf('adsbitvex.com') !== -1 ||
-             url.indexOf('sdk.adsbitvex') !== -1 ||
-             url.indexOf('tads.me')       !== -1;
-    }
 
     window.open = function(url, target, features) {
       if (url && typeof url === 'string' && url.indexOf('http') === 0) {
-        if (isAdSdkUrl(url)) {
-          return _origOpen.call(window, url, target || '_blank', features);
-        }
         var tgApp = window.Telegram && window.Telegram.WebApp;
         if (tgApp && typeof tgApp.openLink === 'function') {
           try { tgApp.openLink(url, { try_instant_view: false }); return null; } catch(e) {}
@@ -44,10 +33,6 @@
           get: _hrefDescriptor.get,
           set: function(url) {
             if (url && typeof url === 'string' && url.indexOf('http') === 0) {
-              if (isAdSdkUrl(url)) {
-                _origHrefSet.call(window.location, url);
-                return;
-              }
               var tgApp = window.Telegram && window.Telegram.WebApp;
               if (tgApp && typeof tgApp.openLink === 'function') {
                 try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
@@ -63,7 +48,6 @@
     if (_origAssign) {
       window.location.assign = function(url) {
         if (url && typeof url === 'string' && url.indexOf('http') === 0) {
-          if (isAdSdkUrl(url)) { _origAssign(url); return; }
           var tgApp = window.Telegram && window.Telegram.WebApp;
           if (tgApp && typeof tgApp.openLink === 'function') {
             try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
@@ -76,7 +60,6 @@
     if (_origReplace) {
       window.location.replace = function(url) {
         if (url && typeof url === 'string' && url.indexOf('http') === 0) {
-          if (isAdSdkUrl(url)) { _origReplace(url); return; }
           var tgApp = window.Telegram && window.Telegram.WebApp;
           if (tgApp && typeof tgApp.openLink === 'function') {
             try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
@@ -88,7 +71,7 @@
   })();
   </script>
 
-  <!-- adsbitvex SDK -->
+  <!-- adsbitvex SDK (fallback) -->
   <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000167"></script>
 
   <!-- tads.me SDK (primary) -->
@@ -134,6 +117,7 @@
       padding: 8px;
     }
 
+    /* ── App shell ── */
     .app-shell {
       width: 100%;
       max-width: 420px;
@@ -158,6 +142,7 @@
       }
     }
 
+    /* ── Top bar ── */
     .top-bar {
       width: 100%;
       background: var(--brand-red);
@@ -168,24 +153,39 @@
       flex-shrink: 0;
     }
     .logo-u {
-      width: 28px; height: 28px; border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
       background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; font-weight: 900; color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--brand-red);
       flex-shrink: 0;
     }
     .logo-text {
-      font-size: 13px; font-weight: 800; color: #fff;
-      flex: 1; min-width: 0;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      font-size: 13px;
+      font-weight: 800;
+      color: #fff;
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .badge-free {
       margin-left: auto;
-      background: #ffffff; color: var(--brand-red);
-      font-size: 10px; font-weight: 800;
-      padding: 3px 8px; border-radius: 20px;
+      background: #ffffff;
+      color: var(--brand-red);
+      font-size: 10px;
+      font-weight: 800;
+      padding: 3px 8px;
+      border-radius: 20px;
     }
 
+    /* ── Scrollable content area ── */
     .scroll-area {
       flex: 1;
       overflow-y: auto;
@@ -193,17 +193,20 @@
       -webkit-overflow-scrolling: touch;
     }
 
+    /* ── Loading skeleton ── */
     .skeleton {
       display: none;
       width: 100%;
+      margin: 0;
       background: var(--card);
-      padding: 16px;
+      padding: 16px 16px;
     }
     .skeleton.visible { display: block; }
     .skel-line {
       background: linear-gradient(90deg, #f0dedd 25%, #faf3f2 50%, #f0dedd 75%);
       background-size: 200% 100%;
-      border-radius: 6px; margin-bottom: 8px;
+      border-radius: 6px;
+      margin-bottom: 8px;
       animation: shimmer 1.4s infinite;
     }
     @keyframes shimmer {
@@ -214,8 +217,10 @@
     .skel-row { display: flex; gap: 10px; margin-bottom: 14px; }
     .skel-lines { flex: 1; }
 
+    /* ── Main card ── */
     .card {
       width: 100%;
+      margin: 0;
       background: var(--card);
       padding: 18px 16px 14px;
       animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
@@ -227,87 +232,128 @@
       to   { opacity:1; transform:translateY(0); }
     }
 
+    /* ── File info ── */
     .file-info {
-      display: flex; gap: 10px;
-      margin-bottom: 10px; padding-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
     .file-thumb {
-      width: 52px; height: 52px; border-radius: 8px;
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
       background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
       flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 24px; overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      overflow: hidden;
     }
     .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
     .file-meta { flex:1; min-width:0; }
     .file-title {
-      font-size: 15px; font-weight: 800; color: var(--text);
-      white-space: normal; word-break: break-word; line-height: 1.35;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.35;
       margin-bottom: 4px;
     }
     .file-tags { display:flex; gap:5px; flex-wrap:wrap; }
     .tag {
-      font-size: 10px; font-weight: 700;
-      padding: 2px 6px; border-radius: 4px;
-      background: #fde6e4; color: var(--brand-red);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #fde6e4;
+      color: var(--brand-red);
     }
     .tag.free-tag { background: var(--brand-red); color: #fff; }
     .file-size-row { font-size: 11px; font-weight: 700; margin-top: 4px; color: var(--text-muted); }
 
+    /* ── Headline ── */
     .unlock-headline { text-align: center; margin-bottom: 6px; }
     .unlock-headline h2 { font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.3; }
     .unlock-headline p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
 
+    /* ── Ad notice ── */
     .ad-notice {
       background: #fde6e4;
       border: 1.5px solid var(--brand-red);
       border-radius: 10px;
-      padding: 10px 14px; margin-bottom: 12px;
-      font-size: 12.5px; color: var(--brand-red-dark);
-      font-weight: 700; text-align: center; line-height: 1.4;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      font-size: 12.5px;
+      color: var(--brand-red-dark);
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
     }
 
+    /* ── Progress bar ── */
     .progress-wrap { margin: 8px 0; display: flex; align-items: center; gap: 8px; }
     .progress-bar-bg { flex:1; height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
     .progress-bar-fill {
       height: 100%;
       background: linear-gradient(90deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 10px; width: 0%;
+      border-radius: 10px;
+      width: 0%;
       transition: width .5s ease;
     }
     .progress-label { font-size:11px; font-weight:800; color:var(--brand-red); min-width:28px; text-align:right; }
 
+    /* ── Steps ── */
     .steps { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
     .step {
-      display: flex; align-items: center; gap: 10px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 12px 14px;
       transition: border-color .3s, background .3s;
     }
     .step.locked { opacity:.5; pointer-events:none; }
     .step.done   { border-color:#c3e6cb; background:var(--step-done-bg); }
 
     .step-num {
-      width: 28px; height: 28px; border-radius: 50%;
-      background: #fde6e4; color: var(--brand-red);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 900; flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fde6e4;
+      color: var(--brand-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 900;
+      flex-shrink: 0;
       transition: background .3s, color .3s;
       position: relative;
     }
     .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:14px; }
 
+    /* countdown ring */
     .countdown-ring {
-      position: absolute; top: 0; left: 0;
-      width: 28px; height: 28px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 28px;
+      height: 28px;
       transform: rotate(-90deg);
       pointer-events: none;
-      opacity: 0; transition: opacity .2s;
+      opacity: 0;
+      transition: opacity .2s;
     }
     .countdown-ring.active { opacity: 1; }
     .countdown-ring circle {
-      fill: none; stroke: var(--brand-red-dark);
+      fill: none;
+      stroke: var(--brand-red-dark);
       stroke-width: 3;
       stroke-dasharray: 88;
       stroke-dashoffset: 88;
@@ -321,25 +367,43 @@
     .step-sub   { font-size:12px; color:var(--text-muted); margin-top:2px; }
 
     .step-btn {
-      background: var(--brand-red); color: #fff;
-      border: none; border-radius: var(--radius-btn);
-      padding: 8px 14px; font-size: 13px; font-weight: 800;
-      cursor: pointer; flex-shrink: 0;
+      background: var(--brand-red);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-btn);
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
       transition: background .2s, transform .1s;
-      min-width: 58px; text-align: center;
+      min-width: 58px;
+      text-align: center;
     }
     .step-btn:active  { transform: scale(.96); }
     .step-btn:disabled { background: #f2c5c1; cursor: not-allowed; }
     .step-btn.watching { background: #f59e0b; pointer-events: none; }
     .step-btn.done-mark {
-      background: transparent; color: var(--step-done-text);
-      font-size: 18px; pointer-events: none; padding: 0 10px;
+      background: transparent;
+      color: var(--step-done-text);
+      font-size: 18px;
+      pointer-events: none;
+      padding: 0 10px;
     }
 
+    /* ── CTA ── */
     .cta-btn {
-      width: 100%; padding: 14px; border-radius: 14px; border: none;
-      font-size: 15px; font-weight: 900; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 6px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 15px;
+      font-weight: 900;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
       transition: all .3s;
     }
     .cta-btn.locked  { background:var(--border); color:var(--text-muted); cursor:not-allowed; }
@@ -355,98 +419,181 @@
       100%{ box-shadow: 0 0 0 0   rgba(213,43,30,0);   }
     }
 
+    /* ── Success message ── */
     .success-msg {
       display: none;
-      text-align: center; margin-top: 10px;
+      text-align: center;
+      margin-top: 10px;
       padding: 8px 12px;
       background: var(--step-done-bg);
       border: 1.5px solid #c3e6cb;
       border-radius: 10px;
-      font-size: 11px; font-weight: 700; color: var(--step-done-text);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--step-done-text);
       animation: fadeIn .4s ease;
     }
     .success-msg.visible { display: block; }
     @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
 
+    /* ── Link box ── */
     .link-box {
-      display: none; margin-top: 10px;
-      background: var(--bg); border: 1.5px solid var(--border);
-      border-radius: 10px; padding: 8px 10px;
+      display: none;
+      margin-top: 10px;
+      background: var(--bg);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 10px;
       animation: fadeIn .4s ease;
     }
     .link-box.visible { display: block; }
     .link-box-label {
-      font-size: 10px; font-weight: 700; color: var(--text-muted);
-      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 4px;
     }
-    .link-row { display: flex; align-items: center; gap: 6px; }
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
     .link-text {
-      flex: 1; font-size: 11px; font-weight: 700; color: var(--brand-red);
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-      background: #fde6e4; border-radius: 6px; padding: 5px 8px;
-      cursor: text; user-select: all;
+      flex: 1;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--brand-red);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #fde6e4;
+      border-radius: 6px;
+      padding: 5px 8px;
+      cursor: text;
+      user-select: all;
     }
     .copy-btn {
-      background: var(--brand-red); color: #fff;
-      border: none; border-radius: 6px;
-      padding: 6px 10px; font-size: 11px; font-weight: 800;
-      cursor: pointer; flex-shrink: 0;
-      transition: background .2s, transform .1s; white-space: nowrap;
+      background: var(--brand-red);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .2s, transform .1s;
+      white-space: nowrap;
     }
     .copy-btn:active { transform: scale(.95); }
     .copy-btn.copied { background: var(--step-done-text); }
 
+    /* ── tads.me TGB Banner ── */
     .tads-banner-section {
-      width: 100%; padding: 0 14px 12px;
-      background: var(--bg); flex-shrink: 0;
+      width: 100%;
+      padding: 0 14px 12px;
+      background: var(--bg);
+      flex-shrink: 0;
     }
-    #tads-container-9637 { width: 100%; border-radius: 12px; overflow: hidden; }
+    #tads-container-9637 {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
 
+    /* ── HelloEncyclo banner ── */
     .encyclo-section {
-      width: 100%; padding: 10px 14px 12px;
-      background: var(--bg); flex-shrink: 0;
+      width: 100%;
+      padding: 10px 14px 12px;
+      background: var(--bg);
+      flex-shrink: 0;
     }
     .encyclo-banner {
       background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 14px; padding: 10px 12px;
-      display: flex; align-items: center; gap: 10px;
+      border-radius: 14px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
       text-decoration: none;
       box-shadow: 0 3px 12px rgba(213,43,30,.25);
       transition: transform .2s, box-shadow .2s;
     }
     .encyclo-banner:active { transform: scale(.98); }
     .encyclo-icon {
-      width: 40px; height: 40px; border-radius: 10px;
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       background: #ffffff;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
     }
     .encyclo-text { flex: 1; }
-    .encyclo-title { font-size: 12px; font-weight: 900; color: #fff; margin-bottom: 2px; }
-    .encyclo-sub { font-size: 10px; color: rgba(255,255,255,.8); font-weight: 600; line-height: 1.3; }
+    .encyclo-title {
+      font-size: 12px;
+      font-weight: 900;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .encyclo-sub {
+      font-size: 10px;
+      color: rgba(255,255,255,.8);
+      font-weight: 600;
+      line-height: 1.3;
+    }
     .encyclo-arrow {
-      background: #ffffff; color: var(--brand-red);
-      border-radius: 6px; padding: 4px 8px;
-      font-size: 11px; font-weight: 900; flex-shrink: 0;
+      background: #ffffff;
+      color: var(--brand-red);
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 11px;
+      font-weight: 900;
+      flex-shrink: 0;
     }
 
+    /* ── Confetti canvas ── */
     #confetti-canvas {
-      position: fixed; top:0; left:0;
-      width:100%; height:100%;
-      pointer-events: none; z-index: 999; display: none;
+      position: fixed;
+      top:0;
+      left:0;
+      width:100%;
+      height:100%;
+      pointer-events: none;
+      z-index: 999;
+      display: none;
     }
 
+    /* ── Desktop optimization ── */
     @media (min-width: 768px) {
-      body { padding: 12px; }
-      .app-shell { max-width: 400px; max-height: 85vh; border-radius: 20px; }
-      .scroll-area { scrollbar-width: thin; scrollbar-color: var(--brand-red-light) transparent; }
+      body {
+        padding: 12px;
+        align-items: center;
+        justify-content: center;
+      }
+      .app-shell {
+        max-width: 400px;
+        max-height: 85vh;
+        border-radius: 20px;
+      }
+      .scroll-area {
+        scrollbar-width: thin;
+        scrollbar-color: var(--brand-red-light) transparent;
+      }
       .scroll-area::-webkit-scrollbar { width: 4px; }
       .scroll-area::-webkit-scrollbar-track { background: transparent; }
-      .scroll-area::-webkit-scrollbar-thumb { background: var(--brand-red-light); border-radius: 4px; }
+      .scroll-area::-webkit-scrollbar-thumb {
+        background: var(--brand-red-light);
+        border-radius: 4px;
+      }
     }
 
     @media (max-width:380px) {
-      .card { padding:12px; }
+      .card { padding:12px 12px; }
       .step-btn { padding:4px 8px; font-size:10px; min-width:44px; }
       .cta-btn { font-size:12px; padding:10px; }
       .file-title { font-size:12px; }
@@ -474,6 +621,7 @@
 
 <div class="app-shell">
 
+  <!-- Top bar -->
   <div class="top-bar">
     <div class="logo-u">P</div>
     <span class="logo-text" id="logo-text">DataPi26 Free Access</span>
@@ -481,6 +629,7 @@
   </div>
 
   <div class="scroll-area">
+    <!-- Skeleton loader -->
     <div class="skeleton visible" id="skeleton">
       <div class="skel-row">
         <div class="skel-line skel-thumb"></div>
@@ -497,6 +646,7 @@
       <div class="skel-line" style="height:44px;border-radius:12px;margin-top:3px;"></div>
     </div>
 
+    <!-- Main card -->
     <div class="card" id="main-card">
 
       <div class="file-info">
@@ -528,6 +678,7 @@
       </div>
 
       <div class="steps">
+        <!-- Step 1 -->
         <div class="step" id="step-1">
           <div class="step-num" id="num-1">
             1
@@ -542,6 +693,7 @@
           <button class="step-btn" id="btn-1" onclick="startStep(1)">Watch</button>
         </div>
 
+        <!-- Step 2 -->
         <div class="step locked" id="step-2">
           <div class="step-num" id="num-2">
             2
@@ -565,6 +717,7 @@
         🎉 You're all set! Click above to download.
       </div>
 
+      <!-- Link box -->
       <div class="link-box" id="link-box">
         <div class="link-box-label">🔗 Direct Download Link</div>
         <div class="link-row">
@@ -575,10 +728,12 @@
 
     </div>
 
+    <!-- tads.me TGB Banner #9637 -->
     <div class="tads-banner-section">
       <div id="tads-container-9637"></div>
     </div>
 
+    <!-- HelloEncyclo Grant Banner -->
     <div class="encyclo-section">
       <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
         <div class="encyclo-icon">🎓</div>
@@ -590,9 +745,10 @@
       </a>
     </div>
 
-  </div>
-</div>
+  </div><!-- end scroll-area -->
+</div><!-- end app-shell -->
 
+<!-- Confetti canvas -->
 <canvas id="confetti-canvas"></canvas>
 
 <script>
@@ -606,9 +762,12 @@ if (tg) {
 
 // ── Ad config ───────────────────────────────────────────────
 const AD_DURATION_SEC = 5;
+
+// tads.me widget IDs
 const TADS_FULLSCREEN_IDS = { 1: 9607, 2: 9969 };
 const TADS_TGB_ID = 9637;
 
+// ── حالة كل زر مستقلة ───────────────────────────────────────
 const stepState = {
   1: { done: false, playing: false },
   2: { done: false, playing: false },
@@ -635,23 +794,39 @@ function showTadsFullscreen(stepN) {
       await waitForTads(5000);
       const widgetId = TADS_FULLSCREEN_IDS[stepN];
       let settled = false;
+
       const ctrl = window.tads.init({
-        widgetId, type: 'fullscreen', debug: false,
-        onShowReward:  () => { if (!settled) { settled = true; resolve(true);  } },
-        onAdsNotFound: () => { if (!settled) { settled = true; resolve(false); } }
+        widgetId: widgetId,
+        type: 'fullscreen',
+        debug: false,
+        onShowReward: () => {
+          if (!settled) { settled = true; resolve(true); }
+        },
+        onAdsNotFound: () => {
+          if (!settled) { settled = true; resolve(false); }
+        }
       });
+
       if (ctrl && typeof ctrl.showAd === 'function') {
-        ctrl.showAd().catch(() => { if (!settled) { settled = true; resolve(false); } });
+        ctrl.showAd().catch(() => {
+          if (!settled) { settled = true; resolve(false); }
+        });
       } else {
         if (!settled) { settled = true; resolve(false); }
       }
-      setTimeout(() => { if (!settled) { settled = true; resolve(false); } }, 7000);
-    } catch (e) { resolve(false); }
+
+      setTimeout(() => {
+        if (!settled) { settled = true; resolve(false); }
+      }, 7000);
+
+    } catch (e) {
+      resolve(false);
+    }
   });
 }
 
-// ── adsbitvex helpers ───────────────────────────────────────
-function waitForAdsBitvex(timeout = 8000) {
+// ── adsbitvex fallback ──────────────────────────────────────
+function waitForAdsBitvex(timeout = 6000) {
   return new Promise((resolve, reject) => {
     if (typeof window.showadsbitvex === 'function') return resolve();
     const start = performance.now();
@@ -668,22 +843,13 @@ function waitForAdsBitvex(timeout = 8000) {
 function showAdsBitvex() {
   return new Promise(async (resolve) => {
     try {
-      await waitForAdsBitvex(8000);
+      await waitForAdsBitvex(5000);
       window.showadsbitvex()
         .then(() => resolve(true))
         .catch(() => resolve(false));
-    } catch (e) { resolve(false); }
-  });
-}
-
-// ── App Open Ad (adsbitvex reward — 15 ثانية) ───────────────
-// يُعرض تلقائياً فور فتح التطبيق للمستخدمين الجدد
-function showAppOpenAd() {
-  return new Promise((resolve) => {
-    waitForAdsBitvex(8000)
-      .then(() => window.showadsbitvex())
-      .then(() => resolve(true))
-      .catch(() => resolve(false));
+    } catch (e) {
+      resolve(false);
+    }
   });
 }
 
@@ -691,14 +857,16 @@ function showAppOpenAd() {
 function initTadsBanner() {
   waitForTads().then(() => {
     const ctrl = window.tads.init({
-      widgetId: TADS_TGB_ID, type: 'static', debug: false,
+      widgetId: TADS_TGB_ID,
+      type: 'static',
+      debug: false,
       onAdsNotFound: () => {}
     });
     ctrl.loadAd().then(() => ctrl.showAd()).catch(() => {});
   }).catch(() => {});
 }
 
-// ── start_param decode ──────────────────────────────────────
+// ── start_param decode ──────────────────────────────────────────
 function b64urlDecode(str) {
   const b64    = str.replace(/-/g, '+').replace(/_/g, '/');
   const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
@@ -734,10 +902,14 @@ function resolveFileUrl() {
   return 'https://pixeldrain.com/';
 }
 
+// ── File meta ────────────────────────────────────────────────
 function loadFileMeta() {
   let title, img, cat, size;
   if (fileData) {
-    title = fileData.t; img = fileData.i; cat = fileData.c; size = fileData.s;
+    title = fileData.t;
+    img   = fileData.i;
+    cat   = fileData.c;
+    size  = fileData.s;
   } else {
     const p   = new URLSearchParams(window.location.search);
     const get = k => p.get(k) ? decodeURIComponent(p.get(k)) : null;
@@ -751,7 +923,7 @@ function loadFileMeta() {
   if (img) {
     const thumb = document.getElementById('file-thumb');
     thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer" crossorigin="anonymous"
-      onerror="this.onerror=null;this.src='';this.parentElement.innerHTML='📦';"
+      onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='📦';"
       style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />`;
   }
   if (cat)  document.getElementById('file-cat').textContent  = cat;
@@ -780,6 +952,7 @@ function saveProgress(step1, step2) {
   } catch(e) {}
 }
 
+// ── Show skeleton → card transition ─────────────────────────
 function showCard() {
   document.getElementById('skeleton').classList.remove('visible');
   document.getElementById('main-card').classList.add('visible');
@@ -816,7 +989,9 @@ function startCountdownRing(n, onDone) {
     if (remaining > 0) {
       btn.textContent = remaining;
       sub.textContent = `${remaining}s • watching ad…`;
-    } else { finish(); }
+    } else {
+      finish();
+    }
   }, 1000);
 
   window[`_cd_${n}`] = iv;
@@ -828,7 +1003,10 @@ function stopCountdownRing(n) {
   if (ring) ring.classList.remove('active');
 }
 
-// ── startStep ────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════
+//  startStep — كل زر يعمل بشكل مستقل تماماً
+//  المنهجية: tads.me أولاً → إذا لا يوجد إعلان → adsbitvex
+// ══════════════════════════════════════════════════════════════
 function startStep(n) {
   if (stepState[n].playing) return;
   if (n === 1 && stepState[1].done) return;
@@ -850,7 +1028,10 @@ function startStep(n) {
   function startTimer() {
     if (timerStarted) return;
     timerStarted = true;
-    startCountdownRing(n, () => { timerDone = true; tryComplete(); });
+    startCountdownRing(n, () => {
+      timerDone = true;
+      tryComplete();
+    });
   }
 
   function tryComplete() {
@@ -866,7 +1047,8 @@ function startStep(n) {
   }
   document.addEventListener('visibilitychange', onVisibilityReturn);
 
-  // tads.me أولاً → إذا لم يجد إعلان → adsbitvex fallback
+  if (sub) sub.textContent = 'loading ad…';
+
   showTadsFullscreen(n).then((tadsShown) => {
     if (tadsShown) {
       startTimer();
@@ -883,7 +1065,7 @@ function startStep(n) {
   });
 }
 
-// ── onAdComplete ─────────────────────────────────────────────
+// ── Ad complete ──────────────────────────────────────────────
 function onAdComplete(n) {
   stopCountdownRing(n);
   stepState[n].playing = false;
@@ -936,25 +1118,33 @@ function unlockDownload() {
 function copyLink() {
   const btn = document.getElementById('copy-btn');
   navigator.clipboard.writeText(FILE_URL).then(() => {
-    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   }).catch(() => {
     const ta = document.createElement('textarea');
-    ta.value = FILE_URL; ta.style.position = 'fixed'; ta.style.opacity = '0';
-    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    ta.value = FILE_URL;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
     document.body.removeChild(ta);
-    btn.textContent = '✓ Copied!'; btn.classList.add('copied');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
     setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
   });
 }
 
+// ── Download ─────────────────────────────────────────────────
 function downloadNow() {
   if (!stepState[1].done || !stepState[2].done) return;
   if (tg && typeof tg.openLink === 'function') {
     tg.openLink(FILE_URL, { try_instant_view: false });
   } else {
     const a = document.createElement('a');
-    a.href = FILE_URL; a.target = '_blank'; a.rel = 'noopener'; a.click();
+    a.href = FILE_URL;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.click();
   }
 }
 document.getElementById('btn-download').addEventListener('click', downloadNow);
@@ -982,10 +1172,12 @@ function launchConfetti() {
   function draw() {
     ctx.clearRect(0,0,canvas.width,canvas.height);
     pieces.forEach(p => {
-      ctx.beginPath(); ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
       ctx.ellipse(p.x, p.y, p.r, p.r*0.4, p.tilt, 0, Math.PI*2);
       ctx.fill();
-      p.y += p.d + frame/80; p.tilt += p.tiltSpeed;
+      p.y += p.d + frame/80;
+      p.tilt += p.tiltSpeed;
       p.x += Math.sin(frame/20) * 0.5;
       if (p.y > canvas.height) { p.y = -10; p.x = Math.random()*canvas.width; }
     });
@@ -1003,7 +1195,6 @@ window.addEventListener('load', async () => {
 
   const cached = loadProgress();
   if (cached?.step1 && cached?.step2) {
-    // مستخدم أكمل مسبقاً — لا إعلان فتح
     stepState[1].done = true; stepState[2].done = true;
     showCard();
     updateProgress();
@@ -1018,10 +1209,7 @@ window.addEventListener('load', async () => {
     });
     unlockDownload();
   } else {
-    // مستخدم جديد — أظهر إعلان الفتح (15s) ثم الكارد
-    showAppOpenAd().finally(() => {
-      showCard();
-    });
+    showCard();
   }
 });
 </script>
