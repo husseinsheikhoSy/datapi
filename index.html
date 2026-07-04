@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>DataPi26 — Free File Access</title>
 
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
   <!-- ══ INTERCEPTORS — يجب أن تكون قبل أي SDK إعلانات ══ -->
   <script>
@@ -71,126 +71,88 @@
   })();
   </script>
 
-  <!-- adsbitvex SDK (fallback) -->
-  <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000167"></script>
-
-  <!-- tads.me SDK (primary) -->
+  <!-- tads.me SDK (primary and only ad provider) — Vanilla JS integration -->
   <script src="https://w.tads.me/widget.js"></script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet" />
 
   <style>
+    /* ══════════════════════════════════════════════════════════
+       Mistral AI-inspired design tokens
+       (warm cream + sunset-orange accent, Inter + Playfair Display)
+       ══════════════════════════════════════════════════════════ */
     :root {
-      --brand-red:      #d52b1e;
-      --brand-red-dark: #a3160c;
-      --brand-red-light:#ff7a6e;
-      --bg:             #fafafa;
-      --card:           #ffffff;
-      --text:           #1c1d1f;
-      --text-muted:     #6a6f73;
-      --border:         #f0dedd;
-      --step-done-bg:   #e6f4ea;
-      --step-done-text: #1e7e34;
+      --bg:             #FFF8E0;
+      --card:           #FFFFFF;
+      --text:           #1A1A1A;
+      --text-muted:     #6A6F73;
+      --border:         #E8E0D0;
+      --accent:         #FA520F;
+      --accent-dark:    #CC3A05;
+      --accent-pale:    #FFF0E6;
+      --step-done-bg:   #FFF0E6;
+      --step-done-text: #CC3A05;
       --radius-card:    20px;
       --radius-btn:     10px;
-      --shadow-card:    0 4px 24px rgba(213,43,30,.12);
+      --shadow-card:    0 4px 24px rgba(26,26,26,.10);
     }
 
     *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 
-    html, body {
-      font-family: 'Mulish', sans-serif;
+    body {
+      font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
       min-height: 100vh;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    body {
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 8px;
+      padding: 18px 12px;
+      overflow-x: hidden;
     }
 
-    /* ── App shell ── */
     .app-shell {
       width: 100%;
-      max-width: 420px;
-      max-height: 100vh;
+      max-width: 440px;
       margin: 0 auto;
       background: var(--bg);
-      border-radius: 16px;
+      border-radius: 20px;
       overflow: hidden;
-      box-shadow: 0 12px 44px rgba(213,43,30,.16);
-      display: flex;
-      flex-direction: column;
+      box-shadow: 0 12px 44px rgba(26,26,26,.14);
     }
-
     @media (max-width: 480px) {
       body { padding: 0; justify-content: flex-start; }
-      .app-shell {
-        border-radius: 0;
-        box-shadow: none;
-        max-width: 100%;
-        max-height: 100vh;
-        height: 100vh;
-      }
+      .app-shell { border-radius: 0; box-shadow: none; max-width: 100%; }
     }
 
     /* ── Top bar ── */
     .top-bar {
       width: 100%;
-      background: var(--brand-red);
-      padding: 10px 16px 9px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
+      background: var(--card);
+      padding: 14px 20px 12px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
     }
     .logo-u {
-      width: 28px;
-      height: 28px;
-      border-radius: 6px;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      font-weight: 900;
-      color: var(--brand-red);
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: #fff;
       flex-shrink: 0;
     }
     .logo-text {
-      font-size: 13px;
-      font-weight: 800;
-      color: #fff;
-      flex: 1;
-      min-width: 0;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      font-size: 14px; font-weight: 700; color: var(--text);
+      flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     }
     .badge-free {
       margin-left: auto;
-      background: #ffffff;
-      color: var(--brand-red);
-      font-size: 10px;
-      font-weight: 800;
-      padding: 3px 8px;
-      border-radius: 20px;
-    }
-
-    /* ── Scrollable content area ── */
-    .scroll-area {
-      flex: 1;
-      overflow-y: auto;
-      overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
+      background: var(--accent-pale); color: var(--accent-dark);
+      font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
     }
 
     /* ── Loading skeleton ── */
@@ -199,22 +161,23 @@
       width: 100%;
       margin: 0;
       background: var(--card);
-      padding: 16px 16px;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 22px 20px;
     }
     .skeleton.visible { display: block; }
     .skel-line {
-      background: linear-gradient(90deg, #f0dedd 25%, #faf3f2 50%, #f0dedd 75%);
+      background: linear-gradient(90deg, #F0E8D8 25%, #FAF5ED 50%, #F0E8D8 75%);
       background-size: 200% 100%;
-      border-radius: 6px;
-      margin-bottom: 8px;
+      border-radius: 6px; margin-bottom: 10px;
       animation: shimmer 1.4s infinite;
     }
     @keyframes shimmer {
       0%   { background-position: 200% 0; }
       100% { background-position: -200% 0; }
     }
-    .skel-thumb { width: 52px; height: 52px; border-radius: 8px; flex-shrink: 0; }
-    .skel-row { display: flex; gap: 10px; margin-bottom: 14px; }
+    .skel-thumb { width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0; }
+    .skel-row { display: flex; gap: 12px; margin-bottom: 18px; }
     .skel-lines { flex: 1; }
 
     /* ── Main card ── */
@@ -222,7 +185,9 @@
       width: 100%;
       margin: 0;
       background: var(--card);
-      padding: 18px 16px 14px;
+      border-radius: 0;
+      box-shadow: none;
+      padding: 20px 18px 18px;
       animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
       display: none;
     }
@@ -234,268 +199,154 @@
 
     /* ── File info ── */
     .file-info {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-      padding-bottom: 10px;
+      display: flex; gap: 12px;
+      margin-bottom: 14px; padding-bottom: 14px;
       border-bottom: 1px solid var(--border);
     }
     .file-thumb {
-      width: 52px;
-      height: 52px;
-      border-radius: 8px;
-      background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
+      width: 64px; height: 64px; border-radius: 10px;
+      background: var(--accent);
       flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      overflow: hidden;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; overflow: hidden;
     }
-    .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:8px; }
+    .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
     .file-meta { flex:1; min-width:0; }
     .file-title {
-      font-size: 15px;
-      font-weight: 800;
-      color: var(--text);
-      white-space: normal;
-      word-break: break-word;
-      line-height: 1.35;
-      margin-bottom: 4px;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 800; color: var(--text);
+      white-space: normal; word-break: break-word; line-height: 1.35;
+      margin-bottom: 6px;
     }
-    .file-tags { display:flex; gap:5px; flex-wrap:wrap; }
+    .file-tags { display:flex; gap:6px; flex-wrap:wrap; }
     .tag {
-      font-size: 10px;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: #fde6e4;
-      color: var(--brand-red);
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px;
+      background: var(--accent-pale); color: var(--accent-dark);
     }
-    .tag.free-tag { background: var(--brand-red); color: #fff; }
-    .file-size-row { font-size: 11px; font-weight: 700; margin-top: 4px; color: var(--text-muted); }
+    .tag.free-tag { background: var(--accent); color: #fff; }
+    .file-size-row { font-size: 12px; font-weight: 700; margin-top: 6px; color: var(--text-muted); }
 
     /* ── Headline ── */
     .unlock-headline { text-align: center; margin-bottom: 6px; }
-    .unlock-headline h2 { font-size: 17px; font-weight: 900; color: var(--text); line-height: 1.3; }
-    .unlock-headline p  { font-size: 13px; color: var(--text-muted); margin-top: 3px; line-height: 1.4; }
+    .unlock-headline h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.3;
+    }
+    .unlock-headline p  { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
 
     /* ── Ad notice ── */
     .ad-notice {
-      background: #fde6e4;
-      border: 1.5px solid var(--brand-red);
+      background: var(--accent-pale);
+      border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 8px 12px;
       margin-bottom: 12px;
-      font-size: 12.5px;
-      color: var(--brand-red-dark);
-      font-weight: 700;
+      font-size: 11.5px;
+      color: var(--accent-dark);
+      font-weight: 600;
       text-align: center;
-      line-height: 1.4;
+      line-height: 1.45;
     }
 
     /* ── Progress bar ── */
-    .progress-wrap { margin: 8px 0; display: flex; align-items: center; gap: 8px; }
-    .progress-bar-bg { flex:1; height:6px; background:var(--border); border-radius:10px; overflow:hidden; }
+    .progress-wrap { margin: 12px 0; display: flex; align-items: center; gap: 10px; }
+    .progress-bar-bg { flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden; }
     .progress-bar-fill {
       height: 100%;
-      background: linear-gradient(90deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 10px;
-      width: 0%;
+      background: var(--accent);
+      border-radius: 10px; width: 0%;
       transition: width .5s ease;
     }
-    .progress-label { font-size:11px; font-weight:800; color:var(--brand-red); min-width:28px; text-align:right; }
+    .progress-label { font-size:12px; font-weight:700; color:var(--accent-dark); min-width:30px; text-align:right; }
 
     /* ── Steps ── */
-    .steps { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
     .step {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 14px;
-      padding: 12px 14px;
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 12px;
       transition: border-color .3s, background .3s;
     }
     .step.locked { opacity:.5; pointer-events:none; }
-    .step.done   { border-color:#c3e6cb; background:var(--step-done-bg); }
+    .step.done   { border-color: var(--accent); background: var(--step-done-bg); }
 
     .step-num {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: #fde6e4;
-      color: var(--brand-red);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 900;
-      flex-shrink: 0;
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--border); color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0;
       transition: background .3s, color .3s;
       position: relative;
     }
-    .step.done .step-num { background:var(--step-done-text); color:#fff; font-size:14px; }
+    .step.done .step-num { background: var(--accent); color:#fff; font-size:16px; }
 
     /* countdown ring */
     .countdown-ring {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 28px;
-      height: 28px;
+      position: absolute; top: 0; left: 0;
+      width: 32px; height: 32px;
       transform: rotate(-90deg);
       pointer-events: none;
-      opacity: 0;
-      transition: opacity .2s;
+      opacity: 0; transition: opacity .2s;
     }
     .countdown-ring.active { opacity: 1; }
     .countdown-ring circle {
-      fill: none;
-      stroke: var(--brand-red-dark);
+      fill: none; stroke: var(--accent-dark);
       stroke-width: 3;
-      stroke-dasharray: 88;
-      stroke-dashoffset: 88;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
       stroke-linecap: round;
       transition: stroke-dashoffset .95s linear;
     }
 
     .step-body { flex:1; min-width:0; }
-    .step-title { font-size:14px; font-weight:800; color:var(--text); }
-    .step.done .step-title { color:var(--step-done-text); }
-    .step-sub   { font-size:12px; color:var(--text-muted); margin-top:2px; }
+    .step-title { font-size:14px; font-weight:700; color:var(--text); }
+    .step.done .step-title { color: var(--accent-dark); }
+    .step-sub   { font-size:11px; color:var(--text-muted); margin-top:2px; }
 
     .step-btn {
-      background: var(--brand-red);
-      color: #fff;
-      border: none;
-      border-radius: var(--radius-btn);
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      cursor: pointer;
-      flex-shrink: 0;
+      background: var(--accent);
+      color: #fff; border: none;
+      border-radius: var(--radius-btn); padding: 7px 14px;
+      font-size: 12.5px; font-weight: 700;
+      cursor: pointer; flex-shrink: 0;
       transition: background .2s, transform .1s;
-      min-width: 58px;
-      text-align: center;
+      min-width: 60px; text-align: center;
     }
     .step-btn:active  { transform: scale(.96); }
-    .step-btn:disabled { background: #f2c5c1; cursor: not-allowed; }
-    .step-btn.watching { background: #f59e0b; pointer-events: none; }
+    .step-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+    .step-btn.watching { background: var(--accent-dark); pointer-events: none; }
+    .step-btn.retry { background: #B3483A; }
     .step-btn.done-mark {
-      background: transparent;
-      color: var(--step-done-text);
-      font-size: 18px;
-      pointer-events: none;
-      padding: 0 10px;
+      background: transparent; color: var(--accent-dark);
+      font-size: 20px; pointer-events: none; padding: 0 12px;
     }
 
     /* ── CTA ── */
     .cta-btn {
-      width: 100%;
-      padding: 14px;
-      border-radius: 14px;
-      border: none;
-      font-size: 15px;
-      font-weight: 900;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       transition: all .3s;
     }
     .cta-btn.locked  { background:var(--border); color:var(--text-muted); cursor:not-allowed; }
     .cta-btn.unlocked {
-      background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
+      background: var(--accent);
       color: #fff;
-      box-shadow: 0 4px 14px -3px rgba(213,43,30,.6);
-      animation: pulseRed 2.2s infinite;
+      box-shadow: 0 6px 18px -4px rgba(250,82,15,.55);
+      animation: pulseOrange 2.2s infinite;
     }
-    @keyframes pulseRed {
-      0%  { box-shadow: 0 0 0 0   rgba(213,43,30,.45); }
-      60% { box-shadow: 0 0 0 10px rgba(213,43,30,0);  }
-      100%{ box-shadow: 0 0 0 0   rgba(213,43,30,0);   }
+    @keyframes pulseOrange {
+      0%  { box-shadow: 0 0 0 0   rgba(250,82,15,.45); }
+      60% { box-shadow: 0 0 0 12px rgba(250,82,15,0);  }
+      100%{ box-shadow: 0 0 0 0   rgba(250,82,15,0);   }
     }
-
-    /* ── Success message ── */
-    .success-msg {
-      display: none;
-      text-align: center;
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: var(--step-done-bg);
-      border: 1.5px solid #c3e6cb;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--step-done-text);
-      animation: fadeIn .4s ease;
-    }
-    .success-msg.visible { display: block; }
-    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
-
-    /* ── Link box ── */
-    .link-box {
-      display: none;
-      margin-top: 10px;
-      background: var(--bg);
-      border: 1.5px solid var(--border);
-      border-radius: 10px;
-      padding: 8px 10px;
-      animation: fadeIn .4s ease;
-    }
-    .link-box.visible { display: block; }
-    .link-box-label {
-      font-size: 10px;
-      font-weight: 700;
-      color: var(--text-muted);
-      text-transform: uppercase;
-      letter-spacing: .6px;
-      margin-bottom: 4px;
-    }
-    .link-row {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .link-text {
-      flex: 1;
-      font-size: 11px;
-      font-weight: 700;
-      color: var(--brand-red);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      background: #fde6e4;
-      border-radius: 6px;
-      padding: 5px 8px;
-      cursor: text;
-      user-select: all;
-    }
-    .copy-btn {
-      background: var(--brand-red);
-      color: #fff;
-      border: none;
-      border-radius: 6px;
-      padding: 6px 10px;
-      font-size: 11px;
-      font-weight: 800;
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: background .2s, transform .1s;
-      white-space: nowrap;
-    }
-    .copy-btn:active { transform: scale(.95); }
-    .copy-btn.copied { background: var(--step-done-text); }
 
     /* ── tads.me TGB Banner ── */
     .tads-banner-section {
       width: 100%;
-      padding: 0 14px 12px;
+      padding: 0 18px 14px;
       background: var(--bg);
-      flex-shrink: 0;
     }
     #tads-container-9637 {
       width: 100%;
@@ -506,113 +357,139 @@
     /* ── HelloEncyclo banner ── */
     .encyclo-section {
       width: 100%;
-      padding: 10px 14px 12px;
+      margin: 0;
+      padding: 14px 18px 18px;
       background: var(--bg);
-      flex-shrink: 0;
     }
     .encyclo-banner {
-      background: linear-gradient(135deg, var(--brand-red), var(--brand-red-dark));
-      border-radius: 14px;
-      padding: 10px 12px;
+      background: var(--accent-dark);
+      border-radius: 16px;
+      padding: 13px 16px;
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       text-decoration: none;
-      box-shadow: 0 3px 12px rgba(213,43,30,.25);
+      box-shadow: 0 4px 16px rgba(204,58,5,.25);
       transition: transform .2s, box-shadow .2s;
     }
     .encyclo-banner:active { transform: scale(.98); }
     .encyclo-icon {
-      width: 40px;
-      height: 40px;
-      border-radius: 10px;
-      background: #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 22px;
-      flex-shrink: 0;
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
     }
     .encyclo-text { flex: 1; }
     .encyclo-title {
-      font-size: 12px;
-      font-weight: 900;
-      color: #fff;
-      margin-bottom: 2px;
+      font-size: 13px; font-weight: 800; color: #fff;
+      margin-bottom: 3px;
     }
     .encyclo-sub {
-      font-size: 10px;
-      color: rgba(255,255,255,.8);
-      font-weight: 600;
-      line-height: 1.3;
+      font-size: 11px; color: rgba(255,255,255,.85);
+      font-weight: 500; line-height: 1.4;
     }
     .encyclo-arrow {
-      background: #ffffff;
-      color: var(--brand-red);
-      border-radius: 6px;
-      padding: 4px 8px;
-      font-size: 11px;
-      font-weight: 900;
+      background: var(--card);
+      color: var(--accent-dark);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
       flex-shrink: 0;
     }
 
+    /* ── Link box ── */
+    .link-box {
+      display: none;
+      margin-top: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      animation: fadeIn .4s ease;
+    }
+    .link-box.visible { display: block; }
+    .link-box-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 6px;
+    }
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .link-text {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: var(--accent-pale);
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: text;
+      user-select: all;
+    }
+    .copy-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .2s, transform .1s;
+      white-space: nowrap;
+    }
+    .copy-btn:active { transform: scale(.95); }
+    .copy-btn.copied { background: var(--step-done-text); }
+
     /* ── Confetti canvas ── */
     #confetti-canvas {
-      position: fixed;
-      top:0;
-      left:0;
-      width:100%;
-      height:100%;
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
       pointer-events: none;
       z-index: 999;
       display: none;
     }
 
-    /* ── Desktop optimization ── */
-    @media (min-width: 768px) {
-      body {
-        padding: 12px;
-        align-items: center;
-        justify-content: center;
-      }
-      .app-shell {
-        max-width: 400px;
-        max-height: 85vh;
-        border-radius: 20px;
-      }
-      .scroll-area {
-        scrollbar-width: thin;
-        scrollbar-color: var(--brand-red-light) transparent;
-      }
-      .scroll-area::-webkit-scrollbar { width: 4px; }
-      .scroll-area::-webkit-scrollbar-track { background: transparent; }
-      .scroll-area::-webkit-scrollbar-thumb {
-        background: var(--brand-red-light);
-        border-radius: 4px;
-      }
+    /* ── Success message ── */
+    .success-msg {
+      display: none;
+      text-align: center;
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--step-done-bg);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      color: var(--accent-dark);
+      animation: fadeIn .4s ease;
     }
+    .success-msg.visible { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
 
     @media (max-width:380px) {
-      .card { padding:12px 12px; }
-      .step-btn { padding:4px 8px; font-size:10px; min-width:44px; }
-      .cta-btn { font-size:12px; padding:10px; }
-      .file-title { font-size:12px; }
+      .card { padding:16px 14px; }
+      .step-btn { padding:6px 10px; font-size:11.5px; min-width:52px; }
+      .cta-btn { font-size:14px; padding:13px; }
+      .file-title { font-size:14px; }
     }
 
-    @media (max-height:700px) {
-      body { padding: 4px; }
-      .unlock-headline h2 { font-size:14px; }
-      .unlock-headline p  { font-size:10.5px; margin-top:2px; }
-      .steps { gap:5px; margin-bottom:10px; }
-      .step  { padding:6px 10px; }
-      .file-info { margin-bottom: 8px; padding-bottom: 8px; }
-      .ad-notice { padding: 5px 8px; margin-bottom: 8px; }
-      .cta-btn { padding: 9px; }
-    }
-
-    @media (max-height:600px) {
-      .unlock-headline { display: none; }
-      .ad-notice { font-size: 10px; padding: 4px 8px; }
+    @media (max-height:720px) {
+      body { padding: 10px 12px; }
+      .unlock-headline h2 { font-size:16px; }
+      .unlock-headline p  { font-size:11.5px; margin-top:3px; }
+      .steps { gap:6px; margin-bottom:12px; }
+      .step  { padding:8px 12px; }
     }
   </style>
 <base target="_blank">
@@ -628,125 +505,139 @@
     <span class="badge-free">FREE</span>
   </div>
 
-  <div class="scroll-area">
-    <!-- Skeleton loader -->
-    <div class="skeleton visible" id="skeleton">
-      <div class="skel-row">
-        <div class="skel-line skel-thumb"></div>
-        <div class="skel-lines">
-          <div class="skel-line" style="height:12px;width:80%;"></div>
-          <div class="skel-line" style="height:10px;width:55%;margin-top:5px;"></div>
-          <div class="skel-line" style="height:10px;width:40%;margin-top:5px;"></div>
-        </div>
+  <!-- Loading skeleton -->
+  <div class="skeleton visible" id="skeleton">
+    <div class="skel-row">
+      <div class="skel-line skel-thumb"></div>
+      <div class="skel-lines">
+        <div class="skel-line" style="height:14px;width:80%;"></div>
+        <div class="skel-line" style="height:11px;width:55%;margin-top:6px;"></div>
+        <div class="skel-line" style="height:11px;width:40%;margin-top:6px;"></div>
       </div>
-      <div class="skel-line" style="height:14px;width:60%;margin:0 auto 8px;"></div>
-      <div class="skel-line" style="height:9px;width:90%;margin:0 auto 14px;"></div>
-      <div class="skel-line" style="height:48px;border-radius:12px;"></div>
-      <div class="skel-line" style="height:48px;border-radius:12px;"></div>
-      <div class="skel-line" style="height:44px;border-radius:12px;margin-top:3px;"></div>
+    </div>
+    <div class="skel-line" style="height:16px;width:60%;margin:0 auto 10px;"></div>
+    <div class="skel-line" style="height:10px;width:90%;margin:0 auto 18px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;margin-top:4px;"></div>
+    <div class="skel-line" style="height:52px;border-radius:14px;margin-top:4px;"></div>
+  </div>
+
+  <!-- Main card -->
+  <div class="card" id="main-card">
+
+    <div class="file-info">
+      <div class="file-thumb" id="file-thumb">📦</div>
+      <div class="file-meta">
+        <div class="file-title" id="file-title">DataPi26 File</div>
+        <div class="file-tags">
+          <span class="tag free-tag">100% FREE</span>
+          <span class="tag" id="file-cat">File</span>
+        </div>
+        <div class="file-size-row" id="file-size"></div>
+      </div>
     </div>
 
-    <!-- Main card -->
-    <div class="card" id="main-card">
-
-      <div class="file-info">
-        <div class="file-thumb" id="file-thumb">📦</div>
-        <div class="file-meta">
-          <div class="file-title" id="file-title">DataPi26 File</div>
-          <div class="file-tags">
-            <span class="tag free-tag">100% FREE</span>
-            <span class="tag" id="file-cat">File</span>
-          </div>
-          <div class="file-size-row" id="file-size"></div>
-        </div>
-      </div>
-
-      <div class="unlock-headline">
-        <h2>🔓 Unlock Your Free Download</h2>
-        <p>Watch 2 short ads, then get your free download link.</p>
-      </div>
-
-      <div class="ad-notice" id="ad-notice">
-        📋 <strong>How it works:</strong> Click <strong>Watch</strong> → an ad plays for a few seconds → step unlocks <strong>automatically</strong>.
-      </div>
-
-      <div class="progress-wrap">
-        <div class="progress-bar-bg">
-          <div class="progress-bar-fill" id="progress-fill"></div>
-        </div>
-        <span class="progress-label" id="progress-label">0/2</span>
-      </div>
-
-      <div class="steps">
-        <!-- Step 1 -->
-        <div class="step" id="step-1">
-          <div class="step-num" id="num-1">
-            1
-            <svg class="countdown-ring" id="ring-1" viewBox="0 0 28 28">
-              <circle cx="14" cy="14" r="11" id="ring-circle-1"/>
-            </svg>
-          </div>
-          <div class="step-body">
-            <div class="step-title">Watch Ad #1</div>
-            <div class="step-sub" id="sub-1">~5 seconds • tap to start</div>
-          </div>
-          <button class="step-btn" id="btn-1" onclick="startStep(1)">Watch</button>
-        </div>
-
-        <!-- Step 2 -->
-        <div class="step locked" id="step-2">
-          <div class="step-num" id="num-2">
-            2
-            <svg class="countdown-ring" id="ring-2" viewBox="0 0 28 28">
-              <circle cx="14" cy="14" r="11" id="ring-circle-2"/>
-            </svg>
-          </div>
-          <div class="step-body">
-            <div class="step-title">Watch Ad #2</div>
-            <div class="step-sub" id="sub-2">~5 seconds • tap to start</div>
-          </div>
-          <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Watch</button>
-        </div>
-      </div>
-
-      <button class="cta-btn locked" id="btn-download" disabled>
-        🔒 Complete both steps to download
-      </button>
-
-      <div class="success-msg" id="success-msg">
-        🎉 You're all set! Click above to download.
-      </div>
-
-      <!-- Link box -->
-      <div class="link-box" id="link-box">
-        <div class="link-box-label">🔗 Direct Download Link</div>
-        <div class="link-row">
-          <span class="link-text" id="link-display"></span>
-          <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
-        </div>
-      </div>
-
+    <div class="unlock-headline">
+      <h2>🔓 Unlock Your Free Download</h2>
+      <p>Watch 3 short ads, then get your free download link.</p>
     </div>
 
-    <!-- tads.me TGB Banner #9637 -->
-    <div class="tads-banner-section">
-      <div id="tads-container-9637"></div>
+    <div class="ad-notice" id="ad-notice">
+      📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
     </div>
 
-    <!-- HelloEncyclo Grant Banner -->
-    <div class="encyclo-section">
-      <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
-        <div class="encyclo-icon">🎓</div>
-        <div class="encyclo-text">
-          <div class="encyclo-title">Join HelloEncyclo Grant</div>
-          <div class="encyclo-sub">Free scholarship to learn Programming &amp; AI</div>
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-label" id="progress-label">0/3</span>
+    </div>
+
+    <div class="steps">
+      <!-- Step 1 -->
+      <div class="step" id="step-1">
+        <div class="step-num" id="num-1">
+          1
+          <svg class="countdown-ring" id="ring-1" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-1"/>
+          </svg>
         </div>
-        <span class="encyclo-arrow">Join →</span>
-      </a>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #1</div>
+          <div class="step-sub" id="sub-1">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step locked" id="step-2">
+        <div class="step-num" id="num-2">
+          2
+          <svg class="countdown-ring" id="ring-2" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-2"/>
+          </svg>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #2</div>
+          <div class="step-sub" id="sub-2">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step locked" id="step-3">
+        <div class="step-num" id="num-3">
+          3
+          <svg class="countdown-ring" id="ring-3" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-3"/>
+          </svg>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #3</div>
+          <div class="step-sub" id="sub-3">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-3" onclick="startStep(3)" disabled>Visit</button>
+      </div>
     </div>
 
-  </div><!-- end scroll-area -->
-</div><!-- end app-shell -->
+    <button class="cta-btn locked" id="btn-download" disabled>
+      🔒 Complete all steps to download
+    </button>
+
+    <div class="success-msg" id="success-msg">
+      🎉 You're all set! Click above to download.
+    </div>
+
+    <!-- Link box -->
+    <div class="link-box" id="link-box">
+      <div class="link-box-label">🔗 Direct Download Link</div>
+      <div class="link-row">
+        <span class="link-text" id="link-display"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- tads.me TGB Banner #9637 (initialized only after user finishes all steps) -->
+  <div class="tads-banner-section" id="tads-banner-section">
+    <div id="tads-container-9637"></div>
+  </div>
+
+  <!-- HelloEncyclo Grant Banner -->
+  <div class="encyclo-section">
+    <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
+      <div class="encyclo-icon">🎓</div>
+      <div class="encyclo-text">
+        <div class="encyclo-title">Join HelloEncyclo Grant</div>
+        <div class="encyclo-sub">Free scholarship to learn Programming &amp; AI</div>
+      </div>
+      <span class="encyclo-arrow">Join →</span>
+    </a>
+  </div>
+
+</div>
 
 <!-- Confetti canvas -->
 <canvas id="confetti-canvas"></canvas>
@@ -757,23 +648,31 @@ const tg = window.Telegram?.WebApp || null;
 if (tg) {
   tg.ready();
   tg.expand();
+  // منع إغلاق التطبيق عند فتح روابط خارجية
   if (tg.disableClosingConfirmation) tg.disableClosingConfirmation();
 }
 
 // ── Ad config ───────────────────────────────────────────────
 const AD_DURATION_SEC = 5;
 
-// tads.me widget IDs
-const TADS_FULLSCREEN_IDS = { 1: 9607, 2: 9969 };
-const TADS_TGB_ID = 9637;
+// tads.me widget IDs — كل زر مستقل تماماً وله widget id خاص به
+const TADS_FULLSCREEN_IDS = {
+  1: 10312,
+  2: 9969,
+  3: 9607
+};
+const TADS_TGB_ID = 9637; // بانر TGB الثابت — يُحمّل فقط بعد إكمال جميع الخطوات
 
 // ── حالة كل زر مستقلة ───────────────────────────────────────
+const STEP_COUNT = 3;
 const stepState = {
   1: { done: false, playing: false },
   2: { done: false, playing: false },
+  3: { done: false, playing: false },
 };
 
-// ── tads.me helpers ─────────────────────────────────────────
+// ── tads.me helpers (Vanilla JS integration) ─────────────────
+// المرجع: https://docs.tads.me/getting-started/publishers/embed-widget/vanilla-js
 function waitForTads(timeout = 6000) {
   return new Promise((resolve, reject) => {
     if (window.tads && typeof window.tads.init === 'function') return resolve();
@@ -788,73 +687,67 @@ function waitForTads(timeout = 6000) {
   });
 }
 
-function showTadsFullscreen(stepN) {
+// يعرض إعلان tads.me الـ fullscreen الخاص بالزر n
+// كل نقرة = instance جديد تماماً بمعرف الويدجت الخاص بهذا الزر فقط،
+// ويُدمَّر (destroy/close) فور انتهاء الإعلان أو إغلاقه أو عدم توفره.
+// يُرجع Promise<'shown' | 'not_found' | 'error'>
+function showTadsFullscreen(n) {
   return new Promise(async (resolve) => {
+    let widgetReady = true;
     try {
       await waitForTads(5000);
-      const widgetId = TADS_FULLSCREEN_IDS[stepN];
-      let settled = false;
+    } catch (e) {
+      widgetReady = false;
+    }
+    if (!widgetReady) { resolve('error'); return; }
 
-      const ctrl = window.tads.init({
+    const widgetId = TADS_FULLSCREEN_IDS[n];
+    let settled = false;
+    let ctrl = null;
+
+    function killInstance() {
+      try { ctrl && typeof ctrl.destroy === 'function' && ctrl.destroy(); } catch (e) {}
+      try { ctrl && typeof ctrl.close   === 'function' && ctrl.close();   } catch (e) {}
+      ctrl = null; // قتل نهائي — لن يُعاد استخدام هذا الـ instance أبداً
+    }
+
+    function finish(status) {
+      if (settled) return;
+      settled = true;
+      killInstance();
+      resolve(status);
+    }
+
+    try {
+      ctrl = window.tads.init({
         widgetId: widgetId,
         type: 'fullscreen',
         debug: false,
-        onShowReward: () => {
-          if (!settled) { settled = true; resolve(true); }
-        },
-        onAdsNotFound: () => {
-          if (!settled) { settled = true; resolve(false); }
-        }
+        onShowReward: () => finish('shown'),
+        onAdsNotFound: () => finish('not_found'),
+        onClose: () => finish('shown')
       });
-
-      if (ctrl && typeof ctrl.showAd === 'function') {
-        ctrl.showAd().catch(() => {
-          if (!settled) { settled = true; resolve(false); }
-        });
-      } else {
-        if (!settled) { settled = true; resolve(false); }
-      }
-
-      setTimeout(() => {
-        if (!settled) { settled = true; resolve(false); }
-      }, 7000);
-
     } catch (e) {
-      resolve(false);
+      finish('error');
+      return;
     }
-  });
-}
 
-// ── adsbitvex fallback ──────────────────────────────────────
-function waitForAdsBitvex(timeout = 6000) {
-  return new Promise((resolve, reject) => {
-    if (typeof window.showadsbitvex === 'function') return resolve();
-    const start = performance.now();
-    const iv = setInterval(() => {
-      if (typeof window.showadsbitvex === 'function') {
-        clearInterval(iv); resolve();
-      } else if (performance.now() - start > timeout) {
-        clearInterval(iv); reject(new Error('adsbitvex timeout'));
-      }
-    }, 50);
-  });
-}
-
-function showAdsBitvex() {
-  return new Promise(async (resolve) => {
-    try {
-      await waitForAdsBitvex(5000);
-      window.showadsbitvex()
-        .then(() => resolve(true))
-        .catch(() => resolve(false));
-    } catch (e) {
-      resolve(false);
+    if (ctrl && typeof ctrl.showAd === 'function') {
+      ctrl.showAd().catch(() => finish('error'));
+    } else {
+      finish('error');
     }
+
+    // حارس: إذا لم يستجب tads خلال 7 ثوانٍ → اعتبره خطأ ويُقتل الـ instance أيضاً
+    setTimeout(() => finish('error'), 7000);
   });
 }
 
-// ── Init tads TGB Banner #9637 ───────────────────────────────
+// ── Init tads TGB Banner #9637 — يُستدعى فقط بعد إكمال جميع الخطوات ──
+let tgbLoaded = false;
 function initTadsBanner() {
+  if (tgbLoaded) return;
+  tgbLoaded = true;
   waitForTads().then(() => {
     const ctrl = window.tads.init({
       widgetId: TADS_TGB_ID,
@@ -862,7 +755,9 @@ function initTadsBanner() {
       debug: false,
       onAdsNotFound: () => {}
     });
-    ctrl.loadAd().then(() => ctrl.showAd()).catch(() => {});
+    ctrl.loadAd()
+      .then(() => ctrl.showAd())
+      .catch(() => {});
   }).catch(() => {});
 }
 
@@ -876,9 +771,10 @@ function b64urlDecode(str) {
 }
 
 function getStartParam() {
-  if (tg?.initDataUnsafe?.start_param) return tg.initDataUnsafe.start_param;
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get('startapp') || urlParams.get('tgWebAppStartParam') || null;
+  return tg?.initDataUnsafe?.start_param
+      || new URLSearchParams(window.location.search).get('startapp')
+      || new URLSearchParams(window.location.search).get('tgWebAppStartParam')
+      || null;
 }
 
 let fileData = null;
@@ -887,18 +783,17 @@ function resolveFileUrl() {
   const raw = getStartParam();
   if (!raw) return 'https://pixeldrain.com/';
   try {
-    const text = b64urlDecode(raw);
+    const text   = b64urlDecode(raw);
     const parsed = JSON.parse(text);
     if (parsed && typeof parsed === 'object' && parsed.u) {
       fileData = parsed;
       return parsed.u;
     }
-  } catch (e) {
-    try {
-      const decoded = b64urlDecode(raw);
-      if (decoded.startsWith('http')) return decoded;
-    } catch (e2) {}
-  }
+  } catch (e) {}
+  try {
+    const decoded = b64urlDecode(raw);
+    if (decoded.startsWith('http')) return decoded;
+  } catch (e) {}
   return 'https://pixeldrain.com/';
 }
 
@@ -924,7 +819,7 @@ function loadFileMeta() {
     const thumb = document.getElementById('file-thumb');
     thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer" crossorigin="anonymous"
       onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='📦';"
-      style="width:100%;height:100%;object-fit:cover;border-radius:8px;" />`;
+      style="width:100%;height:100%;object-fit:cover;border-radius:10px;" />`;
   }
   if (cat)  document.getElementById('file-cat').textContent  = cat;
   if (size) document.getElementById('file-size').textContent = '💾 ' + size;
@@ -946,26 +841,31 @@ function loadProgress() {
   } catch(e) { return null; }
 }
 
-function saveProgress(step1, step2) {
+function saveProgress() {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify({ step1, step2, ts: Date.now() }));
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      step1: stepState[1].done,
+      step2: stepState[2].done,
+      step3: stepState[3].done,
+      ts: Date.now()
+    }));
   } catch(e) {}
 }
 
-// ── Show skeleton → card transition ─────────────────────────
+// ── Show skeleton → card transition ──────────────────────────
 function showCard() {
   document.getElementById('skeleton').classList.remove('visible');
   document.getElementById('main-card').classList.add('visible');
 }
 
-// ── Countdown ring animation ─────────────────────────────────
+// ── Countdown ring animation ──────────────────────────────────
 function startCountdownRing(n, onDone) {
   const ring   = document.getElementById(`ring-${n}`);
   const circle = document.getElementById(`ring-circle-${n}`);
   const btn    = document.getElementById(`btn-${n}`);
   const sub    = document.getElementById(`sub-${n}`);
 
-  const circumference = 2 * Math.PI * 11;
+  const circumference = 2 * Math.PI * 13;
   circle.style.strokeDasharray  = circumference;
   circle.style.strokeDashoffset = circumference;
   ring.classList.add('active');
@@ -1004,13 +904,21 @@ function stopCountdownRing(n) {
 }
 
 // ══════════════════════════════════════════════════════════════
-//  startStep — كل زر يعمل بشكل مستقل تماماً
-//  المنهجية: tads.me أولاً → إذا لا يوجد إعلان → adsbitvex
+//  startStep — كل زر يعمل بشكل مستقل تماماً، بمعرف widget خاص به
+//  tads.me لا يُستدعى إطلاقاً إلا عند نقر الزر
+//
+//  الحالتان الممكنتان بعد استدعاء tads.me لهذا الزر:
+//  1) الإعلان عُرض فعلياً (status === 'shown') → يبدأ عدّاد الـ 5
+//     ثوانٍ، والخطوة تكتمل فقط بعد انتهائه.
+//  2) لا يوجد إعلان متاح (onAdsNotFound) أو حدث خطأ → الـ instance
+//     الخاص بهذا الزر يُدمَّر فوراً (تم ذلك بالفعل داخل
+//     showTadsFullscreen)، ولا يبدأ أي عدّاد وهمي، والخطوة تكتمل
+//     مباشرة دون انتظار فيُفعَّل الزر التالي على الفور.
 // ══════════════════════════════════════════════════════════════
 function startStep(n) {
   if (stepState[n].playing) return;
-  if (n === 1 && stepState[1].done) return;
-  if (n === 2 && (!stepState[1].done || stepState[2].done)) return;
+  if (stepState[n].done) return;
+  if (n > 1 && !stepState[n - 1].done) return;
 
   stepState[n].playing = true;
 
@@ -1021,51 +929,19 @@ function startStep(n) {
   btn.textContent = '⏳';
   if (sub) sub.textContent = 'loading ad…';
 
-  let timerDone    = false;
-  let adHandled    = false;
-  let timerStarted = false;
-
-  function startTimer() {
-    if (timerStarted) return;
-    timerStarted = true;
-    startCountdownRing(n, () => {
-      timerDone = true;
-      tryComplete();
-    });
-  }
-
-  function tryComplete() {
-    if (timerDone && adHandled) onAdComplete(n);
-  }
-
-  function onVisibilityReturn() {
-    if (document.visibilityState === 'visible') {
-      document.removeEventListener('visibilitychange', onVisibilityReturn);
-      if (!adHandled) { adHandled = true; tryComplete(); }
-      if (!timerStarted) startTimer();
-    }
-  }
-  document.addEventListener('visibilitychange', onVisibilityReturn);
-
-  if (sub) sub.textContent = 'loading ad…';
-
-  showTadsFullscreen(n).then((tadsShown) => {
-    if (tadsShown) {
-      startTimer();
-      adHandled = true;
-      tryComplete();
+  showTadsFullscreen(n).then((status) => {
+    if (status === 'shown') {
+      // الإعلان عُرض فعلياً → ابدأ العدّاد، والخطوة تكتمل فقط بعد انتهائه
+      startCountdownRing(n, () => onAdComplete(n));
     } else {
-      if (sub) sub.textContent = 'loading alternate ad…';
-      startTimer();
-      showAdsBitvex().then(() => {
-        adHandled = true;
-        tryComplete();
-      });
+      // لا يوجد إعلان متاح أو حدث خطأ → أكمل الخطوة فوراً بدون عدّاد وهمي
+      // وفعّل الزر التالي مباشرة (الـ instance الحالي مُدمَّر بالفعل)
+      onAdComplete(n);
     }
   });
 }
 
-// ── Ad complete ──────────────────────────────────────────────
+// ── Ad complete ───────────────────────────────────────────────
 function onAdComplete(n) {
   stopCountdownRing(n);
   stepState[n].playing = false;
@@ -1083,25 +959,26 @@ function onAdComplete(n) {
   num.childNodes[0].textContent = '✓';
   sub.textContent = 'Completed ✓';
 
-  if (n === 1) {
-    saveProgress(true, false);
-    updateProgress();
+  saveProgress();
+  updateProgress();
+
+  if (n < STEP_COUNT) {
     setTimeout(() => {
-      document.getElementById('step-2').classList.remove('locked');
-      document.getElementById('btn-2').disabled = false;
+      const nextStep = document.getElementById(`step-${n + 1}`);
+      const nextBtn  = document.getElementById(`btn-${n + 1}`);
+      nextStep.classList.remove('locked');
+      nextBtn.disabled = false;
     }, 600);
   } else {
-    saveProgress(true, true);
-    updateProgress();
     unlockDownload();
     launchConfetti();
   }
 }
 
 function updateProgress() {
-  const done = (stepState[1].done?1:0) + (stepState[2].done?1:0);
-  document.getElementById('progress-fill').style.width  = `${done*50}%`;
-  document.getElementById('progress-label').textContent = `${done}/2`;
+  const done = (stepState[1].done?1:0) + (stepState[2].done?1:0) + (stepState[3].done?1:0);
+  document.getElementById('progress-fill').style.width  = `${(done / STEP_COUNT) * 100}%`;
+  document.getElementById('progress-label').textContent = `${done}/${STEP_COUNT}`;
 }
 
 function unlockDownload() {
@@ -1113,6 +990,8 @@ function unlockDownload() {
   document.getElementById('ad-notice').style.display = 'none';
   document.getElementById('link-display').textContent = FILE_URL;
   document.getElementById('link-box').classList.add('visible');
+  // بانر TGB يُحمّل الآن فقط — بعد أن أنهى المستخدم تفاعله مع الأزرار الثلاثة
+  initTadsBanner();
 }
 
 function copyLink() {
@@ -1136,7 +1015,7 @@ function copyLink() {
 
 // ── Download ─────────────────────────────────────────────────
 function downloadNow() {
-  if (!stepState[1].done || !stepState[2].done) return;
+  if (!stepState[1].done || !stepState[2].done || !stepState[3].done) return;
   if (tg && typeof tg.openLink === 'function') {
     tg.openLink(FILE_URL, { try_instant_view: false });
   } else {
@@ -1149,7 +1028,7 @@ function downloadNow() {
 }
 document.getElementById('btn-download').addEventListener('click', downloadNow);
 
-// ── Confetti ─────────────────────────────────────────────────
+// ── Confetti ──────────────────────────────────────────────────
 function launchConfetti() {
   const canvas = document.getElementById('confetti-canvas');
   const ctx    = canvas.getContext('2d');
@@ -1157,7 +1036,7 @@ function launchConfetti() {
   canvas.width  = window.innerWidth;
   canvas.height = window.innerHeight;
 
-  const colors = ['#d52b1e','#ffffff','#a3160c','#ff7a6e','#2b2b2b','#ffd6d2'];
+  const colors = ['#FA520F','#FFFFFF','#CC3A05','#1A1A1A','#FFF8E0','#FFA455'];
   const pieces = Array.from({length: 90}, () => ({
     x: Math.random() * canvas.width,
     y: Math.random() * canvas.height - canvas.height,
@@ -1188,27 +1067,32 @@ function launchConfetti() {
   draw();
 }
 
-// ── Bootstrap ────────────────────────────────────────────────
-window.addEventListener('load', async () => {
+// ══════════════════════════════════════════════════════════════
+//  Bootstrap — عند تشغيل التطبيق المصغر لا يتم استدعاء tads.me
+//  إطلاقاً هنا. يتم فقط تحميل بيانات الملف واستعادة أي تقدّم
+//  محفوظ. أول استدعاء لـ tads.me يحدث فقط عند نقر أحد الأزرار.
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
   loadFileMeta();
-  initTadsBanner();
 
   const cached = loadProgress();
-  if (cached?.step1 && cached?.step2) {
-    stepState[1].done = true; stepState[2].done = true;
+  if (cached?.step1 && cached?.step2 && cached?.step3) {
+    // المستخدم أكمل مسبقاً
+    stepState[1].done = true; stepState[2].done = true; stepState[3].done = true;
     showCard();
     updateProgress();
-    [1,2].forEach(n => {
+    [1,2,3].forEach(n => {
       const btn  = document.getElementById(`btn-${n}`);
       const step = document.getElementById(`step-${n}`);
       btn.className   = 'step-btn done-mark';
       btn.textContent = '✓';
       step.classList.add('done');
-      document.getElementById(`step-${n}`).classList.remove('locked');
+      step.classList.remove('locked');
       document.getElementById(`sub-${n}`).textContent = 'Completed ✓';
     });
     unlockDownload();
   } else {
+    // مستخدم جديد أو لم يكمل — بلا أي استدعاء لـ tads.me
     showCard();
   }
 });
