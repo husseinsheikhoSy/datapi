@@ -114,6 +114,16 @@
   .success-msg.visible{ display:block; }
   @keyframes fadeIn{ from{opacity:0;transform:translateY(5px);} to{opacity:1;transform:translateY(0);} }
 
+  .download-options{
+    display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:2px;
+  }
+  .format-btn{
+    padding:11px 8px; border-radius:10px; border:1px solid var(--gold-dark);
+    background:rgba(212,175,55,.08); color:var(--gold-bright);
+    font-size:12px; font-weight:800; cursor:pointer; transition:.15s;
+  }
+  .format-btn:active{ transform:scale(.96); background:var(--gold-gradient); color:#141210; }
+
   .loading-msg{ color:var(--gold-bright); font-weight:700; font-size:13px; text-align:center; margin-top:60px; }
 
   .license-note{
@@ -173,8 +183,16 @@
     🔒 Wait for the timer to finish
   </button>
 
+  <div class="download-options" id="download-options" style="display:none;">
+    <button class="format-btn" data-fmt="epub">EPUB</button>
+    <button class="format-btn" data-fmt="epub-images">EPUB (images)</button>
+    <button class="format-btn" data-fmt="kindle">Kindle</button>
+    <button class="format-btn" data-fmt="txt">Plain Text</button>
+    <button class="format-btn" data-fmt="html">HTML</button>
+  </div>
+
   <div class="success-msg" id="success-msg">
-    🎉 You're all set! Tap above to read your book.
+    🎉 You're all set! Choose a format above to download your book.
   </div>
 
   <div class="license-note">
@@ -305,15 +323,31 @@
       `<div class="info-row"><span class="ic">${ic}</span><span>${esc(txt)}</span></div>`
     ).join('');
 
-    startTimer(b.gutenberg_url || b.download_url || 'https://www.gutenberg.org/');
+    startTimer(b.id, b.gutenberg_url || b.download_url || 'https://www.gutenberg.org/');
   }
 
   let timeLeft = TIMER_SECONDS;
   let timerInterval = null;
-  let finalUrl = 'https://www.gutenberg.org/';
+  let currentBookId = null;
+  let fallbackUrl = 'https://www.gutenberg.org/';
 
-  function startTimer(url) {
-    finalUrl = url;
+  // روابط تحميل مباشرة يبنيها Project Gutenberg تلقائياً لأي كتاب حسب رقمه (id) —
+  // هذه الأنماط تعمل لغالبية الكتب مباشرة بدون الحاجة لتخزين روابط لكل صيغة يدوياً.
+  function formatUrl(id, fmt) {
+    const base = `https://www.gutenberg.org/ebooks/${id}`;
+    switch (fmt) {
+      case 'epub':        return `${base}.epub.noimages`;
+      case 'epub-images':  return `${base}.epub.images`;
+      case 'kindle':       return `${base}.kindle.noimages`;
+      case 'txt':          return `${base}.txt.utf-8`;
+      case 'html':         return `${base}.html.images`;
+      default:              return base;
+    }
+  }
+
+  function startTimer(bookId, gutenbergUrl) {
+    currentBookId = bookId;
+    fallbackUrl = gutenbergUrl || fallbackUrl;
     const ring = document.getElementById('ring-fg');
     const num  = document.getElementById('timer-num');
     ring.style.strokeDasharray = RING_CIRCUMFERENCE;
@@ -331,12 +365,10 @@
     clearInterval(timerInterval);
     document.getElementById('timer-wrap').style.display = 'none';
     document.getElementById('unlock-title').textContent = 'Your book is ready!';
-    document.getElementById('unlock-sub').textContent = 'Tap the button below to start reading.';
+    document.getElementById('unlock-sub').textContent = 'Choose a format below to download.';
 
-    const btn = document.getElementById('btn-read');
-    btn.disabled = false;
-    btn.className = 'cta-btn unlocked';
-    btn.innerHTML = '📖 Read on Project Gutenberg';
+    document.getElementById('btn-read').style.display = 'none';
+    document.getElementById('download-options').style.display = 'grid';
     document.getElementById('success-msg').classList.add('visible');
     launchConfetti();
   }
@@ -359,10 +391,14 @@
     });
   });
 
-  document.getElementById('btn-read').addEventListener('click', () => {
-    if (!finalUrl) return;
-    if (tg?.openLink) { tg.openLink(finalUrl); }
-    else window.open(finalUrl, '_blank');
+  document.getElementById('download-options').addEventListener('click', (e) => {
+    const btn = e.target.closest('.format-btn');
+    if (!btn || !currentBookId) return;
+    const url = formatUrl(currentBookId, btn.dataset.fmt);
+    // نفتح الرابط مباشرة — متصفح تيليغرام/الهاتف يبدأ التحميل تلقائياً
+    // لأن Project Gutenberg يرسل الملف مع Content-Disposition: attachment.
+    if (tg?.openLink) { tg.openLink(url); }
+    else window.open(url, '_blank');
   });
 
   function launchConfetti() {
