@@ -1,281 +1,1101 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>AI Library — Free Gutenberg Books</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>DataPi26 — Free File Access</title>
 
-<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet" />
+  <!-- ══ INTERCEPTORS — يجب أن تكون قبل أي SDK إعلانات ══ -->
+  <script>
+  (function() {
+    var _origOpen   = window.open;
+    var _origAssign = window.location ? window.location.assign.bind(window.location) : null;
+    var _origReplace = window.location ? window.location.replace.bind(window.location) : null;
 
-<style>
-  :root {
-    --bg-a:          #0f1021;
-    --bg-b:          #171334;
-    --card:          #1c1a3a;
-    --card-hover:    #242052;
-    --text:          #f1eefc;
-    --text-muted:    #a29ecb;
-    --border:        #322d5e;
-    --accent-a:      #7c5cff;   /* violet   */
-    --accent-b:      #ff5cad;   /* pink     */
-    --accent-c:      #38e0c8;   /* teal     */
-    --accent-d:      #ffb238;   /* amber    */
-    --grad-brand:    linear-gradient(135deg, var(--accent-a), var(--accent-b));
-    --grad-teal:     linear-gradient(135deg, var(--accent-c), var(--accent-a));
-    --radius-card:   18px;
-    --radius-chip:   999px;
-    --shadow-card:   0 8px 26px rgba(10,8,30,.45);
-  }
-  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
-  body{
-    font-family:'Inter',sans-serif;
-    background:
-      radial-gradient(1100px 600px at 90% -10%, rgba(124,92,255,.35), transparent 60%),
-      radial-gradient(900px 500px at -10% 10%, rgba(56,224,200,.20), transparent 55%),
-      linear-gradient(180deg, var(--bg-a), var(--bg-b));
-    background-attachment:fixed;
-    color:var(--text);
-    min-height:100vh; padding-bottom:32px; overflow-x:hidden;
-  }
-  .top-bar{
-    position:sticky; top:0; z-index:10;
-    background:rgba(15,16,33,.85); backdrop-filter:blur(10px);
-    padding:16px 18px 12px; border-bottom:1px solid var(--border);
-    display:flex; align-items:center; gap:10px;
-  }
-  .logo-mark{
-    width:36px; height:36px; border-radius:11px; background:var(--grad-brand);
-    display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0;
-    box-shadow:0 4px 16px rgba(124,92,255,.5);
-  }
-  .logo-title{font-family:'Space Grotesk',sans-serif; font-weight:700; font-size:18px;
-    background:var(--grad-brand); -webkit-background-clip:text; background-clip:text; color:transparent;}
-  .logo-sub{font-size:10.5px; color:var(--text-muted); margin-top:-2px;}
+    window.open = function(url, target, features) {
+      if (url && typeof url === 'string' && url.indexOf('http') === 0) {
+        var tgApp = window.Telegram && window.Telegram.WebApp;
+        if (tgApp && typeof tgApp.openLink === 'function') {
+          try { tgApp.openLink(url, { try_instant_view: false }); return null; } catch(e) {}
+        }
+        return _origOpen.call(window, url, '_blank', features);
+      }
+      return _origOpen.apply(window, arguments);
+    };
 
-  .license-note{
-    margin:12px 16px 0; padding:10px 12px; border:1px solid var(--border);
-    border-radius:12px; background:rgba(124,92,255,.08);
-    font-size:10.5px; line-height:1.5; color:var(--text-muted);
-  }
+    try {
+      var _hrefDescriptor = Object.getOwnPropertyDescriptor(window.location, 'href');
+      if (_hrefDescriptor && _hrefDescriptor.set) {
+        var _origHrefSet = _hrefDescriptor.set;
+        Object.defineProperty(window.location, 'href', {
+          get: _hrefDescriptor.get,
+          set: function(url) {
+            if (url && typeof url === 'string' && url.indexOf('http') === 0) {
+              var tgApp = window.Telegram && window.Telegram.WebApp;
+              if (tgApp && typeof tgApp.openLink === 'function') {
+                try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
+              }
+            }
+            _origHrefSet.call(window.location, url);
+          },
+          configurable: true
+        });
+      }
+    } catch(e) {}
 
-  .search-wrap{ padding:14px 16px 4px; }
-  .search-box{
-    width:100%; background:var(--card); border:1px solid var(--border);
-    border-radius:14px; padding:12px 14px; color:var(--text); font-size:13.5px;
-    outline:none; transition:.2s;
-  }
-  .search-box:focus{ border-color:var(--accent-a); box-shadow:0 0 0 3px rgba(124,92,255,.2); }
-  .search-box::placeholder{color:var(--text-muted);}
+    if (_origAssign) {
+      window.location.assign = function(url) {
+        if (url && typeof url === 'string' && url.indexOf('http') === 0) {
+          var tgApp = window.Telegram && window.Telegram.WebApp;
+          if (tgApp && typeof tgApp.openLink === 'function') {
+            try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
+          }
+        }
+        _origAssign(url);
+      };
+    }
 
-  .chip-row{ display:flex; gap:8px; overflow-x:auto; padding:12px 16px 4px; scrollbar-width:none; }
-  .chip-row::-webkit-scrollbar{display:none;}
-  .chip{
-    flex-shrink:0; padding:8px 15px; border-radius:var(--radius-chip);
-    background:var(--card); border:1px solid var(--border); color:var(--text-muted);
-    font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; transition:.2s;
-  }
-  .chip.active{ background:var(--grad-brand); color:#fff; border-color:transparent;
-    box-shadow:0 4px 14px rgba(124,92,255,.4); }
+    if (_origReplace) {
+      window.location.replace = function(url) {
+        if (url && typeof url === 'string' && url.indexOf('http') === 0) {
+          var tgApp = window.Telegram && window.Telegram.WebApp;
+          if (tgApp && typeof tgApp.openLink === 'function') {
+            try { tgApp.openLink(url, { try_instant_view: false }); return; } catch(e) {}
+          }
+        }
+        _origReplace(url);
+      };
+    }
+  })();
+  </script>
 
-  .sort-row{ display:flex; align-items:center; gap:8px; padding:12px 16px 2px; }
-  .sort-label{font-size:11px; color:var(--text-muted); font-weight:700; letter-spacing:.04em;}
-  .sort-select{
-    background:var(--card); color:var(--accent-c); border:1px solid var(--border);
-    border-radius:9px; padding:6px 10px; font-size:11.5px; font-weight:700;
-  }
+  <!-- tads.me SDK (primary and only ad provider) — Vanilla JS integration -->
+  <script src="https://w.tads.me/widget.js"></script>
 
-  .grid{
-    display:grid; grid-template-columns:1fr 1fr; gap:13px;
-    padding:14px 16px 20px;
-  }
-  @media (min-width:520px){ .grid{ grid-template-columns:repeat(3,1fr);} }
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet" />
 
-  .book-card{
-    background:var(--card); border:1px solid var(--border); border-radius:var(--radius-card);
-    overflow:hidden; box-shadow:var(--shadow-card); cursor:pointer;
-    display:flex; flex-direction:column; transition:transform .15s, border-color .15s, background .15s;
-  }
-  .book-card:active{ transform:scale(.97); background:var(--card-hover); }
-  .book-cover{
-    width:100%; aspect-ratio:2/3; background:linear-gradient(160deg,#242052,#161431);
-    display:flex; align-items:center; justify-content:center; font-size:30px; overflow:hidden;
-    border-bottom:1px solid var(--border); position:relative;
-  }
-  .book-cover img{ width:100%; height:100%; object-fit:cover; }
-  .book-badge{
-    position:absolute; top:7px; left:7px; background:var(--grad-teal); color:#0f1021;
-    font-size:9px; font-weight:900; padding:3px 8px; border-radius:7px;
-    box-shadow:0 3px 10px rgba(56,224,200,.4);
-  }
-  .book-cat{
-    position:absolute; bottom:0; left:0; right:0; padding:4px 7px;
-    background:linear-gradient(0deg, rgba(10,8,25,.85), transparent);
-    font-size:8.5px; font-weight:700; color:var(--accent-c);
-    text-transform:uppercase; letter-spacing:.03em;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  }
-  .book-body{ padding:10px 11px 12px; display:flex; flex-direction:column; gap:4px; flex:1; }
-  .book-title{ font-size:12.5px; font-weight:800; line-height:1.3;
-    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-  .book-author{ font-size:10.5px; color:var(--text-muted); font-weight:600;
-    white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .book-meta{ margin-top:auto; display:flex; align-items:center; justify-content:space-between;
-    font-size:9.5px; color:var(--accent-b); font-weight:700; }
+  <style>
+    /* ══════════════════════════════════════════════════════════
+       Mistral AI-inspired design tokens
+       (warm cream + sunset-orange accent, Inter + Playfair Display)
+       ══════════════════════════════════════════════════════════ */
+    :root {
+      --bg:             #FFF8E0;
+      --card:           #FFFFFF;
+      --text:           #1A1A1A;
+      --text-muted:     #6A6F73;
+      --border:         #E8E0D0;
+      --accent:         #FA520F;
+      --accent-dark:    #CC3A05;
+      --accent-pale:    #FFF0E6;
+      --step-done-bg:   #FFF0E6;
+      --step-done-text: #CC3A05;
+      --radius-card:    20px;
+      --radius-btn:     10px;
+      --shadow-card:    0 4px 24px rgba(26,26,26,.10);
+    }
 
-  .empty-msg, .loading-msg{ text-align:center; color:var(--text-muted); font-size:13px; padding:60px 20px; }
-  .loading-msg{ color:var(--accent-c); font-weight:700; }
-</style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 18px 12px;
+      overflow-x: hidden;
+    }
+
+    .app-shell {
+      width: 100%;
+      max-width: 440px;
+      margin: 0 auto;
+      background: var(--bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 12px 44px rgba(26,26,26,.14);
+    }
+    @media (max-width: 480px) {
+      body { padding: 0; justify-content: flex-start; }
+      .app-shell { border-radius: 0; box-shadow: none; max-width: 100%; }
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      width: 100%;
+      background: var(--card);
+      padding: 14px 20px 12px;
+      display: flex; align-items: center; gap: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-u {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; font-weight: 800; color: #fff;
+      flex-shrink: 0;
+    }
+    .logo-text {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      flex: 1; min-width: 0;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .badge-free {
+      margin-left: auto;
+      background: var(--accent-pale); color: var(--accent-dark);
+      font-size: 11px; font-weight: 700;
+      padding: 4px 10px; border-radius: 20px;
+    }
+
+    /* ── Loading skeleton ── */
+    .skeleton {
+      display: none;
+      width: 100%;
+      margin: 0;
+      background: var(--card);
+      border-radius: 0;
+      box-shadow: none;
+      padding: 22px 20px;
+    }
+    .skeleton.visible { display: block; }
+    .skel-line {
+      background: linear-gradient(90deg, #F0E8D8 25%, #FAF5ED 50%, #F0E8D8 75%);
+      background-size: 200% 100%;
+      border-radius: 6px; margin-bottom: 10px;
+      animation: shimmer 1.4s infinite;
+    }
+    @keyframes shimmer {
+      0%   { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .skel-thumb { width: 64px; height: 64px; border-radius: 10px; flex-shrink: 0; }
+    .skel-row { display: flex; gap: 12px; margin-bottom: 18px; }
+    .skel-lines { flex: 1; }
+
+    /* ── Main card ── */
+    .card {
+      width: 100%;
+      margin: 0;
+      background: var(--card);
+      border-radius: 0;
+      box-shadow: none;
+      padding: 20px 18px 18px;
+      animation: slideUp .45s cubic-bezier(.22,.61,.36,1) both;
+      display: none;
+    }
+    .card.visible { display: block; }
+    @keyframes slideUp {
+      from { opacity:0; transform:translateY(18px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ── File info ── */
+    .file-info {
+      display: flex; gap: 12px;
+      margin-bottom: 14px; padding-bottom: 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .file-thumb {
+      width: 64px; height: 64px; border-radius: 10px;
+      background: var(--accent);
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; overflow: hidden;
+    }
+    .file-thumb img { width:100%; height:100%; object-fit:cover; border-radius:10px; }
+    .file-meta { flex:1; min-width:0; }
+    .file-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 16px; font-weight: 800; color: var(--text);
+      white-space: normal; word-break: break-word; line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .file-tags { display:flex; gap:6px; flex-wrap:wrap; }
+    .tag {
+      font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 5px;
+      background: var(--accent-pale); color: var(--accent-dark);
+    }
+    .tag.free-tag { background: var(--accent); color: #fff; }
+    .file-size-row { font-size: 12px; font-weight: 700; margin-top: 6px; color: var(--text-muted); }
+
+    /* ── Headline ── */
+    .unlock-headline { text-align: center; margin-bottom: 6px; }
+    .unlock-headline h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px; font-weight: 800; color: var(--text); line-height: 1.3;
+    }
+    .unlock-headline p  { font-size: 12px; color: var(--text-muted); margin-top: 4px; line-height: 1.5; }
+
+    /* ── Ad notice ── */
+    .ad-notice {
+      background: var(--accent-pale);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+      color: var(--accent-dark);
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.45;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap { margin: 12px 0; display: flex; align-items: center; gap: 10px; }
+    .progress-bar-bg { flex:1; height:7px; background:var(--border); border-radius:10px; overflow:hidden; }
+    .progress-bar-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 10px; width: 0%;
+      transition: width .5s ease;
+    }
+    .progress-label { font-size:12px; font-weight:700; color:var(--accent-dark); min-width:30px; text-align:right; }
+
+    /* ── Steps ── */
+    .steps { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
+    .step {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 12px;
+      transition: border-color .3s, background .3s;
+    }
+    .step.locked { opacity:.5; pointer-events:none; }
+    .step.done   { border-color: var(--accent); background: var(--step-done-bg); }
+
+    .step-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--border); color: var(--text-muted);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0;
+      transition: background .3s, color .3s;
+      position: relative;
+    }
+    .step.done .step-num { background: var(--accent); color:#fff; font-size:16px; }
+
+    /* countdown ring */
+    .countdown-ring {
+      position: absolute; top: 0; left: 0;
+      width: 32px; height: 32px;
+      transform: rotate(-90deg);
+      pointer-events: none;
+      opacity: 0; transition: opacity .2s;
+    }
+    .countdown-ring.active { opacity: 1; }
+    .countdown-ring circle {
+      fill: none; stroke: var(--accent-dark);
+      stroke-width: 3;
+      stroke-dasharray: 100;
+      stroke-dashoffset: 100;
+      stroke-linecap: round;
+      transition: stroke-dashoffset .95s linear;
+    }
+
+    .step-body { flex:1; min-width:0; }
+    .step-title { font-size:14px; font-weight:700; color:var(--text); }
+    .step.done .step-title { color: var(--accent-dark); }
+    .step-sub   { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+    .step-btn {
+      background: var(--accent);
+      color: #fff; border: none;
+      border-radius: var(--radius-btn); padding: 7px 14px;
+      font-size: 12.5px; font-weight: 700;
+      cursor: pointer; flex-shrink: 0;
+      transition: background .2s, transform .1s;
+      min-width: 60px; text-align: center;
+    }
+    .step-btn:active  { transform: scale(.96); }
+    .step-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; }
+    .step-btn.watching { background: var(--accent-dark); pointer-events: none; }
+    .step-btn.retry { background: #B3483A; }
+    .step-btn.done-mark {
+      background: transparent; color: var(--accent-dark);
+      font-size: 20px; pointer-events: none; padding: 0 12px;
+    }
+
+    /* ── CTA ── */
+    .cta-btn {
+      width: 100%; padding: 14px; border-radius: 14px; border: none;
+      font-size: 15px; font-weight: 800; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      transition: all .3s;
+    }
+    .cta-btn.locked  { background:var(--border); color:var(--text-muted); cursor:not-allowed; }
+    .cta-btn.unlocked {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 18px -4px rgba(250,82,15,.55);
+      animation: pulseOrange 2.2s infinite;
+    }
+    @keyframes pulseOrange {
+      0%  { box-shadow: 0 0 0 0   rgba(250,82,15,.45); }
+      60% { box-shadow: 0 0 0 12px rgba(250,82,15,0);  }
+      100%{ box-shadow: 0 0 0 0   rgba(250,82,15,0);   }
+    }
+
+    /* ── tads.me TGB Banner ── */
+    .tads-banner-section {
+      width: 100%;
+      padding: 0 18px 14px;
+      background: var(--bg);
+    }
+    #tads-container-9637 {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    /* ── HelloEncyclo banner ── */
+    .encyclo-section {
+      width: 100%;
+      margin: 0;
+      padding: 14px 18px 18px;
+      background: var(--bg);
+    }
+    .encyclo-banner {
+      background: var(--accent-dark);
+      border-radius: 16px;
+      padding: 13px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      box-shadow: 0 4px 16px rgba(204,58,5,.25);
+      transition: transform .2s, box-shadow .2s;
+    }
+    .encyclo-banner:active { transform: scale(.98); }
+    .encyclo-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      background: var(--card);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; flex-shrink: 0;
+    }
+    .encyclo-text { flex: 1; }
+    .encyclo-title {
+      font-size: 13px; font-weight: 800; color: #fff;
+      margin-bottom: 3px;
+    }
+    .encyclo-sub {
+      font-size: 11px; color: rgba(255,255,255,.85);
+      font-weight: 500; line-height: 1.4;
+    }
+    .encyclo-arrow {
+      background: var(--card);
+      color: var(--accent-dark);
+      border-radius: 8px;
+      padding: 6px 10px;
+      font-size: 13px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+
+    /* ── Link box ── */
+    .link-box {
+      display: none;
+      margin-top: 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      animation: fadeIn .4s ease;
+    }
+    .link-box.visible { display: block; }
+    .link-box-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 6px;
+    }
+    .link-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .link-text {
+      flex: 1;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: var(--accent-pale);
+      border-radius: 8px;
+      padding: 7px 10px;
+      cursor: text;
+      user-select: all;
+    }
+    .copy-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .2s, transform .1s;
+      white-space: nowrap;
+    }
+    .copy-btn:active { transform: scale(.95); }
+    .copy-btn.copied { background: var(--step-done-text); }
+
+    /* ── Confetti canvas ── */
+    #confetti-canvas {
+      position: fixed; top:0; left:0;
+      width:100%; height:100%;
+      pointer-events: none;
+      z-index: 999;
+      display: none;
+    }
+
+    /* ── Success message ── */
+    .success-msg {
+      display: none;
+      text-align: center;
+      margin-top: 14px;
+      padding: 12px 16px;
+      background: var(--step-done-bg);
+      border: 1px solid var(--accent);
+      border-radius: 12px;
+      font-size: 13px; font-weight: 600;
+      color: var(--accent-dark);
+      animation: fadeIn .4s ease;
+    }
+    .success-msg.visible { display: block; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px);} to{opacity:1;transform:translateY(0);} }
+
+    @media (max-width:380px) {
+      .card { padding:16px 14px; }
+      .step-btn { padding:6px 10px; font-size:11.5px; min-width:52px; }
+      .cta-btn { font-size:14px; padding:13px; }
+      .file-title { font-size:14px; }
+    }
+
+    @media (max-height:720px) {
+      body { padding: 10px 12px; }
+      .unlock-headline h2 { font-size:16px; }
+      .unlock-headline p  { font-size:11.5px; margin-top:3px; }
+      .steps { gap:6px; margin-bottom:12px; }
+      .step  { padding:8px 12px; }
+    }
+  </style>
+<base target="_blank">
 </head>
 <body>
 
-<div class="top-bar">
-  <div class="logo-mark">📖</div>
-  <div>
-    <div class="logo-title">AI Library</div>
-    <div class="logo-sub">Free Programming, Data Science & AI Books</div>
+<div class="app-shell">
+
+  <!-- Top bar -->
+  <div class="top-bar">
+    <div class="logo-u">P</div>
+    <span class="logo-text" id="logo-text">DataPi26 Free Access</span>
+    <span class="badge-free">FREE</span>
   </div>
+
+  <!-- Loading skeleton -->
+  <div class="skeleton visible" id="skeleton">
+    <div class="skel-row">
+      <div class="skel-line skel-thumb"></div>
+      <div class="skel-lines">
+        <div class="skel-line" style="height:14px;width:80%;"></div>
+        <div class="skel-line" style="height:11px;width:55%;margin-top:6px;"></div>
+        <div class="skel-line" style="height:11px;width:40%;margin-top:6px;"></div>
+      </div>
+    </div>
+    <div class="skel-line" style="height:16px;width:60%;margin:0 auto 10px;"></div>
+    <div class="skel-line" style="height:10px;width:90%;margin:0 auto 18px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;"></div>
+    <div class="skel-line" style="height:56px;border-radius:14px;margin-top:4px;"></div>
+    <div class="skel-line" style="height:52px;border-radius:14px;margin-top:4px;"></div>
+  </div>
+
+  <!-- Main card -->
+  <div class="card" id="main-card">
+
+    <div class="file-info">
+      <div class="file-thumb" id="file-thumb">📦</div>
+      <div class="file-meta">
+        <div class="file-title" id="file-title">DataPi26 File</div>
+        <div class="file-tags">
+          <span class="tag free-tag">100% FREE</span>
+          <span class="tag" id="file-cat">File</span>
+        </div>
+        <div class="file-size-row" id="file-size"></div>
+      </div>
+    </div>
+
+    <div class="unlock-headline">
+      <h2>🔓 Unlock Your Free Download</h2>
+      <p>Watch 3 short ads, then get your free download link.</p>
+    </div>
+
+    <div class="ad-notice" id="ad-notice">
+      📋 <strong>How it works:</strong> Click <strong>Visit</strong> → view the advertiser page for a few seconds → come back here and the next step unlocks <strong>automatically</strong>.
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-bar-bg">
+        <div class="progress-bar-fill" id="progress-fill"></div>
+      </div>
+      <span class="progress-label" id="progress-label">0/3</span>
+    </div>
+
+    <div class="steps">
+      <!-- Step 1 -->
+      <div class="step" id="step-1">
+        <div class="step-num" id="num-1">
+          1
+          <svg class="countdown-ring" id="ring-1" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-1"/>
+          </svg>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #1</div>
+          <div class="step-sub" id="sub-1">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-1" onclick="startStep(1)">Visit</button>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step locked" id="step-2">
+        <div class="step-num" id="num-2">
+          2
+          <svg class="countdown-ring" id="ring-2" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-2"/>
+          </svg>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #2</div>
+          <div class="step-sub" id="sub-2">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-2" onclick="startStep(2)" disabled>Visit</button>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="step locked" id="step-3">
+        <div class="step-num" id="num-3">
+          3
+          <svg class="countdown-ring" id="ring-3" viewBox="0 0 32 32">
+            <circle cx="16" cy="16" r="13" id="ring-circle-3"/>
+          </svg>
+        </div>
+        <div class="step-body">
+          <div class="step-title">Visit Sponsor Page #3</div>
+          <div class="step-sub" id="sub-3">~5 seconds • watch the ad to unlock</div>
+        </div>
+        <button class="step-btn" id="btn-3" onclick="startStep(3)" disabled>Visit</button>
+      </div>
+    </div>
+
+    <button class="cta-btn locked" id="btn-download" disabled>
+      🔒 Complete all steps to download
+    </button>
+
+    <div class="success-msg" id="success-msg">
+      🎉 You're all set! Click above to download.
+    </div>
+
+    <!-- Link box -->
+    <div class="link-box" id="link-box">
+      <div class="link-box-label">🔗 Direct Download Link</div>
+      <div class="link-row">
+        <span class="link-text" id="link-display"></span>
+        <button class="copy-btn" id="copy-btn" onclick="copyLink()">Copy</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- tads.me TGB Banner #9637 (initialized only after user finishes all steps) -->
+  <div class="tads-banner-section" id="tads-banner-section">
+    <div id="tads-container-9637"></div>
+  </div>
+
+  <!-- HelloEncyclo Grant Banner -->
+  <div class="encyclo-section">
+    <a class="encyclo-banner" href="https://helloencyclo.com/?ref=HUSSEINSHEIKHO" target="_blank" rel="noopener">
+      <div class="encyclo-icon">🎓</div>
+      <div class="encyclo-text">
+        <div class="encyclo-title">Join HelloEncyclo Grant</div>
+        <div class="encyclo-sub">Free scholarship to learn Programming &amp; AI</div>
+      </div>
+      <span class="encyclo-arrow">Join →</span>
+    </a>
+  </div>
+
 </div>
 
-<div class="license-note">
-  📖 All books listed here are free, open-source public-domain works, licensed by their respective rights holders via Project Gutenberg.
-</div>
-
-<div class="search-wrap">
-  <input type="text" class="search-box" id="search-box" placeholder="Search by title or author..." />
-</div>
-
-<div class="chip-row" id="chip-row">
-  <div class="chip active" data-cat="">All</div>
-  <div class="chip" data-cat="python">Python</div>
-  <div class="chip" data-cat="programming languages">Programming</div>
-  <div class="chip" data-cat="artificial intelligence">AI</div>
-  <div class="chip" data-cat="machine learning">Machine Learning</div>
-  <div class="chip" data-cat="natural language processing">NLP</div>
-  <div class="chip" data-cat="data science">Data Science</div>
-  <div class="chip" data-cat="mobile & web development">Mobile &amp; Web</div>
-  <div class="chip" data-cat="algorithms">Algorithms</div>
-  <div class="chip" data-cat="computer science">Computer Science</div>
-  <div class="chip" data-cat="mathematics & logic">Math &amp; Logic</div>
-</div>
-
-<div class="sort-row">
-  <span class="sort-label">SORT BY</span>
-  <select class="sort-select" id="sort-select">
-    <option value="added_at">Newest Added</option>
-    <option value="issued">Publication Date</option>
-    <option value="download_count">Most Downloaded</option>
-  </select>
-</div>
-
-<div id="content">
-  <div class="loading-msg">Loading books… 📚</div>
-</div>
+<!-- Confetti canvas -->
+<canvas id="confetti-canvas"></canvas>
 
 <script>
-  const tg = window.Telegram?.WebApp || null;
-  if (tg) { tg.ready(); tg.expand(); }
+// ── Telegram WebApp ─────────────────────────────────────────
+const tg = window.Telegram?.WebApp || null;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  // منع إغلاق التطبيق عند فتح روابط خارجية
+  if (tg.disableClosingConfirmation) tg.disableClosingConfirmation();
+}
 
-  // إعدادات Supabase (مفتاح publishable — آمن للاستخدام بالمتصفح)
-  const SUPABASE_URL = 'https://xokzxnslfrcnfdopcxqj.supabase.co';
-  const SUPABASE_KEY = 'sb_publishable_rc349sSa3juCMjxVTMQUng_HQo23ZJF';
+// ── Ad config ───────────────────────────────────────────────
+const AD_DURATION_SEC = 5;
 
-  const INFO_PAGE = 'info.html';   // صفحة تفاصيل الكتاب
+// tads.me widget IDs — كل زر مستقل تماماً وله widget id خاص به
+const TADS_FULLSCREEN_IDS = {
+  1: 10312,
+  2: 9969,
+  3: 9607
+};
+const TADS_TGB_ID = 9637; // بانر TGB الثابت — يُحمّل فقط بعد إكمال جميع الخطوات
 
-  let activeCategory = '';
-  let activeSort = 'added_at';
-  let searchTerm = '';
-  let debounceTimer = null;
+// ── حالة كل زر مستقلة ───────────────────────────────────────
+const STEP_COUNT = 3;
+const stepState = {
+  1: { done: false, playing: false },
+  2: { done: false, playing: false },
+  3: { done: false, playing: false },
+};
 
-  function esc(s){ return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+// ── tads.me helpers (Vanilla JS integration) ─────────────────
+// المرجع: https://docs.tads.me/getting-started/publishers/embed-widget/vanilla-js
+function waitForTads(timeout = 6000) {
+  return new Promise((resolve, reject) => {
+    if (window.tads && typeof window.tads.init === 'function') return resolve();
+    const start = performance.now();
+    const iv = setInterval(() => {
+      if (window.tads && typeof window.tads.init === 'function') {
+        clearInterval(iv); resolve();
+      } else if (performance.now() - start > timeout) {
+        clearInterval(iv); reject(new Error('tads timeout'));
+      }
+    }, 50);
+  });
+}
 
-  async function loadBooks() {
-    const content = document.getElementById('content');
-    content.innerHTML = '<div class="loading-msg">Loading books… 📚</div>';
+// يعرض إعلان tads.me الـ fullscreen الخاص بالزر n
+// كل نقرة = instance جديد تماماً بمعرف الويدجت الخاص بهذا الزر فقط،
+// ويُدمَّر (destroy/close) فور انتهاء الإعلان أو إغلاقه أو عدم توفره.
+// يُرجع Promise<'shown' | 'not_found' | 'error'>
+function showTadsFullscreen(n) {
+  return new Promise(async (resolve) => {
+    let widgetReady = true;
+    try {
+      await waitForTads(5000);
+    } catch (e) {
+      widgetReady = false;
+    }
+    if (!widgetReady) { resolve('error'); return; }
 
-    let url = `${SUPABASE_URL}/rest/v1/books?select=*&order=${activeSort}.desc.nullslast&limit=60`;
-    if (activeCategory) url += `&category=eq.${encodeURIComponent(activeCategory)}`;
-    if (searchTerm) url += `&or=(title.ilike.*${encodeURIComponent(searchTerm)}*,author.ilike.*${encodeURIComponent(searchTerm)}*)`;
+    const widgetId = TADS_FULLSCREEN_IDS[n];
+    let settled = false;
+    let ctrl = null;
+
+    function killInstance() {
+      try { ctrl && typeof ctrl.destroy === 'function' && ctrl.destroy(); } catch (e) {}
+      try { ctrl && typeof ctrl.close   === 'function' && ctrl.close();   } catch (e) {}
+      ctrl = null; // قتل نهائي — لن يُعاد استخدام هذا الـ instance أبداً
+    }
+
+    function finish(status) {
+      if (settled) return;
+      settled = true;
+      killInstance();
+      resolve(status);
+    }
 
     try {
-      const res = await fetch(url, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` } });
-      const books = await res.json();
-      renderBooks(Array.isArray(books) ? books : []);
+      ctrl = window.tads.init({
+        widgetId: widgetId,
+        type: 'fullscreen',
+        debug: false,
+        onShowReward: () => finish('shown'),
+        onAdsNotFound: () => finish('not_found'),
+        onClose: () => finish('shown')
+      });
     } catch (e) {
-      content.innerHTML = '<div class="empty-msg">⚠️ Failed to load books. Please try again.</div>';
-    }
-  }
-
-  function renderBooks(books) {
-    const content = document.getElementById('content');
-    if (!books.length) {
-      content.innerHTML = '<div class="empty-msg">No books found for this filter yet. Check back soon! 📚</div>';
+      finish('error');
       return;
     }
-    const grid = document.createElement('div');
-    grid.className = 'grid';
-    grid.innerHTML = books.map(bookCardHtml).join('');
-    content.innerHTML = '';
-    content.appendChild(grid);
 
-    grid.querySelectorAll('.book-card').forEach(el => {
-      el.addEventListener('click', () => openBook(el.dataset.id));
+    if (ctrl && typeof ctrl.showAd === 'function') {
+      ctrl.showAd().catch(() => finish('error'));
+    } else {
+      finish('error');
+    }
+
+    // حارس: إذا لم يستجب tads خلال 7 ثوانٍ → اعتبره خطأ ويُقتل الـ instance أيضاً
+    setTimeout(() => finish('error'), 7000);
+  });
+}
+
+// ── Init tads TGB Banner #9637 — يُستدعى فقط بعد إكمال جميع الخطوات ──
+let tgbLoaded = false;
+function initTadsBanner() {
+  if (tgbLoaded) return;
+  tgbLoaded = true;
+  waitForTads().then(() => {
+    const ctrl = window.tads.init({
+      widgetId: TADS_TGB_ID,
+      type: 'static',
+      debug: false,
+      onAdsNotFound: () => {}
     });
+    ctrl.loadAd()
+      .then(() => ctrl.showAd())
+      .catch(() => {});
+  }).catch(() => {});
+}
+
+// ── start_param decode ──────────────────────────────────────────
+function b64urlDecode(str) {
+  const b64    = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes  = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+
+function getStartParam() {
+  return tg?.initDataUnsafe?.start_param
+      || new URLSearchParams(window.location.search).get('startapp')
+      || new URLSearchParams(window.location.search).get('tgWebAppStartParam')
+      || null;
+}
+
+let fileData = null;
+
+function resolveFileUrl() {
+  const raw = getStartParam();
+  if (!raw) return 'https://pixeldrain.com/';
+  try {
+    const text   = b64urlDecode(raw);
+    const parsed = JSON.parse(text);
+    if (parsed && typeof parsed === 'object' && parsed.u) {
+      fileData = parsed;
+      return parsed.u;
+    }
+  } catch (e) {}
+  try {
+    const decoded = b64urlDecode(raw);
+    if (decoded.startsWith('http')) return decoded;
+  } catch (e) {}
+  return 'https://pixeldrain.com/';
+}
+
+// ── File meta ────────────────────────────────────────────────
+function loadFileMeta() {
+  let title, img, cat, size;
+  if (fileData) {
+    title = fileData.t;
+    img   = fileData.i;
+    cat   = fileData.c;
+    size  = fileData.s;
+  } else {
+    const p   = new URLSearchParams(window.location.search);
+    const get = k => p.get(k) ? decodeURIComponent(p.get(k)) : null;
+    title = get('title'); img = get('img'); cat = get('cat'); size = get('size');
+  }
+  if (title) {
+    document.getElementById('file-title').textContent = title;
+    document.getElementById('logo-text').textContent  = title;
+    document.title = title + ' — DataPi26';
+  }
+  if (img) {
+    const thumb = document.getElementById('file-thumb');
+    thumb.innerHTML = `<img src="${img}" alt="cover" referrerpolicy="no-referrer" crossorigin="anonymous"
+      onerror="this.onerror=null; this.src=''; this.parentElement.innerHTML='📦';"
+      style="width:100%;height:100%;object-fit:cover;border-radius:10px;" />`;
+  }
+  if (cat)  document.getElementById('file-cat').textContent  = cat;
+  if (size) document.getElementById('file-size').textContent = '💾 ' + size;
+}
+
+const FILE_URL = resolveFileUrl();
+
+// ── localStorage progress cache (5 min) ─────────────────────
+const CACHE_KEY = 'dp_progress_' + FILE_URL.slice(-20);
+const CACHE_TTL = 5 * 60 * 1000;
+
+function loadProgress() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    if (!raw) return null;
+    const obj = JSON.parse(raw);
+    if (Date.now() - obj.ts > CACHE_TTL) { localStorage.removeItem(CACHE_KEY); return null; }
+    return obj;
+  } catch(e) { return null; }
+}
+
+function saveProgress() {
+  try {
+    localStorage.setItem(CACHE_KEY, JSON.stringify({
+      step1: stepState[1].done,
+      step2: stepState[2].done,
+      step3: stepState[3].done,
+      ts: Date.now()
+    }));
+  } catch(e) {}
+}
+
+// ── Show skeleton → card transition ──────────────────────────
+function showCard() {
+  document.getElementById('skeleton').classList.remove('visible');
+  document.getElementById('main-card').classList.add('visible');
+}
+
+// ── Countdown ring animation ──────────────────────────────────
+function startCountdownRing(n, onDone) {
+  const ring   = document.getElementById(`ring-${n}`);
+  const circle = document.getElementById(`ring-circle-${n}`);
+  const btn    = document.getElementById(`btn-${n}`);
+  const sub    = document.getElementById(`sub-${n}`);
+
+  const circumference = 2 * Math.PI * 13;
+  circle.style.strokeDasharray  = circumference;
+  circle.style.strokeDashoffset = circumference;
+  ring.classList.add('active');
+
+  let remaining = AD_DURATION_SEC;
+  let finished  = false;
+  btn.textContent = remaining;
+
+  function finish() {
+    if (finished) return;
+    finished = true;
+    clearInterval(iv);
+    stopCountdownRing(n);
+    onDone();
   }
 
-  function bookCardHtml(b) {
-    const cover = b.cover_image
-      ? `<img src="${esc(b.cover_image)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='📖'"/>`
-      : '📖';
-    const year = b.issued ? b.issued.slice(0,4) : '';
-    return `
-      <div class="book-card" data-id="${b.id}">
-        <div class="book-cover">
-          ${cover}
-          <div class="book-badge">FREE</div>
-          ${b.category ? `<div class="book-cat">${esc(b.category)}</div>` : ''}
-        </div>
-        <div class="book-body">
-          <div class="book-title">${esc(b.title)}</div>
-          <div class="book-author">${esc(b.author || 'Unknown')}</div>
-          <div class="book-meta">
-            <span>${year}</span>
-            <span>⬇ ${(b.download_count||0).toLocaleString()}</span>
-          </div>
-        </div>
-      </div>`;
+  const iv = setInterval(() => {
+    remaining--;
+    const progress = (AD_DURATION_SEC - remaining) / AD_DURATION_SEC;
+    circle.style.strokeDashoffset = circumference * (1 - progress);
+    if (remaining > 0) {
+      btn.textContent = remaining;
+      sub.textContent = `${remaining}s • watching ad…`;
+    } else {
+      finish();
+    }
+  }, 1000);
+
+  window[`_cd_${n}`] = iv;
+}
+
+function stopCountdownRing(n) {
+  clearInterval(window[`_cd_${n}`]);
+  const ring = document.getElementById(`ring-${n}`);
+  if (ring) ring.classList.remove('active');
+}
+
+// ══════════════════════════════════════════════════════════════
+//  startStep — كل زر يعمل بشكل مستقل تماماً، بمعرف widget خاص به
+//  tads.me لا يُستدعى إطلاقاً إلا عند نقر الزر
+//
+//  الحالتان الممكنتان بعد استدعاء tads.me لهذا الزر:
+//  1) الإعلان عُرض فعلياً (status === 'shown') → يبدأ عدّاد الـ 5
+//     ثوانٍ، والخطوة تكتمل فقط بعد انتهائه.
+//  2) لا يوجد إعلان متاح (onAdsNotFound) أو حدث خطأ → الـ instance
+//     الخاص بهذا الزر يُدمَّر فوراً (تم ذلك بالفعل داخل
+//     showTadsFullscreen)، ولا يبدأ أي عدّاد وهمي، والخطوة تكتمل
+//     مباشرة دون انتظار فيُفعَّل الزر التالي على الفور.
+// ══════════════════════════════════════════════════════════════
+function startStep(n) {
+  if (stepState[n].playing) return;
+  if (stepState[n].done) return;
+  if (n > 1 && !stepState[n - 1].done) return;
+
+  stepState[n].playing = true;
+
+  const btn = document.getElementById(`btn-${n}`);
+  const sub = document.getElementById(`sub-${n}`);
+
+  btn.classList.add('watching');
+  btn.textContent = '⏳';
+  if (sub) sub.textContent = 'loading ad…';
+
+  showTadsFullscreen(n).then((status) => {
+    if (status === 'shown') {
+      // الإعلان عُرض فعلياً → ابدأ العدّاد، والخطوة تكتمل فقط بعد انتهائه
+      startCountdownRing(n, () => onAdComplete(n));
+    } else {
+      // لا يوجد إعلان متاح أو حدث خطأ → أكمل الخطوة فوراً بدون عدّاد وهمي
+      // وفعّل الزر التالي مباشرة (الـ instance الحالي مُدمَّر بالفعل)
+      onAdComplete(n);
+    }
+  });
+}
+
+// ── Ad complete ───────────────────────────────────────────────
+function onAdComplete(n) {
+  stopCountdownRing(n);
+  stepState[n].playing = false;
+  stepState[n].done    = true;
+
+  const btn  = document.getElementById(`btn-${n}`);
+  const step = document.getElementById(`step-${n}`);
+  const num  = document.getElementById(`num-${n}`);
+  const sub  = document.getElementById(`sub-${n}`);
+
+  btn.onclick = null;
+  btn.className   = 'step-btn done-mark';
+  btn.textContent = '✓';
+  step.classList.add('done');
+  num.childNodes[0].textContent = '✓';
+  sub.textContent = 'Completed ✓';
+
+  saveProgress();
+  updateProgress();
+
+  if (n < STEP_COUNT) {
+    setTimeout(() => {
+      const nextStep = document.getElementById(`step-${n + 1}`);
+      const nextBtn  = document.getElementById(`btn-${n + 1}`);
+      nextStep.classList.remove('locked');
+      nextBtn.disabled = false;
+    }, 600);
+  } else {
+    unlockDownload();
+    launchConfetti();
   }
+}
 
-  function openBook(id) {
-    window.location.href = `${INFO_PAGE}?id=${encodeURIComponent(id)}`;
+function updateProgress() {
+  const done = (stepState[1].done?1:0) + (stepState[2].done?1:0) + (stepState[3].done?1:0);
+  document.getElementById('progress-fill').style.width  = `${(done / STEP_COUNT) * 100}%`;
+  document.getElementById('progress-label').textContent = `${done}/${STEP_COUNT}`;
+}
+
+function unlockDownload() {
+  const btn = document.getElementById('btn-download');
+  btn.disabled  = false;
+  btn.className = 'cta-btn unlocked';
+  btn.innerHTML = '📥 Download Now';
+  document.getElementById('success-msg').classList.add('visible');
+  document.getElementById('ad-notice').style.display = 'none';
+  document.getElementById('link-display').textContent = FILE_URL;
+  document.getElementById('link-box').classList.add('visible');
+  // بانر TGB يُحمّل الآن فقط — بعد أن أنهى المستخدم تفاعله مع الأزرار الثلاثة
+  initTadsBanner();
+}
+
+function copyLink() {
+  const btn = document.getElementById('copy-btn');
+  navigator.clipboard.writeText(FILE_URL).then(() => {
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = FILE_URL;
+    ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 2000);
+  });
+}
+
+// ── Download ─────────────────────────────────────────────────
+function downloadNow() {
+  if (!stepState[1].done || !stepState[2].done || !stepState[3].done) return;
+  if (tg && typeof tg.openLink === 'function') {
+    tg.openLink(FILE_URL, { try_instant_view: false });
+  } else {
+    const a = document.createElement('a');
+    a.href = FILE_URL;
+    a.target = '_blank';
+    a.rel = 'noopener';
+    a.click();
   }
+}
+document.getElementById('btn-download').addEventListener('click', downloadNow);
 
-  document.getElementById('chip-row').addEventListener('click', (e) => {
-    const chip = e.target.closest('.chip');
-    if (!chip) return;
-    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    activeCategory = chip.dataset.cat || '';
-    loadBooks();
-  });
+// ── Confetti ──────────────────────────────────────────────────
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.style.display = 'block';
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  document.getElementById('sort-select').addEventListener('change', (e) => {
-    activeSort = e.target.value;
-    loadBooks();
-  });
+  const colors = ['#FA520F','#FFFFFF','#CC3A05','#1A1A1A','#FFF8E0','#FFA455'];
+  const pieces = Array.from({length: 90}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height - canvas.height,
+    r: Math.random() * 5 + 3,
+    d: Math.random() * 2 + 1,
+    color: colors[Math.floor(Math.random()*colors.length)],
+    tilt: Math.random()*10-5,
+    tiltSpeed: (Math.random()*.07+.03) * (Math.random()<.5?1:-1),
+  }));
 
-  document.getElementById('search-box').addEventListener('input', (e) => {
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => {
-      searchTerm = e.target.value.trim();
-      loadBooks();
-    }, 400);
-  });
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p => {
+      ctx.beginPath();
+      ctx.fillStyle = p.color;
+      ctx.ellipse(p.x, p.y, p.r, p.r*0.4, p.tilt, 0, Math.PI*2);
+      ctx.fill();
+      p.y += p.d + frame/80;
+      p.tilt += p.tiltSpeed;
+      p.x += Math.sin(frame/20) * 0.5;
+      if (p.y > canvas.height) { p.y = -10; p.x = Math.random()*canvas.width; }
+    });
+    frame++;
+    if (frame < 160) requestAnimationFrame(draw);
+    else { ctx.clearRect(0,0,canvas.width,canvas.height); canvas.style.display='none'; }
+  }
+  draw();
+}
 
-  loadBooks();
+// ══════════════════════════════════════════════════════════════
+//  Bootstrap — عند تشغيل التطبيق المصغر لا يتم استدعاء tads.me
+//  إطلاقاً هنا. يتم فقط تحميل بيانات الملف واستعادة أي تقدّم
+//  محفوظ. أول استدعاء لـ tads.me يحدث فقط عند نقر أحد الأزرار.
+// ══════════════════════════════════════════════════════════════
+window.addEventListener('load', () => {
+  loadFileMeta();
+
+  const cached = loadProgress();
+  if (cached?.step1 && cached?.step2 && cached?.step3) {
+    // المستخدم أكمل مسبقاً
+    stepState[1].done = true; stepState[2].done = true; stepState[3].done = true;
+    showCard();
+    updateProgress();
+    [1,2,3].forEach(n => {
+      const btn  = document.getElementById(`btn-${n}`);
+      const step = document.getElementById(`step-${n}`);
+      btn.className   = 'step-btn done-mark';
+      btn.textContent = '✓';
+      step.classList.add('done');
+      step.classList.remove('locked');
+      document.getElementById(`sub-${n}`).textContent = 'Completed ✓';
+    });
+    unlockDownload();
+  } else {
+    // مستخدم جديد أو لم يكمل — بلا أي استدعاء لـ tads.me
+    showCard();
+  }
+});
 </script>
 
 </body>
