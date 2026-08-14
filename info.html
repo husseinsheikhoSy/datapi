@@ -56,8 +56,8 @@
     display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;
     border:none;cursor:pointer;flex-shrink:0;}
   .logo-text{font-size:16px;font-weight:800;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .badge-free{margin-left:auto;background:#fff;color:var(--accent-dark);font-size:11px;font-weight:800;
-    padding:5px 12px;border-radius:20px;flex-shrink:0;}
+  .points-badge{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;font-size:11.5px;font-weight:800;
+    padding:5px 11px;border-radius:20px;flex-shrink:0;display:flex;align-items:center;gap:4px;}
 
   .card{width:100%;margin:-28px 0 0;background:var(--card);border-radius:24px 24px 0 0;
     box-shadow:0 -6px 24px rgba(46,43,31,.08);padding:22px 18px 24px;position:relative;z-index:2;
@@ -76,31 +76,34 @@
   .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--accent-pale);color:var(--accent-dark);}
   .tag.free-tag{background:var(--accent);color:#fff;}
 
-  .unlock-headline{text-align:center;margin:8px 0 16px;}
-  .unlock-headline h2{font-family:'Playfair Display',serif;font-size:19px;font-weight:800;line-height:1.3;}
-  .unlock-headline p{font-size:12.5px;color:var(--text-muted);margin-top:4px;}
+  /* ── status panel: shows free-downloads-left / points, no gating ── */
+  .status-panel{background:var(--accent-pale);border-radius:14px;padding:14px 16px;margin:14px 0;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;}
+  .status-item{text-align:center;flex:1;}
+  .status-num{font-size:20px;font-weight:800;color:var(--accent-dark);font-family:'Playfair Display',serif;}
+  .status-label{font-size:10.5px;color:var(--text-muted);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
+  .status-divider{width:1px;align-self:stretch;background:var(--border);}
 
-  .ring-wrap{position:relative;width:96px;height:96px;margin:0 auto 16px;}
-  .ring-svg{transform:rotate(-90deg);}
-  .ring-bg{fill:none;stroke:var(--border);stroke-width:6;}
-  .ring-fg{fill:none;stroke:var(--accent);stroke-width:6;stroke-linecap:round;transition:stroke-dashoffset .3s linear;}
-  .ring-center{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
-    font-size:22px;font-weight:800;color:var(--accent-dark);}
-
-  .skip-btn{display:block;width:100%;padding:13px;border-radius:var(--radius-btn);border:none;
-    background:var(--accent-pale);color:var(--accent-dark);font-weight:800;font-size:14px;
-    cursor:pointer;margin-bottom:10px;transition:background .15s;}
-  .skip-btn:active{background:#DEE9CB;}
-  .skip-btn.watching{opacity:.7;}
-  .sub-note{text-align:center;font-size:12px;color:var(--text-muted);margin-bottom:16px;}
-
+  /* ── primary CTA: always reflects real availability, never a fake lock ── */
   .cta-btn{display:block;width:100%;padding:15px;border-radius:var(--radius-btn);border:none;
-    background:var(--border);color:var(--text-muted);font-weight:800;font-size:15px;cursor:not-allowed;}
-  .cta-btn.unlocked{background:var(--accent);color:#fff;cursor:pointer;}
+    background:var(--accent);color:#fff;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:10px;
+    transition:opacity .15s;}
+  .cta-btn:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+  .cta-btn:active:not(:disabled){opacity:.9;}
 
-  .success-msg{display:none;text-align:center;font-size:12.5px;color:var(--accent-dark);
+  /* ── optional ad-for-points section, clearly separated & optional ── */
+  .earn-section{border-top:1px dashed var(--border);margin-top:14px;padding-top:14px;}
+  .earn-headline{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center;}
+  .earn-sub{font-size:11.5px;color:var(--text-muted);text-align:center;margin-bottom:12px;line-height:1.5;}
+  .ad-btn{display:block;width:100%;padding:12px;border-radius:var(--radius-btn);border:1.5px solid var(--accent);
+    background:#fff;color:var(--accent-dark);font-weight:800;font-size:13.5px;cursor:pointer;}
+  .ad-btn.watching{opacity:.6;}
+  .ad-btn:disabled{opacity:.5;cursor:not-allowed;}
+
+  .toast{display:none;text-align:center;font-size:12.5px;color:var(--accent-dark);
     background:var(--accent-pale);border-radius:10px;padding:10px;margin-top:10px;font-weight:700;}
-  .success-msg.visible{display:block;}
+  .toast.visible{display:block;}
+  .toast.error{color:#8a3a2b;background:#FBE7E1;}
 
   .more-btn{display:block;width:100%;text-align:center;padding:12px;margin-top:12px;border-radius:var(--radius-btn);
     background:transparent;border:1.5px solid var(--border);color:var(--text);font-weight:700;font-size:13px;
@@ -115,7 +118,7 @@
   <div class="header-bar">
     <button class="back-btn" onclick="history.back()">‹</button>
     <div class="logo-text">Free Library</div>
-    <div class="badge-free">FREE</div>
+    <div class="points-badge" id="points-badge">⭐ –</div>
   </div>
 
   <div class="card" id="main-card">
@@ -132,30 +135,39 @@
       </div>
     </div>
 
-    <div class="unlock-headline">
-      <h2>Unlock your free download</h2>
-      <p>Wait for the countdown, or skip it instantly with a short ad.</p>
+    <!-- Always-visible status: 2 free downloads/day reset automatically.
+         Nothing here is behind an ad — this is purely informational. -->
+    <div class="status-panel">
+      <div class="status-item">
+        <div class="status-num" id="stat-free">–</div>
+        <div class="status-label">Free today</div>
+      </div>
+      <div class="status-divider"></div>
+      <div class="status-item">
+        <div class="status-num" id="stat-points">–</div>
+        <div class="status-label">Points</div>
+      </div>
     </div>
 
-    <div class="ring-wrap">
-      <svg class="ring-svg" width="96" height="96">
-        <circle class="ring-bg" cx="48" cy="48" r="42"></circle>
-        <circle class="ring-fg" id="ring-circle" cx="48" cy="48" r="42"></circle>
-      </svg>
-      <div class="ring-center" id="ring-center">⏳</div>
+    <!-- Primary action: works immediately if a free slot or enough
+         points exist. No countdown, no forced ad. -->
+    <button class="cta-btn" id="btn-download" disabled onclick="handleDownload()">📥 Download Now</button>
+    <div class="toast" id="toast"></div>
+
+    <!-- Optional, clearly secondary way to top up points. Only shown
+         when the user has no free downloads left. -->
+    <div class="earn-section" id="earn-section" style="display:none">
+      <div class="earn-headline">Out of free downloads for today?</div>
+      <div class="earn-sub">Watch a short ad any time to earn 5 points — 5 points unlocks one extra download. Totally optional; your 2 free downloads renew every day.</div>
+      <button class="ad-btn" id="btn-earn" onclick="watchAdForPoints()">🎬 Watch ad · +5 points</button>
     </div>
-
-    <button class="skip-btn" id="btn-skip" onclick="startSkipAd()">⚡ Skip with ad</button>
-    <div class="sub-note" id="sub-note">Unlocking automatically…</div>
-
-    <button class="cta-btn" id="btn-download" disabled>🔒 Wait for the timer to finish</button>
-    <div class="success-msg" id="success-msg">✅ Unlocked! Tap the button above to download.</div>
 
     <a class="more-btn" id="more-link" href="#">🔎 More from this category</a>
 
     <div class="disclaimer-note">
       This is a free public-domain / open-source resource. No copyrighted
-      or paid material is hosted here.
+      or paid material is hosted here. 2 free downloads reset daily —
+      watching ads is optional and only used to earn bonus points.
     </div>
   </div>
 </div>
@@ -167,21 +179,48 @@ const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disableClosingConfirmation(); }
 
 // ── config ──────────────────────────────────────────────────
-// Public, read-only Supabase credentials (RLS only allows SELECT, see schema.sql)
+// Public, read-only Supabase credentials. The anon key can ONLY call
+// the RPC functions below (see schema_user_downloads.sql) — it has
+// zero direct table access, so this stays safe to ship client-side.
 const SUPABASE_URL      = 'https://xokzxnslfrcnfdopcxqj.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_rc349sSa3juCMjxVTMQUng_HQo23ZJF';
-const FREE_WAIT_SEC    = 20;                     // always-free countdown
-const ADSGRAM_BLOCK_ID = '42837';                // TODO: replace with your approved block id
-const AD_TIMEOUT_MS    = 12000;
+const ADSGRAM_BLOCK_ID  = '42837';                // TODO: replace with your approved block id
+const AD_TIMEOUT_MS     = 12000;
 
 const CATEGORY_LABEL = { book: 'Books', summary: 'Cheat Sheets', project: 'Projects', article: 'Articles' };
 const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article: '📰' };
 
-let freeUnlockDone = false;
-let skipPlaying     = false;
-let adsgramCtrl     = null;
-let item            = null;
+let item          = null;
+let telegramId    = null;
+let adsgramCtrl   = null;
+let earnBusy      = false;
 
+// ── telegram user id ───────────────────────────────────────
+function getTelegramId() {
+  const fromTg = tg?.initDataUnsafe?.user?.id;
+  if (fromTg) return fromTg;
+  // fallback for testing outside Telegram (?debug_uid=123)
+  const dbg = new URLSearchParams(window.location.search).get('debug_uid');
+  return dbg ? Number(dbg) : null;
+}
+
+// ── supabase RPC helper ────────────────────────────────────
+async function callRpc(fn, args) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(args),
+  });
+  if (!res.ok) throw new Error(`RPC ${fn} failed: ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data[0] : data;
+}
+
+// ── adsgram (optional, points-only) ────────────────────────
 function getAdsgram() {
   if (adsgramCtrl) return adsgramCtrl;
   if (window.Adsgram && typeof window.Adsgram.init === 'function') {
@@ -228,7 +267,6 @@ async function loadItem() {
       const parsed = JSON.parse(b64urlDecode(raw));
       if (parsed && parsed.id) itemId = parsed.id;
     } catch (e) {
-      // maybe it's just a raw numeric id (?id=123)
       if (/^\d+$/.test(raw)) itemId = Number(raw);
     }
   }
@@ -276,79 +314,88 @@ async function loadItem() {
   moreLink.href = `index.html?startapp=${encoded}`;
 
   showCard();
-  startFreeCountdown();
+  await refreshState();
 }
 
 function showCard() { document.getElementById('main-card').classList.add('visible'); }
 
-function startFreeCountdown() {
-  const circle = document.getElementById('ring-circle');
-  const center = document.getElementById('ring-center');
-  const sub    = document.getElementById('sub-note');
-  const circumference = 2 * Math.PI * 42;
-  circle.style.strokeDasharray = circumference;
-  circle.style.strokeDashoffset = 0;
-
-  let remaining = FREE_WAIT_SEC;
-  center.textContent = remaining;
-  const iv = setInterval(() => {
-    if (freeUnlockDone) { clearInterval(iv); return; }
-    remaining--;
-    const progress = (FREE_WAIT_SEC - remaining) / FREE_WAIT_SEC;
-    circle.style.strokeDashoffset = circumference * progress;
-    if (remaining > 0) {
-      center.textContent = remaining;
-      sub.textContent = `Unlocking automatically in ${remaining}s…`;
-    } else {
-      clearInterval(iv);
-      completeFreeUnlock();
-    }
-  }, 1000);
-  window._freeCountdownIv = iv;
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast visible' + (isError ? ' error' : '');
 }
 
-function completeFreeUnlock() {
-  if (freeUnlockDone) return;
-  freeUnlockDone = true;
-  clearInterval(window._freeCountdownIv);
+// ── pull current free-downloads/points state and paint the UI ──────
+async function refreshState() {
+  telegramId = getTelegramId();
 
-  document.getElementById('ring-center').textContent = '✓';
-  document.getElementById('btn-skip').style.display = 'none';
-  document.getElementById('sub-note').textContent = 'Unlocked ✓';
+  if (!telegramId) {
+    // No Telegram identity available (e.g. opened outside Telegram) —
+    // fail safe: don't block anything on ads, just disable and explain.
+    document.getElementById('points-badge').textContent = '⭐ –';
+    document.getElementById('stat-free').textContent = '–';
+    document.getElementById('stat-points').textContent = '–';
+    showToast('Open this from the Telegram bot to download.', true);
+    return;
+  }
 
-  unlockDownload();
-  launchConfetti();
+  try {
+    const state = await callRpc('get_download_state', { p_telegram_id: telegramId });
+    paintState(state);
+  } catch (e) {
+    console.error(e);
+    showToast('Could not load your account state. Try again.', true);
+  }
 }
 
-function startSkipAd() {
-  if (skipPlaying || freeUnlockDone) return;
-  skipPlaying = true;
-  const btn = document.getElementById('btn-skip');
-  btn.classList.add('watching');
-  btn.textContent = '⏳ Loading ad…';
+function paintState(state) {
+  document.getElementById('points-badge').textContent = `⭐ ${state.points}`;
+  document.getElementById('stat-free').textContent = state.free_left;
+  document.getElementById('stat-points').textContent = state.points;
 
-  showAdsgramRewarded().then((status) => {
-    skipPlaying = false;
-    btn.classList.remove('watching');
-    btn.textContent = '⚡ Skip with ad';
-    if (status === 'shown' || status === 'no_ad') {
-      completeFreeUnlock();
-    }
-    // 'closed_early' → user backed out of a real ad, countdown keeps running
-  });
-}
-
-function unlockDownload() {
   const btn = document.getElementById('btn-download');
-  btn.disabled = false;
-  btn.className = 'cta-btn unlocked';
-  btn.innerHTML = '📥 Download Now';
-  btn.onclick = downloadNow;
-  document.getElementById('success-msg').classList.add('visible');
+  const earnSection = document.getElementById('earn-section');
+  const canDownload = state.free_left > 0 || state.can_use_points;
+
+  btn.disabled = !canDownload;
+  if (state.free_left > 0) {
+    btn.textContent = '📥 Download Now (free)';
+  } else if (state.can_use_points) {
+    btn.textContent = '📥 Download Now (uses 5 points)';
+  } else {
+    btn.textContent = '📥 Download Now';
+  }
+
+  // The "earn points via ad" block only appears once free downloads
+  // are used up — it is never required to see or use the download button.
+  earnSection.style.display = state.free_left > 0 ? 'none' : 'block';
 }
 
-function downloadNow() {
-  if (!freeUnlockDone || !item) return;
+// ── primary action: consume a free slot or points, never an ad ─────
+async function handleDownload() {
+  if (!telegramId || !item) return;
+  const btn = document.getElementById('btn-download');
+  btn.disabled = true;
+
+  try {
+    const result = await callRpc('consume_download', { p_telegram_id: telegramId });
+    if (!result.success) {
+      showToast("You're out of free downloads and points for now — watch an ad below to earn points, or come back tomorrow.", true);
+      paintState({ points: result.points, free_left: result.free_left, can_use_points: false });
+      return;
+    }
+    openFile();
+    showToast(result.used_free ? '✅ Downloaded using a free daily slot.' : '✅ Downloaded using 5 points.');
+    launchConfetti();
+    paintState({ points: result.points, free_left: result.free_left, can_use_points: result.points >= 5 });
+  } catch (e) {
+    console.error(e);
+    showToast('Something went wrong. Please try again.', true);
+    btn.disabled = false;
+  }
+}
+
+function openFile() {
   const url = item.file_url;
   if (tg && typeof tg.openLink === 'function') {
     tg.openLink(url, { try_instant_view: false });
@@ -356,6 +403,37 @@ function downloadNow() {
     const a = document.createElement('a');
     a.href = url; a.target = '_blank'; a.rel = 'noopener'; a.click();
   }
+}
+
+// ── optional: watch ad to earn points (never blocks downloading) ───
+async function watchAdForPoints() {
+  if (earnBusy || !telegramId) return;
+  earnBusy = true;
+  const btn = document.getElementById('btn-earn');
+  btn.classList.add('watching');
+  btn.textContent = '⏳ Loading ad…';
+  btn.disabled = true;
+
+  const status = await showAdsgramRewarded();
+
+  if (status === 'shown') {
+    try {
+      const result = await callRpc('reward_ad_points', { p_telegram_id: telegramId });
+      showToast(`⭐ +5 points! You now have ${result.points} points.`);
+      refreshState();
+    } catch (e) {
+      console.error(e);
+      showToast('Ad watched, but points could not be saved. Try again.', true);
+    }
+  } else if (status === 'no_ad') {
+    showToast('No ad available right now — try again in a bit.', true);
+  }
+  // 'closed_early' → no reward, no penalty either
+
+  btn.classList.remove('watching');
+  btn.textContent = '🎬 Watch ad · +5 points';
+  btn.disabled = false;
+  earnBusy = false;
 }
 
 function launchConfetti() {
