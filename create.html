@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Link Shortener</title>
+<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F3EDE0; --card:#FFFFFF; --text:#2E2B1F; --text-muted:#83795F;
+    --border:#E3D9C2; --accent:#6B7A3D; --accent-dark:#4F5C2C; --accent-pale:#EAF0DD;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;}
+  .app-shell{width:100%;max-width:460px;padding:20px 18px;}
+  .header{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);
+    border-radius:18px;padding:22px 20px;color:#fff;margin-bottom:16px;}
+  .header h1{font-size:19px;font-weight:800;}
+  .header p{font-size:12.5px;opacity:.9;margin-top:4px;}
+
+  .card{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 4px 16px rgba(46,43,31,.08);margin-bottom:16px;}
+  input{width:100%;padding:13px 14px;border-radius:10px;border:1.5px solid var(--border);
+    font-size:14px;font-family:inherit;margin-bottom:10px;}
+  input:focus{outline:none;border-color:var(--accent);}
+  button{width:100%;padding:13px;border-radius:10px;border:none;background:var(--accent);
+    color:#fff;font-weight:800;font-size:14.5px;cursor:pointer;}
+  button:disabled{background:var(--border);color:var(--text-muted);}
+
+  .result{display:none;background:var(--accent-pale);border-radius:12px;padding:14px;margin-top:12px;}
+  .result.visible{display:block;}
+  .result-link{font-size:13.5px;font-weight:700;color:var(--accent-dark);word-break:break-all;margin-bottom:10px;}
+  .copy-btn{background:var(--accent-dark);}
+  .note{font-size:11px;color:var(--text-muted);text-align:center;margin-top:14px;line-height:1.6;}
+
+  .my-links{margin-top:6px;}
+  .link-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;
+    border-bottom:1px solid var(--border);font-size:12.5px;}
+  .link-row:last-child{border-bottom:none;}
+  .link-orig{color:var(--text-muted);max-width:60%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .link-clicks{color:var(--accent-dark);font-weight:800;}
+</style>
+</head>
+<body>
+<div class="app-shell">
+  <div class="header">
+    <h1>✂️ Shorten your link</h1>
+    <p>Free for everyone — try it now</p>
+  </div>
+
+  <div class="card">
+    <input type="url" id="url-input" placeholder="https://example.com/your-long-link" />
+    <button id="btn-shorten" onclick="shorten()">Shorten link</button>
+    <div class="result" id="result">
+      <div class="result-link" id="result-link"></div>
+      <button class="copy-btn" onclick="copyLink()">📋 Copy link</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="font-weight:800;font-size:13.5px;margin-bottom:8px;">Your recent links</div>
+    <div class="my-links" id="my-links">
+      <div class="note">Sign in via Telegram to see your links</div>
+    </div>
+  </div>
+
+  <div class="note">
+    The short link opens via the Telegram bot after a short free wait,
+    or instantly with an optional ad. No account or payment required.
+  </div>
+</div>
+
+<script>
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
+
+const SUPABASE_URL = 'https://xokzxnslfrcnfdopcxqj.supabase.co'; // replace with your project URL
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const BOT_USERNAME = 'your_bot'; // without @
+
+function getTelegramId() {
+  return tg?.initDataUnsafe?.user?.id || null;
+}
+
+async function callRpc(fn, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+let lastShort = '';
+
+async function shorten() {
+  const input = document.getElementById('url-input');
+  const btn = document.getElementById('btn-shorten');
+  const url = input.value.trim();
+  if (!/^https?:\/\//i.test(url)) { alert('Please enter a valid link starting with http:// or https://'); return; }
+
+  const tgId = getTelegramId();
+  if (!tgId) { alert('Open this page from inside the Telegram bot to continue.'); return; }
+
+  btn.disabled = true; btn.textContent = 'Shortening…';
+  try {
+    const data = await callRpc('create_short_link', { p_owner_tg_id: tgId, p_url: url });
+    const code = data[0].short_code;
+    lastShort = `https://t.me/${BOT_USERNAME}?startapp=${code}`;
+    document.getElementById('result-link').textContent = lastShort;
+    document.getElementById('result').classList.add('visible');
+    loadMyLinks();
+  } catch (e) {
+    console.error(e);
+    alert('Could not shorten the link, please try again.');
+  }
+  btn.disabled = false; btn.textContent = 'Shorten link';
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(lastShort);
+  if (tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+}
+
+async function loadMyLinks() {
+  const tgId = getTelegramId();
+  const box = document.getElementById('my-links');
+  if (!tgId) return;
+  try {
+    const rows = await callRpc('my_links', { p_tg_id: tgId });
+    if (!rows.length) { box.innerHTML = '<div class="note">No links yet</div>'; return; }
+    box.innerHTML = rows.slice(0, 10).map(r => `
+      <div class="link-row">
+        <span class="link-orig">${r.original_url}</span>
+        <span class="link-clicks">${r.clicks} clicks</span>
+      </div>
+    `).join('');
+  } catch (e) { console.error(e); }
+}
+
+window.addEventListener('load', loadMyLinks);
+</script>
+</body>
+</html>

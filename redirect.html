@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Redirecting…</title>
+<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F3EDE0; --card:#FFFFFF; --text:#2E2B1F; --text-muted:#83795F;
+    --border:#E3D9C2; --accent:#6B7A3D; --accent-dark:#4F5C2C; --accent-pale:#EAF0DD;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;}
+  .card{background:var(--card);border-radius:20px;padding:28px 22px;max-width:400px;width:100%;
+    text-align:center;box-shadow:0 4px 20px rgba(46,43,31,.1);}
+
+  .ring{width:96px;height:96px;margin:0 auto 18px;position:relative;}
+  .ring svg{transform:rotate(-90deg);width:100%;height:100%;}
+  .ring circle{fill:none;stroke-width:8;}
+  .ring .bg{stroke:var(--accent-pale);}
+  .ring .fg{stroke:var(--accent);stroke-linecap:round;transition:stroke-dashoffset 1s linear;}
+  .ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:26px;font-weight:800;color:var(--accent-dark);}
+
+  h2{font-size:16px;font-weight:800;margin-bottom:6px;}
+  p{font-size:12.5px;color:var(--text-muted);line-height:1.6;margin-bottom:18px;}
+
+  .destination{font-size:12px;color:var(--text-muted);background:var(--accent-pale);
+    border-radius:8px;padding:8px 10px;word-break:break-all;margin-bottom:18px;}
+
+  .btn{display:block;width:100%;padding:14px;border-radius:10px;border:none;
+    font-weight:800;font-size:14.5px;cursor:pointer;margin-bottom:10px;}
+  .btn-primary{background:var(--accent);color:#fff;}
+  .btn-primary:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+  .btn-skip{background:#fff;border:1.5px solid var(--accent);color:var(--accent-dark);}
+  .btn-skip:disabled{opacity:.5;cursor:not-allowed;}
+
+  .toast{display:none;font-size:12px;background:#FBE7E1;color:#8a3a2b;border-radius:8px;
+    padding:8px;margin-top:6px;}
+  .toast.visible{display:block;}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="ring">
+    <svg viewBox="0 0 100 100">
+      <circle class="bg" cx="50" cy="50" r="44" />
+      <circle class="fg" id="ring-fg" cx="50" cy="50" r="44"
+        stroke-dasharray="276.5" stroke-dashoffset="0" />
+    </svg>
+    <div class="ring-num" id="ring-num">30</div>
+  </div>
+
+  <h2 id="title">Preparing your link…</h2>
+  <p id="sub">It will open automatically in a few seconds — free, no conditions.</p>
+
+  <div class="destination" id="destination">—</div>
+
+  <!-- Primary button: only enables after the free countdown finishes, never depends on an ad -->
+  <button class="btn btn-primary" id="btn-open" disabled onclick="openDestination(false)">
+    🔗 Open link
+  </button>
+
+  <!-- Clearly secondary option: skip the wait with a short ad. Fully optional -->
+  <button class="btn btn-skip" id="btn-skip" onclick="skipWithAd()">
+    ⚡ Skip the wait with a short ad
+  </button>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<script>
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disableClosingConfirmation(); }
+
+const SUPABASE_URL = 'https://xokzxnslfrcnfdopcxqj.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const ADSGRAM_BLOCK_ID = 'YOUR_ADSGRAM_BLOCK_ID';
+
+const WAIT_SECONDS = 30;
+const RADIUS = 44;
+const CIRC = 2 * Math.PI * RADIUS;
+
+let destinationUrl = null;
+let remaining = WAIT_SECONDS;
+let timerHandle = null;
+let unlocked = false;
+let adBusy = false;
+
+function getCode() {
+  const p = new URLSearchParams(window.location.search);
+  return p.get('code') || tg?.initDataUnsafe?.start_param;
+}
+
+async function callRpc(fn, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('visible');
+  setTimeout(() => t.classList.remove('visible'), 3500);
+}
+
+function paintRing() {
+  const offset = CIRC * (remaining / WAIT_SECONDS);
+  document.getElementById('ring-fg').style.strokeDasharray = CIRC;
+  document.getElementById('ring-fg').style.strokeDashoffset = offset;
+  document.getElementById('ring-num').textContent = remaining;
+}
+
+function startCountdown() {
+  paintRing();
+  timerHandle = setInterval(() => {
+    remaining--;
+    paintRing();
+    if (remaining <= 0) {
+      clearInterval(timerHandle);
+      unlock();
+    }
+  }, 1000);
+}
+
+function unlock() {
+  unlocked = true;
+  document.getElementById('title').textContent = '✅ Your link is ready';
+  document.getElementById('sub').textContent = 'Tap the button below to open it.';
+  document.getElementById('btn-open').disabled = false;
+  document.getElementById('btn-skip').style.display = 'none';
+  // optional auto-open once ready (remove this line if you prefer a manual tap only)
+  openDestination(false);
+}
+
+async function openDestination(usedAdSkip) {
+  if (!destinationUrl) return;
+  try { await callRpc('register_click', { p_code: getCode(), p_used_ad_skip: usedAdSkip }); }
+  catch (e) { console.error(e); }
+
+  if (tg && typeof tg.openLink === 'function') {
+    tg.openLink(destinationUrl, { try_instant_view: false });
+  } else {
+    window.location.href = destinationUrl;
+  }
+}
+
+async function skipWithAd() {
+  if (adBusy || unlocked) return;
+  adBusy = true;
+  const btn = document.getElementById('btn-skip');
+  btn.disabled = true;
+  btn.textContent = '⏳ Loading ad…';
+
+  try {
+    // AdsController.show() resolves only if the ad was actually watched
+    await window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID }).show();
+    clearInterval(timerHandle);
+    remaining = 0;
+    paintRing();
+    unlock();
+    openDestination(true);
+  } catch (e) {
+    // no ad available or closed early — the free countdown just keeps running, no penalty
+    showToast('No ad available right now — the free countdown continues.');
+    btn.disabled = false;
+    btn.textContent = '⚡ Skip the wait with a short ad';
+  }
+  adBusy = false;
+}
+
+async function init() {
+  const code = getCode();
+  if (!code) {
+    document.getElementById('title').textContent = 'Invalid link';
+    document.getElementById('sub').textContent = 'No link code was found.';
+    return;
+  }
+  try {
+    const rows = await callRpc('resolve_short_link', { p_code: code });
+    if (!rows.length || !rows[0].is_active) {
+      document.getElementById('title').textContent = 'Link unavailable';
+      document.getElementById('sub').textContent = 'This link has been paused or does not exist.';
+      return;
+    }
+    destinationUrl = rows[0].original_url;
+    document.getElementById('destination').textContent = destinationUrl;
+    startCountdown();
+  } catch (e) {
+    console.error(e);
+    document.getElementById('title').textContent = 'Error';
+    document.getElementById('sub').textContent = 'Could not load this link.';
+  }
+}
+
+window.addEventListener('load', init);
+</script>
+</body>
+</html>

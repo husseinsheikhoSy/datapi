@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Dashboard</title>
+<script src="https://telegram.org/js/telegram-web-app.js?56"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#F3EDE0; --card:#FFFFFF; --text:#2E2B1F; --text-muted:#83795F;
+    --border:#E3D9C2; --accent:#6B7A3D; --accent-dark:#4F5C2C; --accent-pale:#EAF0DD;
+    --danger:#8a3a2b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+  .app-shell{max-width:480px;margin:0 auto;padding:18px;}
+  .header{background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);
+    border-radius:16px;padding:18px;color:#fff;margin-bottom:16px;}
+  .header h1{font-size:17px;font-weight:800;}
+
+  .stats-row{display:flex;gap:10px;margin-bottom:16px;}
+  .stat-card{flex:1;background:var(--card);border-radius:12px;padding:14px;text-align:center;
+    box-shadow:0 2px 10px rgba(46,43,31,.06);}
+  .stat-num{font-size:20px;font-weight:800;color:var(--accent-dark);}
+  .stat-label{font-size:10.5px;color:var(--text-muted);font-weight:700;margin-top:2px;}
+
+  .card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:12px;
+    box-shadow:0 2px 10px rgba(46,43,31,.06);}
+  .link-row{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-bottom:1px solid var(--border);}
+  .link-row:last-child{border-bottom:none;}
+  .link-top{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);}
+  .link-url{font-size:12.5px;font-weight:700;word-break:break-all;}
+  .link-actions{display:flex;gap:8px;margin-top:4px;}
+  .mini-btn{flex:1;padding:7px;border-radius:8px;border:none;font-size:11.5px;font-weight:700;cursor:pointer;}
+  .mini-btn.pause{background:#FBE7E1;color:var(--danger);}
+  .mini-btn.resume{background:var(--accent-pale);color:var(--accent-dark);}
+
+  .denied{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
+</style>
+</head>
+<body>
+<div class="app-shell" id="app">
+  <div class="header"><h1>🔐 Dashboard — owner only</h1></div>
+  <div id="content">Checking access…</div>
+</div>
+
+<script>
+const tg = window.Telegram ? window.Telegram.WebApp : null;
+if (tg) { tg.ready(); tg.expand(); }
+
+const SUPABASE_URL = 'https://xokzxnslfrcnfdopcxqj.supabase.co';
+const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY';
+const OWNER_ID = 148350890; // taken from your existing pixel.py bot — only shown as a UI hint
+
+async function callRpc(fn, body) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': SUPABASE_ANON_KEY,
+      'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+    },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+function getTelegramId() { return tg?.initDataUnsafe?.user?.id || null; }
+
+async function loadDashboard() {
+  const tgId = getTelegramId();
+  const content = document.getElementById('content');
+
+  if (!tgId) {
+    content.innerHTML = '<div class="denied">Open this page from inside Telegram.</div>';
+    return;
+  }
+
+  try {
+    const [stats, links] = await Promise.all([
+      callRpc('admin_stats', { p_tg_id: tgId }),
+      callRpc('admin_all_links', { p_tg_id: tgId }),
+    ]);
+
+    // ── Real access control lives in the database (RPC rejects unauthorized IDs) ──
+    // This front-end check only shows a friendly message; it is not the actual gate.
+    renderStats(stats[0]);
+    renderLinks(links, tgId);
+  } catch (e) {
+    console.error(e);
+    content.innerHTML = '<div class="denied">🚫 This page is restricted to the bot owner.</div>';
+  }
+}
+
+function renderStats(s) {
+  const content = document.getElementById('content');
+  content.innerHTML = `
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num">${s.total_links}</div><div class="stat-label">Total links</div></div>
+      <div class="stat-card"><div class="stat-num">${s.total_clicks}</div><div class="stat-label">Total clicks</div></div>
+      <div class="stat-card"><div class="stat-num">${s.ad_skips}</div><div class="stat-label">Ad skips</div></div>
+    </div>
+    <div class="card"><div id="links-list"></div></div>
+  `;
+}
+
+function renderLinks(links, tgId) {
+  const box = document.getElementById('links-list');
+  if (!links.length) { box.innerHTML = '<div class="denied">No links yet</div>'; return; }
+
+  box.innerHTML = links.map(l => `
+    <div class="link-row">
+      <div class="link-top">
+        <span>👤 ${l.owner_tg_id}</span>
+        <span>🖱️ ${l.clicks}</span>
+      </div>
+      <div class="link-url">${l.original_url}</div>
+      <div class="link-top"><span>code: ${l.short_code}</span><span>${l.is_active ? '✅ active' : '⏸️ paused'}</span></div>
+      <div class="link-actions">
+        ${l.is_active
+          ? `<button class="mini-btn pause" onclick="toggleLink(${l.id}, false, ${tgId})">Pause</button>`
+          : `<button class="mini-btn resume" onclick="toggleLink(${l.id}, true, ${tgId})">Resume</button>`
+        }
+      </div>
+    </div>
+  `).join('');
+}
+
+async function toggleLink(linkId, active, tgId) {
+  try {
+    await callRpc('admin_toggle_link', { p_tg_id: tgId, p_link_id: linkId, p_active: active });
+    loadDashboard();
+  } catch (e) {
+    alert('Could not perform this action.');
+  }
+}
+
+window.addEventListener('load', loadDashboard);
+</script>
+</body>
+</html>
