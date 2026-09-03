@@ -290,20 +290,16 @@ function loadItem() {
     img.alt = 'cover';
     img.onerror = () => {
       thumb.textContent = '📖';
-      if (isDebugMode()) {
-        debugNote.style.display = 'block';
-        debugNote.textContent = '⚠️ Cover failed to load: ' + item.cover_url;
-      }
+      debugNote.style.display = 'block';
+      debugNote.textContent = '⚠️ Cover failed to load: ' + item.cover_url;
     };
     img.src = item.cover_url;
     thumb.innerHTML = '';
     thumb.appendChild(img);
   } else {
     thumb.textContent = '📖';
-    if (isDebugMode()) {
-      debugNote.style.display = 'block';
-      debugNote.textContent = 'ℹ️ No cover image was attached to this item (Skip was tapped when publishing).';
-    }
+    debugNote.style.display = 'block';
+    debugNote.textContent = 'ℹ️ No cover image was attached to this item (Skip was tapped when publishing).';
   }
 
   const moreLink = document.getElementById('more-link');
