@@ -7,7 +7,7 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<!-- Monetag SDK — Rewarded Popup zone -->
+<!-- Monetag SDK -->
 <script src='//libtl.com/sdk.js' data-zone='11714447' data-sdk='show_11714447'></script>
 
 <script>
@@ -462,25 +462,42 @@ function loadItem() {
     const img = document.createElement('img');
     img.alt = 'cover';
     img.crossOrigin = 'anonymous';
+    img.referrerPolicy = 'no-referrer';
 
     img.onload = function() {
       this.classList.add('loaded');
+      console.log('Cover loaded successfully:', item.cover_url);
     };
 
     img.onerror = function() {
-      // Retry with wsrv.nl proxy if not already proxied
-      if (!item.cover_url.includes('wsrv.nl') && !this.dataset.retried) {
-        this.dataset.retried = 'true';
-        const proxied = 'https://wsrv.nl/?url=' + encodeURIComponent(item.cover_url);
-        console.log('Retrying cover with proxy:', proxied);
+      console.error('Cover failed to load:', this.src);
+
+      // Strategy 1: If current src is already proxied, try direct Telegram URL
+      if (this.src.includes('wsrv.nl')) {
+        const decoded = decodeURIComponent(this.src.replace('https://wsrv.nl/?url=', ''));
+        if (decoded !== this.src && !this.dataset.triedDirect) {
+          this.dataset.triedDirect = 'true';
+          console.log('Retrying with direct URL:', decoded);
+          this.src = decoded;
+          return;
+        }
+      }
+
+      // Strategy 2: If current src is direct Telegram URL, try wsrv.nl proxy
+      if (!this.src.includes('wsrv.nl') && !this.dataset.triedProxy) {
+        this.dataset.triedProxy = 'true';
+        const proxied = 'https://wsrv.nl/?url=' + encodeURIComponent(this.src);
+        console.log('Retrying with proxy:', proxied);
         this.src = proxied;
         return;
       }
+
+      // All strategies failed — show placeholder
       this.classList.add('error');
       thumb.classList.add('has-error');
       if (isDebugMode()) {
         debugNote.style.display = 'block';
-        debugNote.textContent = '⚠️ Cover failed to load: ' + item.cover_url;
+        debugNote.textContent = '⚠️ Cover failed to load. Tried: direct + proxy.';
       }
     };
 
