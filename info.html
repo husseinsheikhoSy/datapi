@@ -174,6 +174,7 @@ if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disable
 // channel post is the only place that number is shown (pulled straight
 // from Pixeldrain's own API, refreshed hourly).
 const ITEMS_JSON_URL     = './items.json';
+const CHANNEL_JOIN_LINK  = 'https://t.me/+MhmkscCzIYQ2MmM8';
 
 const CATEGORY_LABEL = { book: 'Books', summary: 'Cheat Sheets', project: 'Projects', article: 'Articles' };
 const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article: '📰' };
@@ -256,11 +257,12 @@ async function loadItem() {
   }
 
   const moreLink = document.getElementById('more-link');
-  const label = CATEGORY_LABEL[item.category] || 'items';
-  moreLink.textContent = `🔎 More ${label}`;
-  const morePayload = { page: 'index', cat: item.category };
-  const encoded = btoa(JSON.stringify(morePayload)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-  moreLink.href = `index.html?startapp=${encoded}`;
+  moreLink.textContent = '📢 More free resources in the channel';
+  moreLink.href = CHANNEL_JOIN_LINK;
+  moreLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open(CHANNEL_JOIN_LINK);
+  });
 
   showCard();
 }
