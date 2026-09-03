@@ -108,14 +108,45 @@ Join the channel below to browse and download the latest resources, all complete
 const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disableClosingConfirmation(); }
 
-const CHANNEL_JOIN_LINK = 'https://t.me/+MhmkscCzIYQ2MmM8';
+// Item-download deep links (from the channel "Download Now Free" button)
+// arrive here too, since this page is the Mini App's registered entry
+// point. If the startapp payload looks like an item (has a title + file
+// url), forward straight to info.html with the same payload attached —
+// otherwise this is a plain "open the app" link, so show the About page.
+function getStartParam() {
+  return tg?.initDataUnsafe?.start_param
+      || new URLSearchParams(window.location.search).get('startapp');
+}
+function b64urlDecode(str) {
+  const b64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  const padded = b64 + '='.repeat((4 - b64.length % 4) % 4);
+  const binary = atob(padded);
+  const bytes = Uint8Array.from(binary, c => c.charCodeAt(0));
+  return new TextDecoder('utf-8').decode(bytes);
+}
+function redirectToInfoIfItemLink() {
+  const raw = getStartParam();
+  if (!raw) return false;
+  try {
+    const parsed = JSON.parse(b64urlDecode(raw));
+    if (parsed && parsed.t && parsed.u) {
+      window.location.replace('info.html?startapp=' + encodeURIComponent(raw));
+      return true;
+    }
+  } catch (e) { /* not an item payload — fall through to the About page */ }
+  return false;
+}
 
-const joinBtn = document.getElementById('join-btn');
-joinBtn.href = CHANNEL_JOIN_LINK;
-joinBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  window.open(CHANNEL_JOIN_LINK);
-});
+if (!redirectToInfoIfItemLink()) {
+  const CHANNEL_JOIN_LINK = 'https://t.me/+MhmkscCzIYQ2MmM8';
+
+  const joinBtn = document.getElementById('join-btn');
+  joinBtn.href = CHANNEL_JOIN_LINK;
+  joinBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    window.open(CHANNEL_JOIN_LINK);
+  });
+}
 </script>
 </body>
 </html>
