@@ -7,7 +7,9 @@
 
 <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
 
-<!-- ══ link interceptors (keep the Mini App from closing on external links) ══ -->
+<!-- Monetag SDK — Rewarded Popup zone -->
+<script src='//libtl.com/sdk.js' data-zone='11714447' data-sdk='show_11714447'></script>
+
 <script>
 (function() {
   var _origOpen = window.open;
@@ -24,92 +26,90 @@
 })();
 </script>
 
-<!-- tads.me SDK (only ad provider) -->
-<script src="https://w.tads.me/widget.js"></script>
-
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap" rel="stylesheet" />
 
 <style>
   :root {
-    --bg:             #F3EDE0;
-    --card:           #FFFFFF;
-    --text:           #2E2B1F;
-    --text-muted:     #83795F;
-    --border:         #E3D9C2;
-    --accent:         #6B7A3D;
-    --accent-dark:    #4F5C2C;
-    --accent-pale:    #EAF0DD;
+    --bg:             #0B1730;
+    --bg-2:           #0F1F42;
+    --card:           #142650;
+    --text:           #EEF1F8;
+    --text-muted:     #9AA6C4;
+    --border:         #24365F;
+    --accent:         #FF4FA0;
+    --accent-dark:    #D6338A;
+    --accent-pale:    rgba(255,79,160,.14);
+    --silver:         #C7CEDD;
+    --silver-dim:     #7C87A3;
     --radius-card:    20px;
     --radius-btn:     10px;
-    --shadow-card:    0 4px 24px rgba(46,43,31,.10);
   }
   *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;
     display:flex;flex-direction:column;align-items:center;padding:0;overflow-x:hidden;}
   .app-shell{width:100%;max-width:440px;margin:0 auto;}
 
-  .header-bar{width:100%;background:linear-gradient(135deg,var(--accent) 0%,var(--accent-dark) 100%);
-    padding:16px 18px 46px;display:flex;align-items:center;gap:10px;}
-  .back-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.18);
+  .header-bar{width:100%;background:linear-gradient(135deg,var(--bg-2) 0%,#1B2F5E 60%,var(--accent-dark) 140%);
+    padding:16px 18px 46px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);}
+  .back-btn{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.1);
     display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:800;
     border:none;cursor:pointer;flex-shrink:0;}
   .logo-text{font-size:16px;font-weight:800;color:#fff;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .points-badge{margin-left:auto;background:rgba(255,255,255,.18);color:#fff;font-size:11.5px;font-weight:800;
-    padding:5px 11px;border-radius:20px;flex-shrink:0;display:flex;align-items:center;gap:4px;}
 
   .card{width:100%;margin:-28px 0 0;background:var(--card);border-radius:24px 24px 0 0;
-    box-shadow:0 -6px 24px rgba(46,43,31,.08);padding:22px 18px 24px;position:relative;z-index:2;
-    display:none;animation:slideUp .45s cubic-bezier(.22,.61,.36,1) both;}
+    border:1px solid var(--border);box-shadow:0 -6px 24px rgba(0,0,0,.4);padding:22px 18px 24px;
+    position:relative;z-index:2;display:none;animation:slideUp .45s cubic-bezier(.22,.61,.36,1) both;}
   .card.visible{display:block;}
   @keyframes slideUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
 
   .item-info{display:flex;gap:12px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-  .item-thumb{width:76px;height:96px;border-radius:10px;background:var(--accent);flex-shrink:0;
-    display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;}
+  .item-thumb{width:76px;height:96px;border-radius:10px;background:var(--bg-2);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;
+    border:1px solid var(--border);}
   .item-thumb img{width:100%;height:100%;object-fit:cover;border-radius:10px;}
   .item-meta{flex:1;min-width:0;}
-  .item-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;line-height:1.35;margin-bottom:6px;}
+  .item-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;line-height:1.35;margin-bottom:6px;color:#fff;}
   .item-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin-bottom:8px;}
   .tags{display:flex;gap:6px;flex-wrap:wrap;}
-  .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--accent-pale);color:var(--accent-dark);}
-  .tag.free-tag{background:var(--accent);color:#fff;}
+  .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--bg-2);color:var(--silver);
+    border:1px solid var(--border);}
+  .tag.free-tag{background:var(--accent);color:#fff;border-color:var(--accent);}
 
-  /* ── status panel: shows free-downloads-left / points, no gating ── */
-  .status-panel{background:var(--accent-pale);border-radius:14px;padding:14px 16px;margin:14px 0;
+  .status-panel{background:var(--accent-pale);border:1px solid var(--border);border-radius:14px;padding:14px 16px;margin:14px 0;
     display:flex;align-items:center;justify-content:space-between;gap:10px;}
   .status-item{text-align:center;flex:1;}
-  .status-num{font-size:20px;font-weight:800;color:var(--accent-dark);font-family:'Playfair Display',serif;}
-  .status-label{font-size:10.5px;color:var(--text-muted);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
+  .status-num{font-size:20px;font-weight:800;color:var(--accent);font-family:'Playfair Display',serif;}
+  .status-label{font-size:10.5px;color:var(--silver-dim);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
   .status-divider{width:1px;align-self:stretch;background:var(--border);}
 
-  /* ── primary CTA: always reflects real availability, never a fake lock ── */
+  .unlock-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
+  .unlock-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:14px 16px;
+    border-radius:var(--radius-btn);border:1.5px solid var(--border);background:var(--bg-2);color:var(--text);
+    font-weight:700;font-size:13.5px;cursor:pointer;transition:opacity .15s,border-color .15s;}
+  .unlock-btn .step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
+    font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .unlock-btn .step-status{font-size:16px;flex-shrink:0;}
+  .unlock-btn.done{border-color:var(--accent);color:var(--silver);opacity:.75;cursor:default;}
+  .unlock-btn:disabled{opacity:.5;cursor:not-allowed;}
+
   .cta-btn{display:block;width:100%;padding:15px;border-radius:var(--radius-btn);border:none;
-    background:var(--accent);color:#fff;font-weight:800;font-size:15px;cursor:pointer;margin-bottom:10px;
-    transition:opacity .15s;}
-  .cta-btn:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;}
+    background:var(--accent);color:#fff;font-weight:800;font-size:15px;cursor:pointer;margin-top:6px;
+    box-shadow:0 4px 18px rgba(255,79,160,.35);transition:opacity .15s;}
+  .cta-btn:disabled{background:var(--border);color:var(--text-muted);cursor:not-allowed;box-shadow:none;}
   .cta-btn:active:not(:disabled){opacity:.9;}
 
-  /* ── optional ad-for-points section, clearly separated & optional ── */
-  .earn-section{border-top:1px dashed var(--border);margin-top:14px;padding-top:14px;}
-  .earn-headline{font-size:12.5px;font-weight:700;color:var(--text);margin-bottom:8px;text-align:center;}
-  .earn-sub{font-size:11.5px;color:var(--text-muted);text-align:center;margin-bottom:12px;line-height:1.5;}
-  .ad-btn{display:block;width:100%;padding:12px;border-radius:var(--radius-btn);border:1.5px solid var(--accent);
-    background:#fff;color:var(--accent-dark);font-weight:800;font-size:13.5px;cursor:pointer;}
-  .ad-btn.watching{opacity:.6;}
-  .ad-btn:disabled{opacity:.5;cursor:not-allowed;}
-
-  .toast{display:none;text-align:center;font-size:12.5px;color:var(--accent-dark);
-    background:var(--accent-pale);border-radius:10px;padding:10px;margin-top:10px;font-weight:700;}
+  .toast{display:none;text-align:center;font-size:12.5px;color:var(--accent);
+    background:var(--accent-pale);border:1px solid var(--border);border-radius:10px;padding:10px;margin-top:10px;font-weight:700;}
   .toast.visible{display:block;}
-  .toast.error{color:#8a3a2b;background:#FBE7E1;}
+  .toast.error{color:#FF8A8A;background:rgba(255,80,80,.1);}
 
   .more-btn{display:block;width:100%;text-align:center;padding:12px;margin-top:12px;border-radius:var(--radius-btn);
-    background:transparent;border:1.5px solid var(--border);color:var(--text);font-weight:700;font-size:13px;
+    background:transparent;border:1.5px solid var(--border);color:var(--silver);font-weight:700;font-size:13px;
     text-decoration:none;cursor:pointer;}
 
-  .disclaimer-note{font-size:11px;color:var(--text-muted);text-align:center;margin-top:18px;line-height:1.5;}
+  .disclaimer-note{font-size:11px;color:var(--silver-dim);text-align:center;margin-top:18px;line-height:1.5;}
   #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:99;display:none;}
 </style>
 </head>
@@ -127,6 +127,7 @@
         <div class="item-title" id="item-title">Loading…</div>
         <div class="item-desc" id="item-desc"></div>
         <div class="tags">
+          <span class="tag" id="item-format"></span>
           <span class="tag" id="item-size"></span>
           <span class="tag" id="item-pages" style="display:none"></span>
           <span class="tag free-tag">FREE</span>
@@ -134,16 +135,40 @@
       </div>
     </div>
 
-    <!-- Unlock flow: watch 2 short ads, then the download link opens. -->
-    <button class="cta-btn" id="btn-unlock" onclick="unlockDownload()">🔓 Unlock Download (watch 2 short ads)</button>
+    <div class="status-panel">
+      <div class="status-item">
+        <div class="status-num" id="stat-downloads">0</div>
+        <div class="status-label">Downloads</div>
+      </div>
+      <div class="status-divider"></div>
+      <div class="status-item">
+        <div class="status-num">100%</div>
+        <div class="status-label">Free</div>
+      </div>
+    </div>
+
+    <!-- Two-step unlock: each button fires one Monetag Rewarded Popup.
+         Both must complete before the real download link activates. -->
+    <div class="unlock-steps">
+      <button class="unlock-btn" id="btn-step1" onclick="runStep(1)">
+        <span><span class="step-num">1</span> &nbsp;Complete step 1</span>
+        <span class="step-status" id="step1-status">▶️</span>
+      </button>
+      <button class="unlock-btn" id="btn-step2" onclick="runStep(2)" disabled>
+        <span><span class="step-num">2</span> &nbsp;Complete step 2</span>
+        <span class="step-status" id="step2-status">🔒</span>
+      </button>
+    </div>
+
+    <button class="cta-btn" id="btn-download" onclick="downloadNow()" disabled>📥 Download Now Free</button>
     <div class="toast" id="toast"></div>
 
     <a class="more-btn" id="more-link" href="#">🔎 More from this category</a>
 
     <div class="disclaimer-note">
       This is a free public-domain / open-source resource. No copyrighted
-      or paid material is hosted here. Watching 2 short ads unlocks the
-      download link — no payment, no account needed.
+      or paid material is hosted here. Completing the two quick steps
+      unlocks the download link — no payment, no account needed.
     </div>
   </div>
 </div>
@@ -155,71 +180,33 @@ const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disableClosingConfirmation(); }
 
 // ── config ──────────────────────────────────────────────────
-// Public, read-only Supabase credentials. The anon key can ONLY call
-// the RPC functions below (see schema_user_downloads.sql) — it has
-// zero direct table access, so this stays safe to ship client-side.
-const SUPABASE_URL      = 'https://xokzxnslfrcnfdopcxqj.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_rc349sSa3juCMjxVTMQUng_HQo23ZJF';
-const TADS_WIDGET_1     = '9607';   // DataPi banner
-const TADS_WIDGET_2     = '9969';   // DataPi banner 2
-const TADS_DEBUG        = false;    // set true only while testing
-const AD_TIMEOUT_MS     = 15000;
+// Replaces the old Supabase REST calls entirely: item data comes from
+// the static items.json committed alongside this page, and the download
+// counter is registered through the bot's own tiny tracking endpoint.
+const ITEMS_JSON_URL     = './items.json';
+const TRACK_API_BASE     = 'https://YOUR_SERVER_DOMAIN_OR_IP:8420'; // must match config.TRACK_API_PUBLIC_BASE
 
 const CATEGORY_LABEL = { book: 'Books', summary: 'Cheat Sheets', project: 'Projects', article: 'Articles' };
 const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article: '📰' };
 
-let item          = null;
-let telegramId    = null;
-let unlocking     = false;
+let item        = null;
+let step1Done   = false;
+let step2Done   = false;
+let tracked     = false;
 
-// ── telegram user id ───────────────────────────────────────
-function getTelegramId() {
-  const fromTg = tg?.initDataUnsafe?.user?.id;
-  if (fromTg) return fromTg;
-  // fallback for testing outside Telegram (?debug_uid=123)
-  const dbg = new URLSearchParams(window.location.search).get('debug_uid');
-  return dbg ? Number(dbg) : null;
-}
-
-// ── tads.me: wait for SDK to be ready ───────────────────────
-function waitForTadsReady(timeout = AD_TIMEOUT_MS) {
-  return new Promise((resolve, reject) => {
-    if (window.tads && typeof window.tads.init === 'function') { resolve(); return; }
-    const start = performance.now();
-    const iv = setInterval(() => {
-      if (window.tads && typeof window.tads.init === 'function') {
-        clearInterval(iv); resolve();
-      } else if (performance.now() - start > timeout) {
-        clearInterval(iv); reject(new Error('tads.me SDK not loaded'));
-      }
-    }, 50);
-  });
-}
-
-// ── tads.me: show one fullscreen rewarded ad, resolve true/false ──
-async function showTadsAd(widgetId) {
-  try {
-    await waitForTadsReady();
-  } catch (e) {
-    console.error(e);
-    return false;
-  }
+// ── Monetag: Rewarded Popup ────────────────────────────────
+// show_11714447 comes from the SDK <script> tag in <head> (data-sdk attr).
+function showRewardedPopup() {
   return new Promise((resolve) => {
-    let settled = false;
-    const done = (ok) => { if (settled) return; settled = true; resolve(ok); };
-    const timer = setTimeout(() => done(false), AD_TIMEOUT_MS);
-
-    const adController = window.tads.init({
-      widgetId: widgetId,
-      type: 'fullscreen',
-      debug: TADS_DEBUG,
-      onShowReward: () => { clearTimeout(timer); done(true); },
-      onAdsNotFound: () => { clearTimeout(timer); done(false); },
+    if (typeof show_11714447 !== 'function') {
+      console.error('Monetag SDK not loaded');
+      resolve(false);
+      return;
+    }
+    show_11714447('pop').then(() => resolve(true)).catch((e) => {
+      console.error('Monetag ad error', e);
+      resolve(false);
     });
-
-    Promise.resolve(adController)
-      .then((ctrl) => ctrl.showAd())
-      .catch((err) => { console.error('tads showAd error', err); clearTimeout(timer); done(false); });
   });
 }
 
@@ -251,27 +238,24 @@ async function loadItem() {
   if (!itemId) itemId = new URLSearchParams(window.location.search).get('id');
 
   try {
-    const endpoint = `${SUPABASE_URL}/rest/v1/items?select=*&id=eq.${encodeURIComponent(itemId)}`;
-    const res = await fetch(endpoint, {
-      headers: {
-        'apikey': SUPABASE_ANON_KEY,
-        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-      },
-    });
-    const data = await res.json();
-    item = data && data[0];
+    const res = await fetch(ITEMS_JSON_URL + '?t=' + Date.now());
+    const all = await res.json();
+    item = all.find(it => String(it.id) === String(itemId));
   } catch (e) {
-    console.error('Failed to load item from Supabase', e);
+    console.error('Failed to load items.json', e);
   }
 
   if (!item) {
     document.getElementById('item-title').textContent = 'Item not found';
+    showCard();
     return;
   }
 
   document.getElementById('item-title').textContent = item.title;
   document.getElementById('item-desc').textContent = item.description || '';
+  document.getElementById('item-format').textContent = item.format_label || '';
   document.getElementById('item-size').textContent = item.size_str || '';
+  document.getElementById('stat-downloads').textContent = item.downloads ?? 0;
   if (item.page_count) {
     const pg = document.getElementById('item-pages');
     pg.style.display = 'inline-block';
@@ -291,7 +275,6 @@ async function loadItem() {
   const encoded = btoa(JSON.stringify(morePayload)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   moreLink.href = `index.html?startapp=${encoded}`;
 
-  telegramId = getTelegramId();
   showCard();
 }
 
@@ -303,39 +286,60 @@ function showToast(msg, isError) {
   t.className = 'toast visible' + (isError ? ' error' : '');
 }
 
-// ── primary action: watch 2 ads in sequence, then open the file ────
-async function unlockDownload() {
-  if (unlocking || !item) return;
-  unlocking = true;
-  const btn = document.getElementById('btn-unlock');
+async function runStep(n) {
+  if (!item) return;
+  const btn = document.getElementById(`btn-step${n}`);
+  const status = document.getElementById(`step${n}-status`);
   btn.disabled = true;
+  status.textContent = '⏳';
 
-  btn.textContent = '⏳ Loading ad 1 of 2…';
-  const ok1 = await showTadsAd(TADS_WIDGET_1);
-  if (!ok1) {
-    showToast('No ad available right now — please try again.', true);
-    btn.textContent = '🔓 Unlock Download (watch 2 short ads)';
+  const ok = await showRewardedPopup();
+  if (!ok) {
+    status.textContent = '▶️';
     btn.disabled = false;
-    unlocking = false;
+    showToast('No ad available right now — please try again.', true);
     return;
   }
 
-  btn.textContent = '⏳ Loading ad 2 of 2…';
-  const ok2 = await showTadsAd(TADS_WIDGET_2);
-  if (!ok2) {
-    showToast('No ad available right now — please try again.', true);
-    btn.textContent = '🔓 Unlock Download (watch 2 short ads)';
-    btn.disabled = false;
-    unlocking = false;
-    return;
+  status.textContent = '✅';
+  btn.classList.add('done');
+
+  if (n === 1) {
+    step1Done = true;
+    document.getElementById('btn-step2').disabled = false;
+  } else {
+    step2Done = true;
+  }
+
+  if (step1Done && step2Done) {
+    document.getElementById('btn-download').disabled = false;
+    showToast('✅ Unlocked! Tap Download Now Free.');
+  }
+}
+
+async function downloadNow() {
+  if (!item || !step1Done || !step2Done) return;
+  const btn = document.getElementById('btn-download');
+  btn.disabled = true;
+  btn.textContent = '⏳ Preparing…';
+
+  if (!tracked) {
+    try {
+      const res = await fetch(`${TRACK_API_BASE}/track/${item.id}`, { method: 'POST' });
+      const data = await res.json();
+      if (data.ok) {
+        tracked = true;
+        document.getElementById('stat-downloads').textContent = data.downloads;
+      }
+    } catch (e) {
+      console.error('Tracking call failed (download still proceeds)', e);
+    }
   }
 
   openFile();
-  showToast('✅ Unlocked! Opening your download…');
   launchConfetti();
   btn.textContent = '📥 Download Again';
   btn.disabled = false;
-  unlocking = false;
 }
 
 function openFile() {
@@ -353,7 +357,7 @@ function launchConfetti() {
   const ctx = canvas.getContext('2d');
   canvas.style.display = 'block';
   canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-  const colors = ['#6B7A3D', '#FFFFFF', '#4F5C2C', '#2E2B1F', '#F3EDE0', '#A3B36C'];
+  const colors = ['#FF4FA0', '#C7CEDD', '#0F1F42', '#EEF1F8', '#D6338A'];
   const pieces = Array.from({length: 80}, () => ({
     x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height,
     r: Math.random() * 5 + 3, d: Math.random() * 2 + 1,
