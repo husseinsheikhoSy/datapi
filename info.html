@@ -135,18 +135,6 @@
       </div>
     </div>
 
-    <div class="status-panel">
-      <div class="status-item">
-        <div class="status-num" id="stat-downloads">0</div>
-        <div class="status-label">Downloads</div>
-      </div>
-      <div class="status-divider"></div>
-      <div class="status-item">
-        <div class="status-num">100%</div>
-        <div class="status-label">Free</div>
-      </div>
-    </div>
-
     <!-- Two-step unlock: each button fires one Monetag Rewarded Popup.
          Both must complete before the real download link activates. -->
     <div class="unlock-steps">
@@ -181,10 +169,11 @@ if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disable
 
 // ── config ──────────────────────────────────────────────────
 // Replaces the old Supabase REST calls entirely: item data comes from
-// the static items.json committed alongside this page, and the download
-// counter is registered through the bot's own tiny tracking endpoint.
+// the static items.json committed alongside this page by pixel.py.
+// This page does NOT track or display download counts at all — the
+// channel post is the only place that number is shown (pulled straight
+// from Pixeldrain's own API, refreshed hourly).
 const ITEMS_JSON_URL     = './items.json';
-const TRACK_API_BASE     = 'https://YOUR_SERVER_DOMAIN_OR_IP:8420'; // must match config.TRACK_API_PUBLIC_BASE
 
 const CATEGORY_LABEL = { book: 'Books', summary: 'Cheat Sheets', project: 'Projects', article: 'Articles' };
 const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article: '📰' };
@@ -192,7 +181,6 @@ const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article
 let item        = null;
 let step1Done   = false;
 let step2Done   = false;
-let tracked     = false;
 
 // ── Monetag: Rewarded Popup ────────────────────────────────
 // show_11714447 comes from the SDK <script> tag in <head> (data-sdk attr).
@@ -255,7 +243,6 @@ async function loadItem() {
   document.getElementById('item-desc').textContent = item.description || '';
   document.getElementById('item-format').textContent = item.format_label || '';
   document.getElementById('item-size').textContent = item.size_str || '';
-  document.getElementById('stat-downloads').textContent = item.downloads ?? 0;
   if (item.page_count) {
     const pg = document.getElementById('item-pages');
     pg.style.display = 'inline-block';
@@ -317,29 +304,11 @@ async function runStep(n) {
   }
 }
 
-async function downloadNow() {
+function downloadNow() {
   if (!item || !step1Done || !step2Done) return;
-  const btn = document.getElementById('btn-download');
-  btn.disabled = true;
-  btn.textContent = '⏳ Preparing…';
-
-  if (!tracked) {
-    try {
-      const res = await fetch(`${TRACK_API_BASE}/track/${item.id}`, { method: 'POST' });
-      const data = await res.json();
-      if (data.ok) {
-        tracked = true;
-        document.getElementById('stat-downloads').textContent = data.downloads;
-      }
-    } catch (e) {
-      console.error('Tracking call failed (download still proceeds)', e);
-    }
-  }
-
   openFile();
   launchConfetti();
-  btn.textContent = '📥 Download Again';
-  btn.disabled = false;
+  document.getElementById('btn-download').textContent = '📥 Download Again';
 }
 
 function openFile() {
