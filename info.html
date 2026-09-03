@@ -213,6 +213,12 @@ function getStartParam() {
       || new URLSearchParams(window.location.search).get('id');
 }
 
+async function fetchItemsJson() {
+  const res = await fetch(ITEMS_JSON_URL + '?t=' + Date.now());
+  if (!res.ok) throw new Error('items.json HTTP ' + res.status);
+  return res.json();
+}
+
 async function loadItem() {
   let itemId = null;
   const raw = getStartParam();
@@ -226,17 +232,31 @@ async function loadItem() {
   }
   if (!itemId) itemId = new URLSearchParams(window.location.search).get('id');
 
-  try {
-    const res = await fetch(ITEMS_JSON_URL + '?t=' + Date.now());
-    const all = await res.json();
-    item = all.find(it => String(it.id) === String(itemId));
-  } catch (e) {
-    console.error('Failed to load items.json', e);
+  // Retry a few times — right after publishing, GitHub Pages can take a
+  // little while to serve the freshly-committed items.json.
+  const attempts = 4;
+  for (let i = 0; i < attempts && !item; i++) {
+    try {
+      const all = await fetchItemsJson();
+      item = all.find(it => String(it.id) === String(itemId));
+    } catch (e) {
+      console.error('Failed to load items.json (attempt ' + (i + 1) + ')', e);
+    }
+    if (!item && i < attempts - 1) {
+      await new Promise(r => setTimeout(r, 1500));
+    }
   }
 
   if (!item) {
+    console.error('Item not found. itemId =', itemId);
     document.getElementById('item-title').textContent = 'Item not found';
+    document.getElementById('item-desc').textContent =
+      'This link may be outdated, or the item is still syncing — please reopen it from the channel post in a moment.';
+    document.getElementById('btn-step1').disabled = true;
+    document.getElementById('btn-step2').disabled = true;
+    document.getElementById('btn-download').disabled = true;
     showCard();
+    showToast('⚠️ Item not found — try reopening from the channel post.', true);
     return;
   }
 
@@ -276,7 +296,10 @@ function showToast(msg, isError) {
 }
 
 async function runStep(n) {
-  if (!item) return;
+  if (!item) {
+    showToast('⚠️ Item not loaded — please reopen this page from the channel post.', true);
+    return;
+  }
   const btn = document.getElementById(`btn-step${n}`);
   const status = document.getElementById(`step${n}-status`);
   btn.disabled = true;
@@ -307,7 +330,10 @@ async function runStep(n) {
 }
 
 function downloadNow() {
-  if (!item || !step1Done || !step2Done) return;
+  if (!item || !step1Done || !step2Done) {
+    if (!item) showToast('⚠️ Item not loaded — please reopen this page from the channel post.', true);
+    return;
+  }
   openFile();
   launchConfetti();
   document.getElementById('btn-download').textContent = '📥 Download Again';
