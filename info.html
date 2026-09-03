@@ -72,6 +72,8 @@
   .item-meta{flex:1;min-width:0;}
   .item-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:800;line-height:1.35;margin-bottom:6px;color:#fff;}
   .item-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin-bottom:8px;}
+  .debug-note{font-size:10.5px;color:#FF8A8A;background:rgba(255,80,80,.1);border:1px solid rgba(255,80,80,.3);
+    border-radius:6px;padding:5px 8px;margin-bottom:8px;word-break:break-all;line-height:1.4;}
   .tags{display:flex;gap:6px;flex-wrap:wrap;}
   .tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:5px;background:var(--bg-2);color:var(--silver);
     border:1px solid var(--border);}
@@ -132,6 +134,7 @@
       <div class="item-meta">
         <div class="item-title" id="item-title">Loading…</div>
         <div class="item-desc" id="item-desc"></div>
+        <div class="debug-note" id="debug-note" style="display:none"></div>
         <div class="tags">
           <span class="tag" id="item-format"></span>
           <span class="tag" id="item-size"></span>
@@ -234,6 +237,10 @@ function getStartParam() {
       || new URLSearchParams(window.location.search).get('startapp');
 }
 
+function isDebugMode() {
+  return new URLSearchParams(window.location.search).get('debug') === '1';
+}
+
 function loadItem() {
   const raw = getStartParam();
   let parsed = null;
@@ -277,19 +284,26 @@ function loadItem() {
     pg.textContent = item.page_count + ' pages';
   }
   const thumb = document.getElementById('item-thumb');
+  const debugNote = document.getElementById('debug-note');
   if (item.cover_url) {
     const img = document.createElement('img');
     img.alt = 'cover';
     img.onerror = () => {
-      console.error('Cover image failed to load:', item.cover_url);
       thumb.textContent = '📖';
+      if (isDebugMode()) {
+        debugNote.style.display = 'block';
+        debugNote.textContent = '⚠️ Cover failed to load: ' + item.cover_url;
+      }
     };
     img.src = item.cover_url;
     thumb.innerHTML = '';
     thumb.appendChild(img);
   } else {
-    console.log('No cover_url in this item link — showing default icon.');
     thumb.textContent = '📖';
+    if (isDebugMode()) {
+      debugNote.style.display = 'block';
+      debugNote.textContent = 'ℹ️ No cover image was attached to this item (Skip was tapped when publishing).';
+    }
   }
 
   const moreLink = document.getElementById('more-link');
