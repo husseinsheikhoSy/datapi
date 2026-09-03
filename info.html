@@ -84,10 +84,16 @@
   .status-label{font-size:10.5px;color:var(--silver-dim);font-weight:700;margin-top:2px;text-transform:uppercase;letter-spacing:.02em;}
   .status-divider{width:1px;align-self:stretch;background:var(--border);}
 
+  .unlock-intro{font-size:12.5px;color:var(--silver);line-height:1.5;text-align:center;
+    margin-bottom:12px;padding:0 4px;}
   .unlock-steps{display:flex;flex-direction:column;gap:10px;margin-bottom:12px;}
   .unlock-btn{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;padding:14px 16px;
     border-radius:var(--radius-btn);border:1.5px solid var(--border);background:var(--bg-2);color:var(--text);
     font-weight:700;font-size:13.5px;cursor:pointer;transition:opacity .15s,border-color .15s;}
+  .unlock-btn-text{display:flex;align-items:center;gap:10px;text-align:left;}
+  .unlock-btn-labels{display:flex;flex-direction:column;gap:1px;}
+  .unlock-btn-title{font-size:13.5px;font-weight:700;color:var(--text);}
+  .unlock-btn-sub{font-size:11px;font-weight:600;color:var(--silver-dim);}
   .unlock-btn .step-num{width:22px;height:22px;border-radius:50%;background:var(--accent);color:#fff;
     font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
   .unlock-btn .step-status{font-size:16px;flex-shrink:0;}
@@ -135,15 +141,32 @@
       </div>
     </div>
 
-    <!-- Two-step unlock: each button fires one Monetag Rewarded Popup.
-         Both must complete before the real download link activates. -->
+    <!-- Two-step unlock: each button fires one Monetag Rewarded
+         Interstitial ad. Both must complete before the download button
+         activates. -->
+    <div class="unlock-intro" id="unlock-intro">
+      🔓 Watch <b>2 short ads</b> below to unlock your free download —
+      each one takes about 10–15 seconds.
+    </div>
     <div class="unlock-steps">
       <button class="unlock-btn" id="btn-step1" onclick="runStep(1)">
-        <span><span class="step-num">1</span> &nbsp;Complete step 1</span>
+        <span class="unlock-btn-text">
+          <span class="step-num">1</span>
+          <span class="unlock-btn-labels">
+            <span class="unlock-btn-title">Watch ad #1</span>
+            <span class="unlock-btn-sub" id="step1-sub">Tap to start</span>
+          </span>
+        </span>
         <span class="step-status" id="step1-status">▶️</span>
       </button>
       <button class="unlock-btn" id="btn-step2" onclick="runStep(2)" disabled>
-        <span><span class="step-num">2</span> &nbsp;Complete step 2</span>
+        <span class="unlock-btn-text">
+          <span class="step-num">2</span>
+          <span class="unlock-btn-labels">
+            <span class="unlock-btn-title">Watch ad #2</span>
+            <span class="unlock-btn-sub" id="step2-sub">Unlocks after step 1</span>
+          </span>
+        </span>
         <span class="step-status" id="step2-status">🔒</span>
       </button>
     </div>
@@ -180,16 +203,18 @@ let item        = null;
 let step1Done   = false;
 let step2Done   = false;
 
-// ── Monetag: Rewarded Popup ────────────────────────────────
+// ── Monetag: Rewarded Interstitial ─────────────────────────
 // show_11714447 comes from the SDK <script> tag in <head> (data-sdk attr).
-function showRewardedPopup() {
+// Rewarded Interstitial is called with NO arguments (unlike the old
+// Rewarded Popup format, which took 'pop').
+function showRewardedAd() {
   return new Promise((resolve) => {
     if (typeof show_11714447 !== 'function') {
       console.error('Monetag SDK not loaded');
       resolve(false);
       return;
     }
-    show_11714447('pop').then(() => resolve(true)).catch((e) => {
+    show_11714447().then(() => resolve(true)).catch((e) => {
       console.error('Monetag ad error', e);
       resolve(false);
     });
@@ -253,8 +278,17 @@ function loadItem() {
   }
   const thumb = document.getElementById('item-thumb');
   if (item.cover_url) {
-    thumb.innerHTML = `<img src="${item.cover_url}" alt="cover" onerror="this.parentElement.textContent='📖'" />`;
+    const img = document.createElement('img');
+    img.alt = 'cover';
+    img.onerror = () => {
+      console.error('Cover image failed to load:', item.cover_url);
+      thumb.textContent = '📖';
+    };
+    img.src = item.cover_url;
+    thumb.innerHTML = '';
+    thumb.appendChild(img);
   } else {
+    console.log('No cover_url in this item link — showing default icon.');
     thumb.textContent = '📖';
   }
 
@@ -284,29 +318,35 @@ async function runStep(n) {
   }
   const btn = document.getElementById(`btn-step${n}`);
   const status = document.getElementById(`step${n}-status`);
+  const sub = document.getElementById(`step${n}-sub`);
   btn.disabled = true;
   status.textContent = '⏳';
+  sub.textContent = 'Loading ad…';
 
-  const ok = await showRewardedPopup();
+  const ok = await showRewardedAd();
   if (!ok) {
     status.textContent = '▶️';
+    sub.textContent = 'Tap to start';
     btn.disabled = false;
     showToast('No ad available right now — please try again.', true);
     return;
   }
 
   status.textContent = '✅';
+  sub.textContent = 'Done';
   btn.classList.add('done');
 
   if (n === 1) {
     step1Done = true;
     document.getElementById('btn-step2').disabled = false;
+    document.getElementById('step2-sub').textContent = 'Tap to start';
   } else {
     step2Done = true;
   }
 
   if (step1Done && step2Done) {
     document.getElementById('btn-download').disabled = false;
+    document.getElementById('unlock-intro').textContent = '✅ Both ads watched — your download is unlocked!';
     showToast('✅ Unlocked! Tap Download Now Free.');
   }
 }
