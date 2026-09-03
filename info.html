@@ -168,16 +168,13 @@ const tg = window.Telegram ? window.Telegram.WebApp : null;
 if (tg) { tg.ready(); tg.expand(); if (tg.disableClosingConfirmation) tg.disableClosingConfirmation(); }
 
 // ── config ──────────────────────────────────────────────────
-// Replaces the old Supabase REST calls entirely: item data comes from
-// the static items.json committed alongside this page by pixel.py.
+// No backend, no items.json, no fetch of any kind. The item's data is
+// encoded directly into this page's own startapp URL parameter by
+// pixel.py when it posts to the channel — we just decode it below.
 // This page does NOT track or display download counts at all — the
 // channel post is the only place that number is shown (pulled straight
 // from Pixeldrain's own API, refreshed hourly).
-const ITEMS_JSON_URL     = './items.json';
 const CHANNEL_JOIN_LINK  = 'https://t.me/+MhmkscCzIYQ2MmM8';
-
-const CATEGORY_LABEL = { book: 'Books', summary: 'Cheat Sheets', project: 'Projects', article: 'Articles' };
-const CATEGORY_EMOJI = { book: '📖', summary: '📝', project: '💻', article: '📰' };
 
 let item        = null;
 let step1Done   = false;
@@ -209,56 +206,41 @@ function b64urlDecode(str) {
 }
 function getStartParam() {
   return tg?.initDataUnsafe?.start_param
-      || new URLSearchParams(window.location.search).get('startapp')
-      || new URLSearchParams(window.location.search).get('id');
+      || new URLSearchParams(window.location.search).get('startapp');
 }
 
-async function fetchItemsJson() {
-  const res = await fetch(ITEMS_JSON_URL + '?t=' + Date.now());
-  if (!res.ok) throw new Error('items.json HTTP ' + res.status);
-  return res.json();
-}
-
-async function loadItem() {
-  let itemId = null;
+function loadItem() {
   const raw = getStartParam();
+  let parsed = null;
   if (raw) {
-    try {
-      const parsed = JSON.parse(b64urlDecode(raw));
-      if (parsed && parsed.id) itemId = parsed.id;
-    } catch (e) {
-      if (/^\d+$/.test(raw)) itemId = Number(raw);
-    }
-  }
-  if (!itemId) itemId = new URLSearchParams(window.location.search).get('id');
-
-  // Retry a few times — right after publishing, GitHub Pages can take a
-  // little while to serve the freshly-committed items.json.
-  const attempts = 4;
-  for (let i = 0; i < attempts && !item; i++) {
-    try {
-      const all = await fetchItemsJson();
-      item = all.find(it => String(it.id) === String(itemId));
-    } catch (e) {
-      console.error('Failed to load items.json (attempt ' + (i + 1) + ')', e);
-    }
-    if (!item && i < attempts - 1) {
-      await new Promise(r => setTimeout(r, 1500));
+    try { parsed = JSON.parse(b64urlDecode(raw)); } catch (e) {
+      console.error('Failed to decode startapp payload', e);
     }
   }
 
-  if (!item) {
-    console.error('Item not found. itemId =', itemId);
+  if (!parsed || !parsed.t || !parsed.u) {
+    console.error('No valid item data in URL. raw startapp =', raw);
     document.getElementById('item-title').textContent = 'Item not found';
     document.getElementById('item-desc').textContent =
-      'This link may be outdated, or the item is still syncing — please reopen it from the channel post in a moment.';
+      'This link is missing its data — please open the download button from the channel post directly.';
     document.getElementById('btn-step1').disabled = true;
     document.getElementById('btn-step2').disabled = true;
     document.getElementById('btn-download').disabled = true;
     showCard();
-    showToast('⚠️ Item not found — try reopening from the channel post.', true);
+    showToast('⚠️ Item link is invalid — reopen it from the channel post.', true);
     return;
   }
+
+  // Map the short keys pixel.py encodes back to readable fields.
+  item = {
+    title:        parsed.t,
+    description:  parsed.d || '',
+    format_label: parsed.f || '',
+    size_str:     parsed.s || '',
+    page_count:   parsed.p || null,
+    file_url:     parsed.u,
+    cover_url:    parsed.c || '',
+  };
 
   document.getElementById('item-title').textContent = item.title;
   document.getElementById('item-desc').textContent = item.description || '';
@@ -271,9 +253,9 @@ async function loadItem() {
   }
   const thumb = document.getElementById('item-thumb');
   if (item.cover_url) {
-    thumb.innerHTML = `<img src="${item.cover_url}" alt="cover" onerror="this.parentElement.textContent='${CATEGORY_EMOJI[item.category] || '📄'}'" />`;
+    thumb.innerHTML = `<img src="${item.cover_url}" alt="cover" onerror="this.parentElement.textContent='📖'" />`;
   } else {
-    thumb.textContent = CATEGORY_EMOJI[item.category] || '📄';
+    thumb.textContent = '📖';
   }
 
   const moreLink = document.getElementById('more-link');
